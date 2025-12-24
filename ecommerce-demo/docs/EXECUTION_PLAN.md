@@ -17,7 +17,153 @@
 
 ---
 
-## Settimana 1: Foundation (Giorni 1-3)
+## Calendario Effettivo
+
+| Giorno | Data | Focus | Stato |
+|--------|------|-------|-------|
+| 1 | 24 Dic | Foundation + Backend + Helm + CI/CD + Docs | ✅ |
+| 2 | 25 Dic | Dockerfiles + React Components | ⏳ |
+| 3 | 26 Dic | API Client + Hooks + Pagine | ⏳ |
+| 4 | 27 Dic | Auth Frontend + Testing | ⏳ |
+| 5 | 28 Dic | Seed Data + Local Testing | ⏳ |
+| 6 | 29 Dic | Security + Ottimizzazione | ⏳ |
+| 7 | 30 Dic | Deploy AWS + E2E Test | ⏳ |
+
+---
+
+## Dettaglio Giorno 1 - 24 Dicembre ✅
+
+Completato in una sessione intensiva (Sessions 1-11, 13-14, 19-24 del piano originale).
+
+---
+
+## Dettaglio Giorno 2 - 25 Dicembre ⏳
+
+### Mattina: Dockerfiles
+
+| Task | File | Stato |
+|------|------|-------|
+| Dockerfile backend | `apps/backend/Dockerfile` | ⏳ |
+| Dockerfile frontend | `apps/frontend/Dockerfile` | ⏳ |
+| .dockerignore apps | `apps/*/. dockerignore` | ⏳ |
+
+### Pomeriggio: React Components
+
+| Task | File | Stato |
+|------|------|-------|
+| Header component | `src/components/layout/Header.tsx` | ⏳ |
+| Footer component | `src/components/layout/Footer.tsx` | ⏳ |
+| ProductCard | `src/components/ui/ProductCard.tsx` | ⏳ |
+| ProductGrid | `src/components/ui/ProductGrid.tsx` | ⏳ |
+| SearchBar | `src/components/ui/SearchBar.tsx` | ⏳ |
+| CartItem | `src/components/cart/CartItem.tsx` | ⏳ |
+| CartSummary | `src/components/cart/CartSummary.tsx` | ⏳ |
+
+---
+
+## Dettaglio Giorno 3 - 26 Dicembre ⏳
+
+### Mattina: API Client + Hooks
+
+| Task | File | Stato |
+|------|------|-------|
+| API client base | `src/lib/api-client.ts` | ⏳ |
+| Types shared | `src/types/index.ts` | ⏳ |
+| useProducts hook | `src/hooks/useProducts.ts` | ⏳ |
+| useCart hook | `src/hooks/useCart.ts` | ⏳ |
+| useAuth hook | `src/hooks/useAuth.ts` | ⏳ |
+
+### Pomeriggio: Pagine Complete
+
+| Task | File | Stato |
+|------|------|-------|
+| Products page | `src/app/products/page.tsx` | ⏳ |
+| Product detail | `src/app/products/[id]/page.tsx` | ⏳ |
+| Cart page | `src/app/cart/page.tsx` | ⏳ |
+| Checkout page | `src/app/checkout/page.tsx` | ⏳ |
+
+---
+
+## Dettaglio Giorno 4 - 27 Dicembre ⏳
+
+### Mattina: Auth Frontend
+
+| Task | File | Stato |
+|------|------|-------|
+| Login page | `src/app/auth/login/page.tsx` | ⏳ |
+| Register page | `src/app/auth/register/page.tsx` | ⏳ |
+| Auth middleware | `src/middleware.ts` | ⏳ |
+| Auth context | `src/lib/auth-context.tsx` | ⏳ |
+
+### Pomeriggio: Testing Backend
+
+| Task | File | Stato |
+|------|------|-------|
+| Jest config | `apps/backend/jest.config.js` | ⏳ |
+| Auth tests | `apps/backend/tests/auth.test.ts` | ⏳ |
+| Catalog tests | `apps/backend/tests/catalog.test.ts` | ⏳ |
+| Orders tests | `apps/backend/tests/orders.test.ts` | ⏳ |
+
+---
+
+## Dettaglio Giorno 5 - 28 Dicembre ⏳
+
+### Mattina: Seed Data
+
+| Task | File | Stato |
+|------|------|-------|
+| Seed script | `apps/backend/prisma/seed.ts` | ⏳ |
+| Demo categories | (in seed.ts) | ⏳ |
+| Demo products | (in seed.ts) | ⏳ |
+| Demo users | (in seed.ts) | ⏳ |
+
+### Pomeriggio: Local Testing
+
+| Task | Stato |
+|------|-------|
+| docker-compose up | ⏳ |
+| npm run db:migrate | ⏳ |
+| npm run db:seed | ⏳ |
+| Test frontend | ⏳ |
+| Test backend API | ⏳ |
+| Test auth flow | ⏳ |
+
+---
+
+## Dettaglio Giorno 6 - 29 Dicembre ⏳
+
+### Security & Optimization
+
+| Task | Stato |
+|------|-------|
+| Dockerfile security (non-root) | ⏳ |
+| Helm security contexts | ⏳ |
+| Rate limiting config | ⏳ |
+| CORS config | ⏳ |
+| Environment variables review | ⏳ |
+| Bundle size optimization | ⏳ |
+
+---
+
+## Dettaglio Giorno 7 - 30 Dicembre ⏳
+
+### Deploy AWS & E2E
+
+| Task | Stato |
+|------|-------|
+| Terraform init/plan | ⏳ |
+| Terraform apply | ⏳ |
+| Configure kubectl | ⏳ |
+| Helm install backend | ⏳ |
+| Helm install frontend | ⏳ |
+| E2E test su AWS | ⏳ |
+| Screenshots/demo | ⏳ |
+
+---
+
+## Piano Originale (Reference)
+
+### Settimana 1: Foundation (Giorni 1-3)
 
 ### Giorno 1 - Struttura Base
 
