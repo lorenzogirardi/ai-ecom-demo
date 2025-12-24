@@ -1,0 +1,70 @@
+# Demo environment values
+replicaCount: 2
+
+image:
+  repository: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/ecommerce-demo/backend
+  pullPolicy: Always
+  tag: latest
+
+ingress:
+  enabled: true
+  className: alb
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/healthcheck-path: /health
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    alb.ingress.kubernetes.io/group.name: ecommerce-demo
+  hosts:
+    - host: api.demo.example.com  # Update with actual domain
+      paths:
+        - path: /
+          pathType: Prefix
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 200m
+    memory: 512Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70
+
+env:
+  NODE_ENV: production
+  PORT: "4000"
+  HOST: "0.0.0.0"
+  LOG_LEVEL: info
+  ENABLE_SWAGGER: "true"
+  ENABLE_RATE_LIMITING: "true"
+  CORS_ORIGIN: "https://demo.example.com"
+
+# Use External Secrets for sensitive data
+externalSecrets:
+  enabled: true
+  refreshInterval: 1h
+  secretStoreRef:
+    name: aws-secrets-manager
+    kind: ClusterSecretStore
+  data:
+    - secretKey: DATABASE_URL
+      remoteRef:
+        key: ecommerce-demo-demo-rds-password
+        property: connection_string
+    - secretKey: REDIS_PASSWORD
+      remoteRef:
+        key: ecommerce-demo-demo-redis-auth
+        property: auth_token
+    - secretKey: JWT_SECRET
+      remoteRef:
+        key: ecommerce-demo-demo-jwt
+        property: secret
+
+migration:
+  enabled: true

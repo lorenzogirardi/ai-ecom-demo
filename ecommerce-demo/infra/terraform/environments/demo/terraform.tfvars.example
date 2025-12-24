@@ -1,0 +1,39 @@
+# ===========================================
+# Demo Environment - Terraform Variables
+# ===========================================
+# Copy this file to terraform.tfvars and update values
+
+# Project Configuration
+project_name = "ecommerce-demo"
+environment  = "demo"
+aws_region   = "us-east-1"
+
+# Network Configuration
+vpc_cidr           = "10.0.0.0/16"
+az_count           = 2
+single_nat_gateway = true  # Set to false for high availability
+
+# EKS Configuration
+eks_cluster_version        = "1.29"
+eks_endpoint_public_access = true
+eks_node_instance_types    = ["t3.medium"]
+eks_capacity_type          = "ON_DEMAND"  # Use "SPOT" for cost savings
+eks_node_desired_size      = 2
+eks_node_min_size          = 1
+eks_node_max_size          = 4
+
+# RDS Configuration
+rds_instance_class          = "db.t3.micro"  # Use db.t3.small or larger for production
+rds_allocated_storage       = 20
+rds_max_allocated_storage   = 100
+rds_multi_az                = false  # Set to true for production
+rds_backup_retention_period = 7
+
+# ElastiCache Configuration
+redis_node_type       = "cache.t3.micro"  # Use cache.t3.small or larger for production
+redis_num_cache_nodes = 1  # Set to 2 for Multi-AZ
+
+# CDN Configuration (optional)
+cdn_domain_names        = []  # ["demo.example.com"]
+cdn_acm_certificate_arn = null  # ARN of ACM certificate in us-east-1
+cdn_price_class         = "PriceClass_100"  # North America and Europe only

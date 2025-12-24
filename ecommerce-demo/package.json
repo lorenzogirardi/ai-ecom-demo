@@ -1,0 +1,65 @@
+{
+  "name": "ecommerce-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "E-commerce demo monorepo for AWS EKS deployment",
+  "keywords": [
+    "ecommerce",
+    "monorepo",
+    "aws",
+    "eks",
+    "kubernetes",
+    "nextjs",
+    "fastify"
+  ],
+  "license": "MIT",
+  "author": "Your Team",
+  "workspaces": [
+    "apps/frontend",
+    "apps/backend"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspaces --if-present",
+    "dev:frontend": "npm run dev -w apps/frontend",
+    "dev:backend": "npm run dev -w apps/backend",
+    "build": "npm run build --workspaces --if-present",
+    "build:frontend": "npm run build -w apps/frontend",
+    "build:backend": "npm run build -w apps/backend",
+    "start": "npm run start --workspaces --if-present",
+    "start:frontend": "npm run start -w apps/frontend",
+    "start:backend": "npm run start -w apps/backend",
+    "test": "npm run test --workspaces --if-present",
+    "test:frontend": "npm run test -w apps/frontend",
+    "test:backend": "npm run test -w apps/backend",
+    "lint": "npm run lint --workspaces --if-present",
+    "lint:fix": "npm run lint:fix --workspaces --if-present",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "clean": "npm run clean --workspaces --if-present && rm -rf node_modules",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "db:migrate": "npm run db:migrate -w apps/backend",
+    "db:seed": "npm run db:seed -w apps/backend",
+    "db:studio": "npm run db:studio -w apps/backend",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
+    "prettier": "^3.2.5"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  }
+}
