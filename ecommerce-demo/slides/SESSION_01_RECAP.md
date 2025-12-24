@@ -32,10 +32,10 @@
 
 | Metrica | Valore |
 |---------|--------|
-| File creati | 82 |
-| Linee di codice | 8,906 |
+| File creati | ~79 |
+| Linee di codice | ~9,300 |
 | Commits | 3 |
-| Linguaggi | TypeScript, HCL, YAML, JSON, Bash, Markdown |
+| Linguaggi | TypeScript, HCL, YAML, JSON, Bash, Markdown, CSS |
 
 ### Struttura Completa
 
@@ -66,14 +66,16 @@ ecommerce-demo/
 
 **Extras**: Error handling, Zod validation, Pino logging, Redis caching
 
-### Frontend (Next.js 16)
+### Frontend (Next.js 16) - Base Setup
 
-| Componente | Tecnologie |
-|------------|------------|
-| App Router | React 18, TypeScript |
-| Styling | Tailwind CSS, Custom components |
-| State | React Query, Providers |
-| Build | Standalone output per Docker |
+| Componente | Stato |
+|------------|-------|
+| App Router | ✅ Layout, Homepage, Providers |
+| Styling | ✅ Tailwind CSS, globals.css |
+| State | ✅ React Query config |
+| Components | ⏳ Da creare (Header, ProductCard, etc.) |
+| Pages | ⏳ Da creare (products, cart, auth) |
+| Dockerfile | ⏳ Da creare |
 
 ### Infrastructure (Terraform)
 
@@ -154,11 +156,11 @@ ecommerce-demo/
 
 ### Best Practices Incluse
 - Security contexts in Helm
-- Multi-stage Dockerfile patterns
 - Proper TypeScript types
 - Zod validation schemas
 - Redis caching strategies
 - JWT authentication flow
+- Modular Terraform structure
 
 ### Integrazione
 - Comprensione del contesto tra file
@@ -179,6 +181,20 @@ ecommerce-demo/
 
 ---
 
+## Cosa Manca (Da Completare)
+
+| Componente | Dettaglio |
+|------------|-----------|
+| Dockerfiles | Backend e Frontend multi-stage |
+| React Components | Header, Footer, ProductCard, CartItem, SearchBar |
+| Frontend Pages | /products, /cart, /checkout, /auth/* |
+| API Client | Axios + React Query hooks |
+| Backend Tests | Unit e integration tests |
+| Seed Data | prisma/seed.ts con dati demo |
+| Deploy AWS | Terraform apply + Helm install |
+
+---
+
 ## Costo Comparativo
 
 ### Claude Max ($100/mese)
@@ -186,7 +202,7 @@ ecommerce-demo/
 ```
 Sessione 1: ~177k tokens
 Costo stimato: ~$2-3 di tokens
-Output: 82 file, 8906 linee
+Output: ~79 file, ~9,300 linee
 ```
 
 ### Developer Mid-Senior
