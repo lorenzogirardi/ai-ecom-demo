@@ -42,7 +42,7 @@
     "db:migrate": "npm run db:migrate -w apps/backend",
     "db:seed": "npm run db:seed -w apps/backend",
     "db:studio": "npm run db:studio -w apps/backend",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "devDependencies": {
     "husky": "^9.0.11",
