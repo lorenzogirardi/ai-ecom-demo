@@ -57,7 +57,7 @@ flowchart TB
 ## Tech Stack
 
 ### Frontend
-- **Framework:** Next.js 14 (App Router)
+- **Framework:** Next.js 16 (App Router)
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS
 - **State Management:** React Query (TanStack Query)

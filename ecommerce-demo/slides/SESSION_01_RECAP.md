@@ -42,7 +42,7 @@
 ```
 ecommerce-demo/
 ├── apps/
-│   ├── frontend/     (Next.js 14 + TypeScript + Tailwind)
+│   ├── frontend/     (Next.js 16 + TypeScript + Tailwind)
 │   └── backend/      (Fastify + Prisma + Redis + JWT)
 ├── infra/terraform/  (5 moduli AWS completi)
 ├── helm/             (2 charts Kubernetes)
@@ -66,7 +66,7 @@ ecommerce-demo/
 
 **Extras**: Error handling, Zod validation, Pino logging, Redis caching
 
-### Frontend (Next.js 14)
+### Frontend (Next.js 16)
 
 | Componente | Tecnologie |
 |------------|------------|
