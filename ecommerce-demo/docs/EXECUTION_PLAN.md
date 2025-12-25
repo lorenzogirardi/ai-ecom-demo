@@ -104,22 +104,115 @@ Completato in una sessione intensiva (Sessions 1-11, 13-14, 19-24 del piano orig
 
 ## Dettaglio Giorno 3 - 26 Dicembre ⏳
 
-### Auth Pages (Da fare)
+### Ultimo giorno di sviluppo codice - App completamente funzionante in locale
+
+---
+
+### 1. Auth System
 
 | Task | File | Stato |
 |------|------|-------|
+| useAuth hook | `src/hooks/useAuth.ts` | ⏳ |
+| Auth context/provider | `src/lib/auth-context.tsx` | ⏳ |
 | Login page | `src/app/auth/login/page.tsx` | ⏳ |
 | Register page | `src/app/auth/register/page.tsx` | ⏳ |
-| Checkout page | `src/app/checkout/page.tsx` | ⏳ |
 | Auth middleware | `src/middleware.ts` | ⏳ |
 
-### Security Review
+---
+
+### 2. Checkout Flow
+
+| Task | File | Stato |
+|------|------|-------|
+| Checkout page | `src/app/checkout/page.tsx` | ⏳ |
+| Address form component | `src/components/checkout/AddressForm.tsx` | ⏳ |
+| Order confirmation | `src/app/orders/[id]/page.tsx` | ⏳ |
+| useOrders hook | `src/hooks/useOrders.ts` | ⏳ |
+
+---
+
+### 3. User Account
+
+| Task | File | Stato |
+|------|------|-------|
+| Account layout | `src/app/account/layout.tsx` | ⏳ |
+| Account profile | `src/app/account/page.tsx` | ⏳ |
+| Order history | `src/app/account/orders/page.tsx` | ⏳ |
+| Order detail | `src/app/account/orders/[id]/page.tsx` | ⏳ |
+
+---
+
+### 4. Search Enhancement
+
+| Task | File | Stato |
+|------|------|-------|
+| Search query params support | `src/app/products/page.tsx` (update) | ⏳ |
+| Search results integration | `src/components/ui/SearchBar.tsx` (update) | ⏳ |
+| useSearch hook | `src/hooks/useSearch.ts` | ⏳ |
+
+---
+
+### 5. Shared Types
+
+| Task | File | Stato |
+|------|------|-------|
+| API response types | `src/types/api.ts` | ⏳ |
+| User/Auth types | `src/types/auth.ts` | ⏳ |
+| Product/Order types | `src/types/models.ts` | ⏳ |
+| Types index | `src/types/index.ts` | ⏳ |
+
+---
+
+### 6. Security Review
 
 | Task | Stato |
 |------|-------|
 | Rate limiting config | ⏳ |
 | CORS config | ⏳ |
 | Environment variables review | ⏳ |
+
+---
+
+### Flusso Utente Completo (dopo Day 3)
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    USER FLOW - E-COMMERCE                        │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐    │
+│  │ Homepage │ → │ Products │ → │  Detail  │ → │   Cart   │    │
+│  └──────────┘   └──────────┘   └──────────┘   └──────────┘    │
+│                       ↓                             ↓           │
+│                 ┌──────────┐                  ┌──────────┐     │
+│                 │  Search  │                  │ Checkout │     │
+│                 └──────────┘                  └──────────┘     │
+│                                                    ↓           │
+│  ┌──────────┐   ┌──────────┐   ┌──────────┐   ┌──────────┐    │
+│  │ Register │ → │  Login   │ → │ Account  │ ← │  Order   │    │
+│  └──────────┘   └──────────┘   └──────────┘   │ Confirm  │    │
+│                       ↓                        └──────────┘    │
+│                 ┌──────────┐                                    │
+│                 │  Orders  │                                    │
+│                 │ History  │                                    │
+│                 └──────────┘                                    │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### Checklist Finale Day 3
+
+- [ ] Utente può registrarsi
+- [ ] Utente può fare login/logout
+- [ ] Utente può cercare prodotti
+- [ ] Utente può aggiungere al carrello
+- [ ] Utente può completare checkout
+- [ ] Utente vede conferma ordine
+- [ ] Utente può vedere storico ordini
+- [ ] Route protette funzionano
+- [ ] Tutti i flussi testati manualmente
 
 ---
 
@@ -541,10 +634,31 @@ Le pipeline attuali sono base. Vanno estese con security scanning, code quality 
 
 ### Da Completare ⏳
 
-**Giorno 3 - Auth & Security:**
-- [ ] Auth pages (/auth/login, /auth/register)
-- [ ] Checkout page (/checkout)
-- [ ] Auth middleware frontend
+**Giorno 3 - Ultimo giorno codice (App completa locale):**
+
+Auth System:
+- [ ] useAuth hook + Auth context
+- [ ] /auth/login page
+- [ ] /auth/register page
+- [ ] Auth middleware (route protection)
+
+Checkout Flow:
+- [ ] /checkout page + AddressForm
+- [ ] /orders/[id] confirmation page
+- [ ] useOrders hook
+
+User Account:
+- [ ] /account profile page
+- [ ] /account/orders history
+- [ ] /account/orders/[id] detail
+
+Search Enhancement:
+- [ ] Products page search params
+- [ ] SearchBar integration
+- [ ] useSearch hook
+
+Types & Security:
+- [ ] Shared TypeScript types
 - [ ] Security review (rate limiting, CORS)
 
 **Giorno 4 - CI/CD Pipelines:**
@@ -563,15 +677,77 @@ Le pipeline attuali sono base. Vanno estese con security scanning, code quality 
 
 ## Prossima Sessione
 
-**Priorità**: Auth Pages + Security (Giorno 3)
+**Giorno 3 - Ultimo giorno codice (App completa in locale)**
 
 ```
-Sessione 3:
-1. Login page con form validation
-2. Register page con form validation
-3. Checkout page
-4. Auth middleware per route protette
-5. Security review (rate limiting, CORS)
+┌─────────────────────────────────────────────────────────────────┐
+│                    SESSIONE 3 - PRIORITY ORDER                   │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  1. TYPES (base per tutto)                                      │
+│     └── src/types/*.ts                                          │
+│                                                                  │
+│  2. AUTH SYSTEM                                                 │
+│     ├── useAuth hook + AuthContext                              │
+│     ├── /auth/login                                             │
+│     ├── /auth/register                                          │
+│     └── middleware.ts                                           │
+│                                                                  │
+│  3. CHECKOUT FLOW                                               │
+│     ├── /checkout + AddressForm                                 │
+│     ├── useOrders hook                                          │
+│     └── /orders/[id] (confirmation)                             │
+│                                                                  │
+│  4. USER ACCOUNT                                                │
+│     ├── /account (profile)                                      │
+│     ├── /account/orders (history)                               │
+│     └── /account/orders/[id] (detail)                           │
+│                                                                  │
+│  5. SEARCH                                                      │
+│     ├── useSearch hook                                          │
+│     ├── Products page query params                              │
+│     └── SearchBar navigation                                    │
+│                                                                  │
+│  6. SECURITY REVIEW                                             │
+│     ├── Rate limiting                                           │
+│     └── CORS config                                             │
+│                                                                  │
+│  7. MANUAL TESTING                                              │
+│     └── Full user flow verification                             │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**File da creare (~20 files):**
+```
+src/types/
+├── api.ts, auth.ts, models.ts, index.ts
+
+src/hooks/
+├── useAuth.ts, useOrders.ts, useSearch.ts
+
+src/lib/
+├── auth-context.tsx
+
+src/app/auth/
+├── login/page.tsx, register/page.tsx
+
+src/app/checkout/
+├── page.tsx
+
+src/app/orders/[id]/
+├── page.tsx
+
+src/app/account/
+├── layout.tsx, page.tsx
+├── orders/page.tsx
+├── orders/[id]/page.tsx
+
+src/components/checkout/
+├── AddressForm.tsx
+
+src/
+├── middleware.ts
 ```
 
 **Sessione 4 - CI/CD Pipelines:**
