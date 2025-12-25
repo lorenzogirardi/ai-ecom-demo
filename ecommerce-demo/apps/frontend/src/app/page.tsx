@@ -3,44 +3,7 @@ import { ShoppingBag, Package, Users, TrendingUp } from "lucide-react";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen">
-      {/* Header */}
-      <header className="border-b border-gray-200 bg-white">
-        <div className="container-custom flex h-16 items-center justify-between">
-          <Link href="/" className="text-xl font-bold text-primary-600">
-            E-commerce Demo
-          </Link>
-          <nav className="hidden md:flex items-center gap-6">
-            <Link
-              href="/products"
-              className="text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              Products
-            </Link>
-            <Link
-              href="/categories"
-              className="text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              Categories
-            </Link>
-            <Link
-              href="/cart"
-              className="text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              Cart
-            </Link>
-          </nav>
-          <div className="flex items-center gap-4">
-            <Link href="/auth/login" className="btn btn-outline btn-sm">
-              Sign In
-            </Link>
-            <Link href="/auth/register" className="btn btn-primary btn-sm">
-              Get Started
-            </Link>
-          </div>
-        </div>
-      </header>
-
+    <div>
       {/* Hero Section */}
       <section className="bg-gradient-to-b from-primary-50 to-white py-20">
         <div className="container-custom text-center">
@@ -118,12 +81,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-gray-200 bg-white py-8">
-        <div className="container-custom text-center text-gray-600">
-          <p>E-commerce Demo - Built for AWS EKS deployment</p>
-        </div>
-      </footer>
     </div>
   );
 }
