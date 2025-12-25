@@ -150,6 +150,45 @@ JWT_SECRET=your-secret-key
 - Environment configs in `infra/terraform/environments/{env}/`
 - S3 + DynamoDB backend for state
 
+#### Current State (Single State)
+All resources in one state file: `demo/terraform.tfstate`
+- Network, EKS, RDS, ElastiCache, CDN, ECR deployed together
+- High blast radius, slow applies, coupled lifecycles
+
+#### Planned Refactor: Layer Separation
+```
+Layer 1: PLATFORM (core)           → platform/terraform.tfstate
+├── Network (VPC, Subnets, NAT)
+└── EKS (Cluster, Node Groups, IAM)
+    Frequency: Rare (months)
+    Risk: High
+    Team: Platform/SRE
+
+Layer 2: APPLICATION (services)    → services/terraform.tfstate
+├── Database (RDS PostgreSQL)
+├── Cache (ElastiCache Redis)
+├── CDN (CloudFront)
+├── ECR Repositories
+└── Secrets Manager
+    Frequency: Often (weeks)
+    Risk: Medium
+    Team: DevOps/App
+```
+
+Benefits:
+- Isolated blast radius per layer
+- Faster applies (~2-5 min vs ~15-20 min)
+- Parallel work by different teams
+- Per-layer rollback capability
+- Differentiated approval processes by risk level
+
+Implementation:
+1. Create `infra/terraform/environments/demo/platform/` with network + eks
+2. Create `infra/terraform/environments/demo/services/` with database + cache + cdn + ecr
+3. Use `terraform_remote_state` data source to share outputs between layers
+4. Separate state files in S3: `demo/platform.tfstate`, `demo/services.tfstate`
+5. Update CI/CD to deploy layers independently with dependencies
+
 ### Helm
 - Environment values: `values-{env}.yaml`
 - ExternalSecrets for AWS Secrets Manager integration
@@ -165,6 +204,20 @@ JWT_SECRET=your-secret-key
 7. **Auth Pages** - /auth/login, /auth/register, /checkout
 8. **Security** - Rate limiting review, CORS config
 9. **AWS Deploy** - Terraform apply, Helm install, E2E testing
+
+## Planned Refactors
+
+### Terraform Layer Separation (Priority: Medium)
+**Status:** Not started
+**Effort:** ~2-3 hours
+
+Separate Terraform into two layers for better isolation:
+- **Layer 1 (Platform):** Network + EKS → `platform/terraform.tfstate`
+- **Layer 2 (Services):** RDS + ElastiCache + CDN + ECR → `services/terraform.tfstate`
+
+See "Terraform > Planned Refactor: Layer Separation" section for full details.
+
+**When to implement:** Before production deployment or when team grows beyond 2-3 people.
 
 ## Links
 

@@ -216,6 +216,84 @@ Completed in an intensive session (Sessions 1-11, 13-14, 19-24 from original pla
 
 ---
 
+## Planned Refactoring: Terraform Layer Separation
+
+**Priority:** Medium | **Effort:** ~2-3 hours | **When:** Before production or when team > 2-3 people
+
+### Current State (Single State)
+
+```
+demo/terraform.tfstate
+├── Network (VPC, Subnets, NAT)
+├── EKS (Cluster, Node Groups)
+├── Database (RDS PostgreSQL)
+├── Cache (ElastiCache Redis)
+├── CDN (CloudFront)
+└── ECR Repositories
+```
+
+**Issues:**
+- High blast radius
+- Slow applies (~15-20 min)
+- Coupled lifecycles
+- Risk of accidental cluster modifications
+
+### Proposed Strategy (Two Layers)
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    LAYER SEPARATION                          │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  Layer 1: PLATFORM (core)        → platform/terraform.tfstate│
+│  ├── Network (VPC, Subnets, NAT)                            │
+│  └── EKS (Cluster, Node Groups, IAM)                        │
+│      Frequency: Rare (months)                               │
+│      Risk: High                                             │
+│      Team: Platform/SRE                                     │
+│                                                              │
+│  Layer 2: APPLICATION (services) → services/terraform.tfstate│
+│  ├── Database (RDS PostgreSQL)                              │
+│  ├── Cache (ElastiCache Redis)                              │
+│  ├── CDN (CloudFront)                                       │
+│  ├── ECR Repositories                                       │
+│  └── Secrets Manager                                        │
+│      Frequency: Often (weeks)                               │
+│      Risk: Medium                                           │
+│      Team: DevOps/App                                       │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Benefits
+
+| Aspect | Before | After |
+|--------|--------|-------|
+| Blast Radius | Everything | Isolated per layer |
+| Apply Time | ~15-20 min | ~2-5 min per layer |
+| Parallelism | No | Different teams in parallel |
+| Rollback | Complex | Per layer |
+| Approvals | Single | Differentiated by risk |
+
+### Implementation
+
+```
+1. Create infra/terraform/environments/demo/platform/
+   └── main.tf (network + eks modules)
+   └── backend.tf (key = "demo/platform.tfstate")
+
+2. Create infra/terraform/environments/demo/services/
+   └── main.tf (database + cache + cdn + ecr)
+   └── backend.tf (key = "demo/services.tfstate")
+   └── data.tf (terraform_remote_state for platform outputs)
+
+3. Update CI/CD
+   └── Deploy platform before services
+   └── Separate approval gates
+```
+
+---
+
 ## Day 4 Details - December 27 ⏳
 
 ### GitHub Actions - Complete CI/CD Pipelines
