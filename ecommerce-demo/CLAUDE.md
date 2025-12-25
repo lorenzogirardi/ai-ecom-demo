@@ -98,7 +98,7 @@ npm run lint                      # Lint all
 ### NOT Completed ❌
 
 **Backend:**
-- [ ] prisma/seed.ts
+- [x] prisma/seed.ts ✅ (aggiunto in Sessione 2)
 
 **Frontend:**
 - [ ] Hooks (useProducts, useCart, useAuth)
