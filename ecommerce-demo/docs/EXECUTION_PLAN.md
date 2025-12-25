@@ -23,8 +23,9 @@
 |--------|------|-------|-------|
 | 1 | 24 Dic | Foundation + Backend + Helm + CI/CD + Docs | ✅ |
 | 2 | 25 Dic | Dockerfiles + React Components + Test Suite + API Client + Pages + Seed | ✅ |
-| 3 | 26 Dic | Auth Pages + Security | ⏳ |
-| 4 | 27 Dic | Deploy AWS + E2E Test | ⏳ |
+| 3 | 26 Dic | Auth Pages + Security Review | ⏳ |
+| 4 | 27 Dic | GitHub Actions Pipelines (CI/CD completo) | ⏳ |
+| 5 | 28 Dic | Deploy AWS + E2E Test | ⏳ |
 
 ---
 
@@ -123,6 +124,185 @@ Completato in una sessione intensiva (Sessions 1-11, 13-14, 19-24 del piano orig
 ---
 
 ## Dettaglio Giorno 4 - 27 Dicembre ⏳
+
+### GitHub Actions - Pipeline CI/CD Complete
+
+Le pipeline attuali sono base. Vanno estese con security scanning, code quality e infra-as-code checks.
+
+---
+
+### CI Pipeline - Apps (Frontend & Backend)
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    CI PIPELINE - APPS                            │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐         │
+│  │  Lint   │ → │  Test   │ → │  Build  │ → │ Docker  │         │
+│  └─────────┘   └─────────┘   └─────────┘   └─────────┘         │
+│       ↓                                         ↓               │
+│  ┌─────────┐                           ┌─────────────────┐     │
+│  │ Secrets │                           │ Vulnerability   │     │
+│  │  Scan   │                           │     Scan        │     │
+│  └─────────┘                           └─────────────────┘     │
+│       ↓                                         ↓               │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │                    Code Quality Gate                     │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                              ↓                                  │
+│                    ┌─────────────────┐                         │
+│                    │   Push to ECR   │                         │
+│                    └─────────────────┘                         │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+| Step | Tool | File | Stato |
+|------|------|------|-------|
+| Linting | ESLint + Prettier | `.github/workflows/ci-apps.yml` | ⏳ |
+| Unit Tests | Vitest | `.github/workflows/ci-apps.yml` | ⏳ |
+| Code Quality | SonarQube / CodeClimate | `.github/workflows/ci-apps.yml` | ⏳ |
+| Secret Scanning | Gitleaks / TruffleHog | `.github/workflows/ci-apps.yml` | ⏳ |
+| Docker Build | Docker Buildx | `.github/workflows/ci-apps.yml` | ⏳ |
+| Vulnerability Scan | Trivy / Snyk | `.github/workflows/ci-apps.yml` | ⏳ |
+| Push to Registry | AWS ECR | `.github/workflows/ci-apps.yml` | ⏳ |
+
+---
+
+### CI Pipeline - Infrastructure (Terraform)
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                 CI PIPELINE - INFRASTRUCTURE                     │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ┌───────────┐   ┌───────────┐   ┌───────────┐                 │
+│  │  Checkov  │ → │  TFLint   │ → │ TF Format │                 │
+│  │ (Security)│   │  (Lint)   │   │  (Style)  │                 │
+│  └───────────┘   └───────────┘   └───────────┘                 │
+│        ↓                                                        │
+│  ┌───────────────────────────────────────────────────────────┐ │
+│  │                    Terraform Validate                      │ │
+│  └───────────────────────────────────────────────────────────┘ │
+│        ↓                                                        │
+│  ┌───────────────────────────────────────────────────────────┐ │
+│  │                     Terraform Plan                         │ │
+│  │              (saved as artifact for CD)                    │ │
+│  └───────────────────────────────────────────────────────────┘ │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+| Step | Tool | File | Stato |
+|------|------|------|-------|
+| Security Scan | Checkov | `.github/workflows/ci-infra.yml` | ⏳ |
+| Terraform Lint | TFLint | `.github/workflows/ci-infra.yml` | ⏳ |
+| Format Check | terraform fmt | `.github/workflows/ci-infra.yml` | ⏳ |
+| Validate | terraform validate | `.github/workflows/ci-infra.yml` | ⏳ |
+| Plan | terraform plan | `.github/workflows/ci-infra.yml` | ⏳ |
+| Cost Estimation | Infracost (optional) | `.github/workflows/ci-infra.yml` | ⏳ |
+
+---
+
+### CD Pipeline - Infrastructure Deploy
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                 CD PIPELINE - INFRASTRUCTURE                     │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │              Manual Approval (main branch)               │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                              ↓                                  │
+│  ┌───────────────┐   ┌───────────────┐   ┌───────────────┐    │
+│  │   TF Apply    │ → │   Configure   │ → │  Post-Deploy  │    │
+│  │  (Core Infra) │   │    kubectl    │   │   Validation  │    │
+│  └───────────────┘   └───────────────┘   └───────────────┘    │
+│                                                                  │
+│  Core Infrastructure:                                           │
+│  • VPC, Subnets, NAT                                           │
+│  • EKS Cluster                                                  │
+│  • RDS PostgreSQL                                               │
+│  • ElastiCache Redis                                            │
+│  • CloudFront + S3                                              │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+| Step | Tool | File | Stato |
+|------|------|------|-------|
+| Approval Gate | GitHub Environments | `.github/workflows/cd-infra.yml` | ⏳ |
+| Terraform Apply | terraform apply | `.github/workflows/cd-infra.yml` | ⏳ |
+| Configure kubectl | aws eks update-kubeconfig | `.github/workflows/cd-infra.yml` | ⏳ |
+| Validate Cluster | kubectl get nodes | `.github/workflows/cd-infra.yml` | ⏳ |
+
+---
+
+### CD Pipeline - Apps Deploy
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    CD PIPELINE - APPS                            │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │                    Pre-Deploy Checks                     │   │
+│  │    • Infrastructure exists (EKS, RDS, Redis ready)       │   │
+│  │    • Secrets configured in AWS Secrets Manager           │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                              ↓                                  │
+│  ┌───────────────┐   ┌───────────────┐   ┌───────────────┐    │
+│  │    Database   │ → │  Helm Deploy  │ → │  Smoke Tests  │    │
+│  │   Migrations  │   │   (Backend)   │   │               │    │
+│  └───────────────┘   └───────────────┘   └───────────────┘    │
+│                              ↓                                  │
+│  ┌───────────────┐   ┌───────────────┐   ┌───────────────┐    │
+│  │  Helm Deploy  │ → │  Health Check │ → │   E2E Tests   │    │
+│  │  (Frontend)   │   │               │   │  (Optional)   │    │
+│  └───────────────┘   └───────────────┘   └───────────────┘    │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+| Step | Tool | File | Stato |
+|------|------|------|-------|
+| Pre-Deploy Validation | AWS CLI checks | `.github/workflows/cd-apps.yml` | ⏳ |
+| Database Migrations | Prisma migrate deploy | `.github/workflows/cd-apps.yml` | ⏳ |
+| Deploy Backend | Helm upgrade --install | `.github/workflows/cd-apps.yml` | ⏳ |
+| Deploy Frontend | Helm upgrade --install | `.github/workflows/cd-apps.yml` | ⏳ |
+| Health Checks | curl + kubectl | `.github/workflows/cd-apps.yml` | ⏳ |
+| Smoke Tests | API endpoint validation | `.github/workflows/cd-apps.yml` | ⏳ |
+
+---
+
+### Workflow Files da Creare/Aggiornare
+
+| File | Descrizione | Trigger |
+|------|-------------|---------|
+| `.github/workflows/ci-apps.yml` | CI per frontend e backend | PR, push to main |
+| `.github/workflows/ci-infra.yml` | CI per Terraform (Checkov, TFLint) | PR to infra/** |
+| `.github/workflows/cd-infra.yml` | Deploy infrastruttura AWS | Manual / Tag release |
+| `.github/workflows/cd-apps.yml` | Deploy apps su EKS | Push to main (after CI) |
+| `.github/workflows/security-scan.yml` | Scheduled security scans | Cron weekly |
+
+---
+
+### GitHub Secrets Richiesti
+
+| Secret | Descrizione |
+|--------|-------------|
+| `AWS_ACCESS_KEY_ID` | AWS credentials per deploy |
+| `AWS_SECRET_ACCESS_KEY` | AWS credentials per deploy |
+| `AWS_REGION` | Region (eu-west-1) |
+| `ECR_REGISTRY` | ECR registry URL |
+| `SONAR_TOKEN` | SonarQube token (optional) |
+| `SNYK_TOKEN` | Snyk token per vulnerability scan |
+
+---
+
+## Dettaglio Giorno 5 - 28 Dicembre ⏳
 
 ### Deploy AWS & E2E
 
@@ -361,25 +541,46 @@ Completato in una sessione intensiva (Sessions 1-11, 13-14, 19-24 del piano orig
 
 ### Da Completare ⏳
 
+**Giorno 3 - Auth & Security:**
 - [ ] Auth pages (/auth/login, /auth/register)
 - [ ] Checkout page (/checkout)
 - [ ] Auth middleware frontend
 - [ ] Security review (rate limiting, CORS)
+
+**Giorno 4 - CI/CD Pipelines:**
+- [ ] CI Pipeline Apps (lint, test, docker, vulnerability scan, secret scan)
+- [ ] CI Pipeline Infra (Checkov, TFLint, terraform plan)
+- [ ] CD Pipeline Infra (terraform apply con approval)
+- [ ] CD Pipeline Apps (migrations, helm deploy, health checks)
+- [ ] Security scan scheduled workflow
+
+**Giorno 5 - AWS Deploy:**
 - [ ] Deploy su AWS (Terraform apply + Helm install)
 - [ ] E2E test su AWS
+- [ ] Screenshots/demo
 
 ---
 
 ## Prossima Sessione
 
-**Priorità**: Auth Pages + Security
+**Priorità**: Auth Pages + Security (Giorno 3)
 
 ```
-Sessione prossima:
+Sessione 3:
 1. Login page con form validation
 2. Register page con form validation
 3. Checkout page
 4. Auth middleware per route protette
+5. Security review (rate limiting, CORS)
+```
+
+**Sessione 4 - CI/CD Pipelines:**
+```
+1. ci-apps.yml:     ESLint, Vitest, Docker build, Trivy, Gitleaks
+2. ci-infra.yml:    Checkov, TFLint, terraform validate/plan
+3. cd-infra.yml:    Terraform apply con manual approval
+4. cd-apps.yml:     Prisma migrate, Helm deploy, health checks
+5. security-scan.yml: Weekly scheduled scans
 ```
 
 ---
