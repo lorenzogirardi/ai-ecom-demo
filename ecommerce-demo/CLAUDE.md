@@ -67,6 +67,11 @@ npm run lint                      # Lint all
 - Utilities: Prisma client, Redis client, Pino logger
 - Prisma schema (User, Category, Product, Order, OrderItem)
 - Dockerfile (multi-stage, non-root user, health check)
+- Complete test suite:
+  - Unit tests: config, error-handler, auth-guard, redis-cache
+  - Integration tests: auth, catalog, search, orders routes
+  - Database tests with Testcontainers
+  - E2E Docker tests
 
 **Frontend:**
 - Base layout with metadata
@@ -93,7 +98,6 @@ npm run lint                      # Lint all
 ### NOT Completed ❌
 
 **Backend:**
-- [ ] Unit/integration tests (folder exists with only .gitkeep)
 - [ ] prisma/seed.ts
 
 **Frontend:**
