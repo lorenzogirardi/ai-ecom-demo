@@ -101,9 +101,10 @@ npm run lint                      # Lint all
 - [x] prisma/seed.ts ✅ (aggiunto in Sessione 2)
 
 **Frontend:**
-- [ ] Hooks (useProducts, useCart, useAuth)
-- [ ] API client (Axios + React Query)
-- [ ] Pages (products, cart, checkout, auth/login, auth/register)
+- [x] Hooks (useProducts, useCategories, useCart) ✅ (aggiunto in Sessione 2)
+- [x] API client (Axios + React Query) ✅ (aggiunto in Sessione 2)
+- [x] Pages (products, categories, cart) ✅ (aggiunto in Sessione 2)
+- [ ] Pages (checkout, auth/login, auth/register)
 - [ ] Middleware for auth
 
 ## Technical Notes
@@ -157,12 +158,13 @@ JWT_SECRET=your-secret-key
 
 1. ~~**Dockerfiles** - Backend and frontend multi-stage builds~~ ✅
 2. ~~**React Components** - Header, Footer, ProductCard, ProductGrid, SearchBar, CartItem, CartSummary~~ ✅
-3. **API Client + Hooks** - useProducts, useCart, useAuth with React Query
-4. **Frontend Pages** - /products, /products/[id], /cart, /checkout, /auth/login, /auth/register
-5. **Seed Data** - prisma/seed.ts with demo users, categories, products
-6. **Backend Tests** - Unit tests for auth, catalog, orders modules
-7. **Security** - Rate limiting review, CORS config
-8. **AWS Deploy** - Terraform apply, Helm install, E2E testing
+3. ~~**API Client + Hooks** - useProducts, useCart, useAuth with React Query~~ ✅
+4. ~~**Frontend Pages** - /products, /products/[slug], /categories, /categories/[slug], /cart~~ ✅
+5. ~~**Seed Data** - prisma/seed.ts with demo users, categories, products~~ ✅
+6. ~~**Backend Tests** - Unit tests for auth, catalog, orders modules~~ ✅ (177 tests)
+7. **Auth Pages** - /auth/login, /auth/register, /checkout
+8. **Security** - Rate limiting review, CORS config
+9. **AWS Deploy** - Terraform apply, Helm install, E2E testing
 
 ## Links
 

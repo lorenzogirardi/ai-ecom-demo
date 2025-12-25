@@ -379,6 +379,9 @@ export default defineConfig({
 |------|------------|
 | Backend API | 4 complete modules with routes |
 | Frontend Base | Layout, Homepage, 7 UI components |
+| Frontend Pages | /products, /products/[slug], /categories, /categories/[slug], /cart |
+| API Client | Axios + React Query + Zustand (cart) |
+| Seed Data | prisma/seed.ts (18 products, 9 categories, 3 orders) |
 | Infrastructure | Terraform 5 modules, Helm 2 charts |
 | CI/CD | 2 GitHub Actions workflows |
 | Testing | 177 tests (unit, integration, database) |
@@ -388,9 +391,7 @@ export default defineConfig({
 
 | Area | Components |
 |------|------------|
-| Frontend Pages | /products, /cart, /checkout, /auth/* |
-| API Client | Axios + React Query hooks |
-| Seed Data | prisma/seed.ts |
+| Auth Pages | /auth/login, /auth/register, /checkout |
 | AWS Deploy | Terraform apply + Helm install |
 
 ---
