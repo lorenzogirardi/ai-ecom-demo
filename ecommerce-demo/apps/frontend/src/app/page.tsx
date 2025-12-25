@@ -104,7 +104,7 @@ export default function HomePage() {
           <div className="grid md:grid-cols-3 gap-8">
             <TechCard
               title="Frontend"
-              items={["Next.js 14", "TypeScript", "Tailwind CSS", "React Query"]}
+              items={["Next.js 16", "TypeScript", "Tailwind CSS", "React Query"]}
             />
             <TechCard
               title="Backend"

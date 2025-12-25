@@ -13,8 +13,11 @@ E-commerce monorepo for AWS EKS deployment with:
 ecommerce-demo/
 ├── apps/
 │   ├── frontend/           # Next.js 16 App Router
-│   │   └── src/app/        # Only: layout.tsx, page.tsx, providers.tsx, globals.css
+│   │   ├── src/app/        # layout.tsx, page.tsx, providers.tsx, globals.css
+│   │   ├── src/components/ # layout, ui, products, cart components
+│   │   └── Dockerfile      # Multi-stage build with standalone output
 │   └── backend/            # Fastify API
+│       └── Dockerfile      # Multi-stage build with non-root user
 │       ├── src/
 │       │   ├── config/     # Configuration (index.ts)
 │       │   ├── middleware/ # auth-guard.ts, error-handler.ts
@@ -63,6 +66,7 @@ npm run lint                      # Lint all
 - 4 API modules with routes: auth, catalog, search, orders
 - Utilities: Prisma client, Redis client, Pino logger
 - Prisma schema (User, Category, Product, Order, OrderItem)
+- Dockerfile (multi-stage, non-root user, health check)
 
 **Frontend:**
 - Base layout with metadata
@@ -70,6 +74,8 @@ npm run lint                      # Lint all
 - Providers (React Query, Toaster)
 - Tailwind CSS with custom components (.btn, .card, .input)
 - Next.js 16 config with Turbopack
+- Dockerfile (multi-stage, standalone output)
+- Components: Header, Footer, ProductCard, ProductGrid, SearchBar, CartItem, CartSummary
 
 **Infrastructure:**
 - Terraform modules: network, eks, database, cache, cdn
@@ -87,15 +93,12 @@ npm run lint                      # Lint all
 ### NOT Completed ❌
 
 **Backend:**
-- [ ] Dockerfile
 - [ ] Unit/integration tests (folder exists with only .gitkeep)
 - [ ] prisma/seed.ts
 
 **Frontend:**
-- [ ] Dockerfile
-- [ ] Components (Header, Footer, ProductCard, CartItem, etc.)
 - [ ] Hooks (useProducts, useCart, useAuth)
-- [ ] API client
+- [ ] API client (Axios + React Query)
 - [ ] Pages (products, cart, checkout, auth/login, auth/register)
 - [ ] Middleware for auth
 
@@ -148,13 +151,13 @@ JWT_SECRET=your-secret-key
 
 ## Next Steps (Priority Order)
 
-1. **Dockerfiles** - Backend and frontend multi-stage builds
-2. **React Components** - Header, Footer, ProductCard, ProductGrid, SearchBar, CartItem, CartSummary
+1. ~~**Dockerfiles** - Backend and frontend multi-stage builds~~ ✅
+2. ~~**React Components** - Header, Footer, ProductCard, ProductGrid, SearchBar, CartItem, CartSummary~~ ✅
 3. **API Client + Hooks** - useProducts, useCart, useAuth with React Query
 4. **Frontend Pages** - /products, /products/[id], /cart, /checkout, /auth/login, /auth/register
 5. **Seed Data** - prisma/seed.ts with demo users, categories, products
 6. **Backend Tests** - Unit tests for auth, catalog, orders modules
-7. **Security** - Non-root Dockerfiles, rate limiting review, CORS config
+7. **Security** - Rate limiting review, CORS config
 8. **AWS Deploy** - Terraform apply, Helm install, E2E testing
 
 ## Links
