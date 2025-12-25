@@ -395,6 +395,66 @@ export default defineConfig({
 
 ---
 
+## Costo Comparativo
+
+### Claude Max ($100/mese)
+
+```
+Sessione 2: ~120k tokens
+Costo stimato: ~$2 di tokens
+Output: 21 file, ~3,200 linee, 177 test
+```
+
+### QA Engineer + Full-Stack Developer
+
+```
+Tariffa media QA: €45-70/ora
+Tariffa media Dev: €50-80/ora
+
+QA Engineer (test): 30 ore × €55 = €1,650
+Full-Stack Dev (UI): 20 ore × €65 = €1,300
+─────────────────────────────────────────
+Totale: €2,950
+```
+
+### ROI Questa Sessione
+
+```
+┌─────────────────────────────────────────┐
+│  Risparmio: ~€2,950                      │
+│  Costo Claude: ~$2                       │
+│  ROI: ~1,500x                           │
+└─────────────────────────────────────────┘
+```
+
+### ROI Cumulativo (Sessioni 1-2)
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                  COSTO TOTALE PROGETTO                   │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  Claude Code (2 sessioni)                               │
+│  ────────────────────────                               │
+│  Sessione 1: ~$3                                        │
+│  Sessione 2: ~$2                                        │
+│  Totale: ~$5                                            │
+│                                                          │
+│  Team Tradizionale                                      │
+│  ────────────────────────                               │
+│  Sessione 1: €3,700 - €5,920                           │
+│  Sessione 2: €2,950                                     │
+│  Totale: €6,650 - €8,870                               │
+│                                                          │
+│  ═══════════════════════════════════════════════════    │
+│  RISPARMIO TOTALE: €6,645 - €8,865                     │
+│  ROI MEDIO: ~1,500x                                     │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
 ## Prossimi Passi (Giorni 3-7)
 
 | Giorno | Focus |

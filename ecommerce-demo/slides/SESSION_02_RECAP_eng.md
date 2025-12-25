@@ -395,6 +395,66 @@ export default defineConfig({
 
 ---
 
+## Cost Comparison
+
+### Claude Max ($100/month)
+
+```
+Session 2: ~120k tokens
+Estimated cost: ~$2 in tokens
+Output: 21 files, ~3,200 lines, 177 tests
+```
+
+### QA Engineer + Full-Stack Developer
+
+```
+Average QA rate: $50-80/hour
+Average Dev rate: $55-90/hour
+
+QA Engineer (tests): 30 hours × $65 = $1,950
+Full-Stack Dev (UI): 20 hours × $75 = $1,500
+─────────────────────────────────────────────
+Total: $3,450
+```
+
+### ROI This Session
+
+```
+┌─────────────────────────────────────────┐
+│  Savings: ~$3,450                        │
+│  Claude cost: ~$2                        │
+│  ROI: ~1,700x                           │
+└─────────────────────────────────────────┘
+```
+
+### Cumulative ROI (Sessions 1-2)
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                  TOTAL PROJECT COST                      │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  Claude Code (2 sessions)                               │
+│  ────────────────────────                               │
+│  Session 1: ~$3                                         │
+│  Session 2: ~$2                                         │
+│  Total: ~$5                                             │
+│                                                          │
+│  Traditional Team                                       │
+│  ────────────────────────                               │
+│  Session 1: $4,000 - $6,700                            │
+│  Session 2: $3,450                                      │
+│  Total: $7,450 - $10,150                               │
+│                                                          │
+│  ═══════════════════════════════════════════════════    │
+│  TOTAL SAVINGS: $7,445 - $10,145                       │
+│  AVERAGE ROI: ~1,700x                                   │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
 ## Next Steps (Days 3-7)
 
 | Day | Focus |
