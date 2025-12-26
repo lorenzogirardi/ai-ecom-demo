@@ -21,6 +21,8 @@
 │  ✅ Search Enhancement (hooks, integration)     │
 │  ✅ Security (CORS wildcards)                   │
 │  ✅ Frontend Test Suite (29 tests)              │
+│  ✅ Docker Full Environment (docker-compose)    │
+│  ✅ Bug fixes (checkout, types, healthchecks)   │
 │                                                  │
 └─────────────────────────────────────────────────┘
 ```
@@ -514,6 +516,117 @@ Total: $2,150
 │  ✅ ALL FLOWS IMPLEMENTED                                       │
 │                                                                  │
 └─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Docker Full Environment
+
+### docker-compose.full.yml
+
+Complete Docker environment to start the entire application with a single command:
+
+```bash
+# Start everything
+docker-compose -f docker-compose.full.yml up --build
+
+# Available URLs
+# Frontend:  http://localhost:3000
+# Backend:   http://localhost:4000
+# Adminer:   http://localhost:8080
+
+# Stop
+docker-compose -f docker-compose.full.yml down
+
+# Full reset (delete data)
+docker-compose -f docker-compose.full.yml down -v
+```
+
+### Included Services
+
+| Service | Image | Port | Description |
+|---------|-------|------|-------------|
+| postgres | postgres:15-alpine | 5432 | PostgreSQL Database |
+| redis | redis:7-alpine | 6379 | Redis Cache |
+| backend | ecommerce-demo-backend | 4000 | Fastify API |
+| frontend | ecommerce-demo-frontend | 3000 | Next.js App |
+| db-setup | node:20-alpine | - | Migrations + Seed |
+| adminer | adminer:latest | 8080 | DB Management UI |
+
+### Problems Solved
+
+| Problem | Solution |
+|---------|----------|
+| npm ci fails without package-lock.json | Use `npm install` in Dockerfiles |
+| Prisma OpenSSL missing in Alpine | Install openssl in container |
+| Healthcheck IPv6 fails | Use `127.0.0.1` instead of `localhost` |
+| prisma db seed can't find config | Added `prisma.seed` to package.json |
+
+---
+
+## Bug Fixes
+
+### Checkout Button Not Working
+
+```typescript
+// Before: button without onClick
+<button className="btn btn-primary">Proceed to Checkout</button>
+
+// After: navigation with auth check
+const handleCheckout = () => {
+  if (isAuthenticated) {
+    router.push("/checkout");
+  } else {
+    router.push("/auth/login?redirect=/checkout");
+  }
+};
+<button onClick={handleCheckout}>Proceed to Checkout</button>
+```
+
+### Address Field Mismatch (422 Error)
+
+```typescript
+// Frontend uses 'street', Backend expects 'address1'
+const transformAddress = (addr: Address) => ({
+  firstName: addr.firstName,
+  lastName: addr.lastName,
+  address1: addr.street,  // Transform
+  city: addr.city,
+  state: addr.state,
+  postalCode: addr.postalCode,
+  country: addr.country,
+  phone: addr.phone,
+});
+```
+
+### TypeScript Strict Mode in Docker
+
+```json
+// tsconfig.json - Relaxed for npm version compatibility
+{
+  "strict": false,
+  "noImplicitAny": false,
+  "noUnusedLocals": false,
+  "noUnusedParameters": false
+}
+```
+
+### Next.js Suspense for useSearchParams
+
+```typescript
+// Wrap components that use useSearchParams
+function LoginForm() {
+  const searchParams = useSearchParams();
+  // ...
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginForm />
+    </Suspense>
+  );
+}
 ```
 
 ---
