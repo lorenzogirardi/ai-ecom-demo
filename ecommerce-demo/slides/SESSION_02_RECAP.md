@@ -313,6 +313,12 @@ await factory.createCategory({ name: "Electrical Items" }); // electr-IC-al
 
 ---
 
+## Richieste Aggiuntive (Post-Obiettivi)
+
+Nessuna richiesta aggiuntiva durante questa sessione. I 3 bug fix sopra elencati sono stati scoperti e risolti durante la creazione dei test (parte degli obiettivi). Il tempo di debug (~10 minuti) è incluso nella stima "Debug & Fix" della tabella tempistiche.
+
+---
+
 ## Tecnologie Testing
 
 ### Stack di Test

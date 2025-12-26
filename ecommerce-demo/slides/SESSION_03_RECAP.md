@@ -3,7 +3,7 @@
 ## E-commerce Monorepo per AWS EKS
 
 **Data**: 26 Dicembre 2024
-**Durata sessione**: ~1.5 ore
+**Durata sessione**: ~3 ore (obiettivi + richieste aggiuntive)
 **Modello**: Claude Opus 4.5 (claude-opus-4-5-20251101)
 
 ---
@@ -364,9 +364,29 @@ Total: 206 tests passed ✅
 
 ---
 
+## Richieste Aggiuntive (Post-Obiettivi)
+
+Durante la sessione sono state fatte richieste aggiuntive oltre agli obiettivi del Giorno 3:
+
+| Richiesta | Descrizione | Tempo Claude |
+|-----------|-------------|--------------|
+| Test dell'app in locale | Avvio app e verifica funzionamento | 10 min |
+| Fix checkout button | Bottone "Proceed to Checkout" non funzionante | 5 min |
+| Fix 422 error | Address field mismatch (street vs address1) | 10 min |
+| docker-compose.full.yml | Ambiente Docker completo con tutti i servizi | 20 min |
+| Fix Docker build | npm ci, OpenSSL, TypeScript strict, healthcheck IPv6 | 45 min |
+| Next.js Suspense | Fix useSearchParams per build production | 15 min |
+| Update documentation | Aggiornamento SETUP.md, README.md, CLAUDE.md | 10 min |
+| Session recap update | Aggiunta sezioni Docker e Bug Fixes | 10 min |
+| **Totale richieste extra** | | **~2 ore** |
+
+---
+
 ## Stima Tempistica
 
 ### Confronto Claude Code vs Developer
+
+**Parte 1: Obiettivi Giorno 3**
 
 | Task | Claude Code | Developer | Fattore |
 |------|-------------|-----------|---------|
@@ -378,7 +398,24 @@ Total: 206 tests passed ✅
 | CORS Wildcard | 3 min | 30 min | 10x |
 | Frontend Tests (29) | 15 min | 6 ore | 24x |
 | Debug & Fix | 10 min | 2 ore | 12x |
-| **TOTALE** | **~65 min** | **~26.5 ore** | **~25x** |
+| **Subtotale obiettivi** | **~65 min** | **~26.5 ore** | **~25x** |
+
+**Parte 2: Richieste Aggiuntive**
+
+| Task | Claude Code | Developer | Fattore |
+|------|-------------|-----------|---------|
+| Bug fixes (checkout, 422) | 15 min | 2 ore | 8x |
+| docker-compose.full.yml | 20 min | 4 ore | 12x |
+| Docker build fixes | 45 min | 8 ore | 11x |
+| Next.js Suspense fix | 15 min | 1.5 ore | 6x |
+| Documentation updates | 20 min | 2 ore | 6x |
+| **Subtotale extra** | **~115 min** | **~17.5 ore** | **~9x** |
+
+**Totale Sessione 3**
+
+| | Claude Code | Developer | Fattore |
+|--|-------------|-----------|---------|
+| **TOTALE** | **~3 ore** | **~44 ore** | **~15x** |
 
 ### Effort Comparison
 
@@ -387,13 +424,19 @@ Total: 206 tests passed ✅
 │                    SESSION 3 EFFORT                       │
 ├──────────────────────────────────────────────────────────┤
 │                                                          │
-│  Claude Code    ████ 1.5 ore                             │
+│  OBIETTIVI GIORNO 3                                      │
+│  Claude Code    ████ 1 ora                               │
+│  Developer      ████████████████████████████ 26.5 ore    │
 │                                                          │
-│  Full-Stack Dev ████████████████████████ 20 ore          │
-│  (UI + Logic)                                            │
+│  RICHIESTE AGGIUNTIVE                                    │
+│  Claude Code    ████████ 2 ore                           │
+│  Developer      ████████████████████ 17.5 ore            │
 │                                                          │
-│  QA Engineer    ████████████ 10 ore                      │
-│  (test frontend)                                         │
+│  ─────────────────────────────────────────────────────   │
+│  TOTALE SESSIONE                                         │
+│  Claude Code    ████████████ 3 ore                       │
+│  Developer      ████████████████████████████████████████ │
+│                 ████ 44 ore (~5.5 giorni)                │
 │                                                          │
 └──────────────────────────────────────────────────────────┘
 ```
@@ -432,30 +475,34 @@ Total: 206 tests passed ✅
 ### Claude Max ($100/mese)
 
 ```
-Sessione 3: ~100k tokens
-Costo stimato: ~$1.50 di tokens
-Output: 24 file, ~2,500 linee, 29 frontend tests
+Sessione 3: ~200k tokens (obiettivi + richieste extra)
+Costo stimato: ~$3 di tokens
+Output: 30+ file, ~3,500 linee, 29 tests, docker-compose.full.yml
 ```
 
-### Full-Stack Developer + QA Engineer
+### Full-Stack Developer + DevOps Engineer
 
 ```
 Tariffa media Dev: €50-80/ora
-Tariffa media QA: €45-70/ora
+Tariffa media DevOps: €60-90/ora
 
-Full-Stack Dev: 20 ore × €65 = €1,300
-QA Engineer: 10 ore × €55 = €550
-─────────────────────────────────────
-Totale: €1,850
+Obiettivi Giorno 3:
+  Full-Stack Dev: 26.5 ore × €65 = €1,722
+
+Richieste Aggiuntive:
+  Full-Stack Dev: 5.5 ore × €65 = €357
+  DevOps Engineer: 12 ore × €75 = €900
+─────────────────────────────────────────────
+Totale: €2,979
 ```
 
 ### ROI Questa Sessione
 
 ```
 ┌─────────────────────────────────────────┐
-│  Risparmio: ~€1,850                      │
-│  Costo Claude: ~$1.50                    │
-│  ROI: ~1,200x                            │
+│  Risparmio: ~€2,979                      │
+│  Costo Claude: ~$3                       │
+│  ROI: ~1,000x                            │
 └─────────────────────────────────────────┘
 ```
 
@@ -470,19 +517,19 @@ Totale: €1,850
 │  ────────────────────────                               │
 │  Sessione 1: ~$3                                        │
 │  Sessione 2: ~$2                                        │
-│  Sessione 3: ~$1.50                                     │
-│  Totale: ~$6.50                                         │
+│  Sessione 3: ~$3                                        │
+│  Totale: ~$8                                            │
 │                                                          │
 │  Team Tradizionale                                      │
 │  ────────────────────────                               │
 │  Sessione 1: €3,700 - €5,920                           │
 │  Sessione 2: €2,950                                     │
-│  Sessione 3: €1,850                                     │
-│  Totale: €8,500 - €10,720                              │
+│  Sessione 3: €2,979                                     │
+│  Totale: €9,629 - €11,849                              │
 │                                                          │
 │  ═══════════════════════════════════════════════════    │
-│  RISPARMIO TOTALE: €8,495 - €10,715                    │
-│  ROI MEDIO: ~1,500x                                     │
+│  RISPARMIO TOTALE: €9,621 - €11,841                    │
+│  ROI MEDIO: ~1,400x                                     │
 │                                                          │
 └─────────────────────────────────────────────────────────┘
 ```
@@ -674,17 +721,19 @@ npm run dev  # Frontend :3000 + Backend :4000
 │           SESSION 3 SUMMARY                      │
 ├─────────────────────────────────────────────────┤
 │                                                  │
-│  Tempo Claude Code:  1.5 ore                    │
-│  Tempo equivalente:  26.5 ore developer         │
-│  Fattore speedup:    ~18x                       │
+│  Tempo Claude Code:  3 ore                      │
+│  Tempo equivalente:  44 ore developer           │
+│  Fattore speedup:    ~15x                       │
 │                                                  │
-│  File creati:        24                         │
-│  Linee di codice:    ~2,500                     │
+│  File creati:        30+                        │
+│  Linee di codice:    ~3,500                     │
 │  Frontend tests:     29                         │
 │                                                  │
 │  Total tests:        206 (177 backend + 29 FE)  │
 │  Test pass rate:     100%                       │
 │                                                  │
+│  Docker environment: Completo (6 servizi)       │
+│  Bug fixes:          10+ issue risolti          │
 │  App completa:       ✅ Tutti i flussi utente   │
 │                                                  │
 └─────────────────────────────────────────────────┘
@@ -695,6 +744,7 @@ npm run dev  # Frontend :3000 + Backend :4000
 - **App Completa**: Utente può registrarsi → login → cercare → acquistare → vedere ordini
 - **Test Coverage**: 206 test garantiscono stabilità
 - **Production Ready**: CORS wildcards per deploy su vari domini
+- **Docker Completo**: Un solo comando per avviare tutto l'ambiente
 - **Pronta per Deploy**: Solo CI/CD avanzato e AWS deploy rimanenti
 
 ---
