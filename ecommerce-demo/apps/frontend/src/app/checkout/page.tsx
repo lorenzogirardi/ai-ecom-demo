@@ -73,13 +73,25 @@ export default function CheckoutPage() {
     }
 
     try {
+      // Transform address format: frontend uses 'street', backend expects 'address1'
+      const transformAddress = (addr: Address) => ({
+        firstName: addr.firstName,
+        lastName: addr.lastName,
+        address1: addr.street,
+        city: addr.city,
+        state: addr.state,
+        postalCode: addr.postalCode,
+        country: addr.country,
+        phone: addr.phone,
+      });
+
       const orderData = {
         items: items.map((item) => ({
           productId: item.product.id,
           quantity: item.quantity,
         })),
-        shippingAddress,
-        billingAddress: useSameAddress ? shippingAddress : billingAddress,
+        shippingAddress: transformAddress(shippingAddress),
+        billingAddress: transformAddress(useSameAddress ? shippingAddress : billingAddress),
       };
 
       const result = await createOrder(orderData);

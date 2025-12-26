@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useCart } from "@/hooks/useCart";
+import { useAuth } from "@/hooks/useAuth";
 import {
   ShoppingCart,
   Trash2,
@@ -14,7 +16,17 @@ import {
 import toast from "react-hot-toast";
 
 export default function CartPage() {
+  const router = useRouter();
+  const { isAuthenticated } = useAuth();
   const { items, removeItem, updateQuantity, clearCart, getTotal } = useCart();
+
+  const handleCheckout = () => {
+    if (isAuthenticated) {
+      router.push("/checkout");
+    } else {
+      router.push("/auth/login?redirect=/checkout");
+    }
+  };
 
   const subtotal = getTotal();
   const shipping = subtotal > 50 ? 0 : 9.99;
@@ -223,7 +235,10 @@ export default function CartPage() {
             )}
 
             {/* Checkout Button */}
-            <button className="w-full btn btn-primary btn-lg mt-6">
+            <button
+              onClick={handleCheckout}
+              className="w-full btn btn-primary btn-lg mt-6"
+            >
               Proceed to Checkout
             </button>
 
