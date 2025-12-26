@@ -53,7 +53,7 @@ export interface Order {
   status: OrderStatus;
   subtotal: string;
   tax: string;
-  shipping: string;
+  shippingAmount: string;
   totalAmount: string;
   items: OrderItem[];
   shippingAddress?: Address;

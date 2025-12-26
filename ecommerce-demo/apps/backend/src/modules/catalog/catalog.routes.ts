@@ -112,7 +112,7 @@ export async function catalogRoutes(app: FastifyInstance): Promise<void> {
       const body = createCategorySchema.parse(request.body);
 
       const category = await prisma.category.create({
-        data: body,
+        data: body as any,
       });
 
       // Invalidate cache
@@ -277,7 +277,7 @@ export async function catalogRoutes(app: FastifyInstance): Promise<void> {
           ...body,
           price: new Prisma.Decimal(body.price),
           compareAt: body.compareAt ? new Prisma.Decimal(body.compareAt) : null,
-        },
+        } as any,
         include: { category: true },
       });
 
@@ -310,7 +310,7 @@ export async function catalogRoutes(app: FastifyInstance): Promise<void> {
           ...body,
           price: body.price ? new Prisma.Decimal(body.price) : undefined,
           compareAt: body.compareAt ? new Prisma.Decimal(body.compareAt) : undefined,
-        },
+        } as any,
         include: { category: true },
       });
 

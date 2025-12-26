@@ -42,8 +42,8 @@ export function useOrder(id: string) {
 
 interface CreateOrderData {
   items: { productId: string; quantity: number }[];
-  shippingAddress: Address;
-  billingAddress?: Address;
+  shippingAddress: Record<string, string | undefined>;
+  billingAddress?: Record<string, string | undefined>;
 }
 
 export function useCreateOrder() {

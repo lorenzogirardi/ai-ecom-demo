@@ -1,16 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useProducts, normalizeProduct } from "@/hooks/useProducts";
 import { useCategories } from "@/hooks/useCategories";
 import { useSearch } from "@/hooks/useSearch";
 import { useCart } from "@/hooks/useCart";
 import { ProductGrid } from "@/components/products/ProductGrid";
-import { SlidersHorizontal, X } from "lucide-react";
+import { SlidersHorizontal, X, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 
-export default function ProductsPage() {
+function ProductsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get("q") || "";
@@ -165,5 +165,17 @@ export default function ProductsPage() {
         </main>
       </div>
     </div>
+  );
+}
+
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex justify-center py-12">
+        <Loader2 className="w-8 h-8 animate-spin text-primary-600" />
+      </div>
+    }>
+      <ProductsContent />
+    </Suspense>
   );
 }

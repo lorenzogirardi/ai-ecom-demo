@@ -98,9 +98,13 @@ export interface Order {
   status: string;
   subtotal: string;
   tax: string;
+  shippingAmount: string;
   totalAmount: string;
   items: OrderItem[];
+  shippingAddress?: Record<string, string>;
+  billingAddress?: Record<string, string>;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export interface OrderItem {

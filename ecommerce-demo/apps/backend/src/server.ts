@@ -20,7 +20,7 @@ import { errorHandler } from "./middleware/error-handler.js";
 
 async function buildServer() {
   const app = Fastify({
-    logger: logger,
+    logger: logger as any,
     trustProxy: true,
   });
 
@@ -112,7 +112,7 @@ async function buildServer() {
   }
 
   // Error handler
-  app.setErrorHandler(errorHandler);
+  app.setErrorHandler(errorHandler as any);
 
   // Health check
   app.get("/health", async () => {

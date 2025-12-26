@@ -14,8 +14,8 @@ RUN apk add --no-cache libc6-compat openssl
 COPY package.json package-lock.json* ./
 COPY prisma ./prisma/
 
-# Install all dependencies (including devDependencies for build)
-RUN npm ci
+# Install all dependencies (use npm install for monorepo compatibility)
+RUN npm install
 
 # Generate Prisma client
 RUN npx prisma generate

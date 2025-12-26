@@ -13,8 +13,8 @@ RUN apk add --no-cache libc6-compat
 # Copy package files
 COPY package.json package-lock.json* ./
 
-# Install dependencies
-RUN npm ci
+# Install dependencies (use npm install for monorepo compatibility)
+RUN npm install --legacy-peer-deps
 
 # ================================
 # Stage 2: Builder

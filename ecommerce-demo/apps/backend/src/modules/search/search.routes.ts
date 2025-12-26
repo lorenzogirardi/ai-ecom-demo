@@ -30,7 +30,7 @@ export async function searchRoutes(app: FastifyInstance): Promise<void> {
     const cacheKey = `search:${searchTerm}:${type}:${page}:${limit}:${categoryId || ""}:${minPrice || ""}:${maxPrice || ""}`;
 
     // Check cache
-    const cached = await cache.get<unknown>(cacheKey);
+    const cached = await cache.get<Record<string, unknown>>(cacheKey);
     if (cached) {
       return reply.send({ success: true, ...cached });
     }

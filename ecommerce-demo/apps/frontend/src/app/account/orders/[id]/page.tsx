@@ -119,11 +119,11 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
               ${Number(order.subtotal).toFixed(2)}
             </span>
           </div>
-          {order.shipping && (
+          {order.shippingAmount && Number(order.shippingAmount) > 0 && (
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">Shipping</span>
               <span className="font-medium">
-                ${Number(order.shipping).toFixed(2)}
+                ${Number(order.shippingAmount).toFixed(2)}
               </span>
             </div>
           )}

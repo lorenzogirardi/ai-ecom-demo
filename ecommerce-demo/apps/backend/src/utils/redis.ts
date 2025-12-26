@@ -1,8 +1,8 @@
-import Redis from "ioredis";
+import Redis, { RedisOptions } from "ioredis";
 import { config } from "../config/index.js";
 import { logger } from "./logger.js";
 
-const redisOptions: Redis.RedisOptions = {
+const redisOptions: RedisOptions = {
   host: config.redis.host,
   port: config.redis.port,
   password: config.redis.password || undefined,
