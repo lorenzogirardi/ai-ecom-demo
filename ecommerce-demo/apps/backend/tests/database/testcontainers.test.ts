@@ -6,8 +6,12 @@ import { execSync } from "child_process";
 describe("Database Tests with Testcontainers", () => {
   let container: StartedPostgreSqlContainer;
   let prisma: PrismaClient;
+  let originalDatabaseUrl: string | undefined;
 
   beforeAll(async () => {
+    // Save original DATABASE_URL to restore after tests
+    originalDatabaseUrl = process.env.DATABASE_URL;
+
     // Start PostgreSQL container
     container = await new PostgreSqlContainer("postgres:15-alpine")
       .withDatabase("test_db")
@@ -16,7 +20,7 @@ describe("Database Tests with Testcontainers", () => {
       .withExposedPorts(5432)
       .start();
 
-    // Set DATABASE_URL for Prisma
+    // Set DATABASE_URL for Prisma (only for this test file's Prisma client)
     const connectionUri = container.getConnectionUri();
     process.env.DATABASE_URL = connectionUri;
 
@@ -39,6 +43,10 @@ describe("Database Tests with Testcontainers", () => {
   afterAll(async () => {
     await prisma.$disconnect();
     await container.stop();
+    // Restore original DATABASE_URL for other tests
+    if (originalDatabaseUrl) {
+      process.env.DATABASE_URL = originalDatabaseUrl;
+    }
   });
 
   beforeEach(async () => {

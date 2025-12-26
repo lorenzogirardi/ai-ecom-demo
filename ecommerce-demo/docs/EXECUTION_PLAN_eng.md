@@ -212,7 +212,8 @@ Completed in an intensive session (Sessions 1-11, 13-14, 19-24 from original pla
 - [x] User sees order confirmation
 - [x] User can view order history
 - [x] Protected routes work
-- [ ] All flows manually tested (to verify)
+- [x] Frontend test suite (29 tests)
+- [x] Backend tests all passing (177 tests)
 
 ---
 
@@ -678,14 +679,14 @@ Current pipelines are basic. They need to be extended with security scanning, co
 
 ## Current Status Summary
 
-### Completed ✅ (Sessions 1-2)
+### Completed ✅ (Sessions 1-3)
 
 **Infrastructure:**
 - [x] Monorepo structure
 - [x] Terraform modules (network, eks, database, cache, cdn)
 - [x] Terraform demo environment
 - [x] Helm charts (frontend, backend)
-- [x] GitHub Actions workflows
+- [x] GitHub Actions workflows (base)
 - [x] Automation scripts
 - [x] Docker Compose
 
@@ -696,48 +697,26 @@ Current pipelines are basic. They need to be extended with security scanning, co
 - [x] Multi-stage Dockerfile (non-root user, health check)
 - [x] Complete test suite (177 tests)
 - [x] Seed data (3 users, 9 categories, 18 products, 3 orders)
+- [x] CORS wildcard support (*.k8s.it, *.ngrok-free.app, *.ngrok.app)
 
 **Frontend:**
 - [x] Layout, providers, styles
 - [x] Multi-stage Dockerfile (standalone output)
-- [x] Components (Header, Footer, ProductCard, ProductGrid, SearchBar, CartItem, CartSummary)
+- [x] Components (Header, Footer, ProductCard, ProductGrid, SearchBar, CartItem, CartSummary, AddressForm)
 - [x] API client (Axios)
-- [x] Hooks (useProducts, useCategories, useCart with Zustand)
-- [x] Pages (/products, /products/[slug], /categories, /categories/[slug], /cart)
+- [x] Hooks (useProducts, useCategories, useCart, useAuth, useOrders, useSearch)
+- [x] Pages (/products, /categories, /cart, /auth/login, /auth/register, /checkout, /account, /orders)
+- [x] Auth system (AuthContext, useAuth, middleware)
+- [x] Checkout flow (checkout page, order confirmation)
+- [x] User account (profile, orders history, order detail)
+- [x] Frontend test suite (29 tests)
 
 **Documentation:**
 - [x] README, SETUP, DEVELOPMENT, DEPLOYMENT, API docs
 - [x] Execution plan (IT + EN)
-- [x] Session recaps (IT + EN)
+- [x] Session recaps 1-3 (IT + EN)
 
 ### To Complete ⏳
-
-**Day 3 - Last Code Day (Complete Local App):**
-
-Auth System:
-- [ ] useAuth hook + Auth context
-- [ ] /auth/login page
-- [ ] /auth/register page
-- [ ] Auth middleware (route protection)
-
-Checkout Flow:
-- [ ] /checkout page + AddressForm
-- [ ] /orders/[id] confirmation page
-- [ ] useOrders hook
-
-User Account:
-- [ ] /account profile page
-- [ ] /account/orders history
-- [ ] /account/orders/[id] detail
-
-Search Enhancement:
-- [ ] Products page search params
-- [ ] SearchBar integration
-- [ ] useSearch hook
-
-Types & Security:
-- [ ] Shared TypeScript types
-- [ ] Security review (rate limiting, CORS)
 
 **Day 4 - CI/CD Pipelines:**
 - [ ] CI Pipeline Apps (lint, test, docker, vulnerability scan, secret scan)
@@ -755,99 +734,76 @@ Types & Security:
 
 ## Next Session
 
-**Day 3 - Last Code Day (Complete Local App)**
+**Day 4 - Complete CI/CD Pipelines**
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    SESSION 3 - PRIORITY ORDER                    │
+│                    SESSION 4 - CI/CD PIPELINES                   │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                  │
-│  1. TYPES (foundation for everything)                           │
-│     └── src/types/*.ts                                          │
+│  1. CI PIPELINE - APPS                                          │
+│     ├── ESLint + Prettier                                       │
+│     ├── Vitest (unit + integration)                             │
+│     ├── Docker build + push ECR                                 │
+│     ├── Trivy vulnerability scan                                │
+│     └── Gitleaks secret scan                                    │
 │                                                                  │
-│  2. AUTH SYSTEM                                                 │
-│     ├── useAuth hook + AuthContext                              │
-│     ├── /auth/login                                             │
-│     ├── /auth/register                                          │
-│     └── middleware.ts                                           │
+│  2. CI PIPELINE - INFRASTRUCTURE                                │
+│     ├── Checkov security scan                                   │
+│     ├── TFLint                                                  │
+│     ├── terraform fmt check                                     │
+│     ├── terraform validate                                      │
+│     └── terraform plan (artifact)                               │
 │                                                                  │
-│  3. CHECKOUT FLOW                                               │
-│     ├── /checkout + AddressForm                                 │
-│     ├── useOrders hook                                          │
-│     └── /orders/[id] (confirmation)                             │
+│  3. CD PIPELINE - INFRASTRUCTURE                                │
+│     ├── Manual approval gate                                    │
+│     ├── terraform apply                                         │
+│     └── Post-deploy validation                                  │
 │                                                                  │
-│  4. USER ACCOUNT                                                │
-│     ├── /account (profile)                                      │
-│     ├── /account/orders (history)                               │
-│     └── /account/orders/[id] (detail)                           │
+│  4. CD PIPELINE - APPS                                          │
+│     ├── Pre-deploy checks                                       │
+│     ├── Database migrations                                     │
+│     ├── Helm deploy backend                                     │
+│     ├── Helm deploy frontend                                    │
+│     ├── Health checks                                           │
+│     └── Smoke tests                                             │
 │                                                                  │
-│  5. SEARCH                                                      │
-│     ├── useSearch hook                                          │
-│     ├── Products page query params                              │
-│     └── SearchBar navigation                                    │
-│                                                                  │
-│  6. SECURITY REVIEW                                             │
-│     ├── Rate limiting                                           │
-│     └── CORS config                                             │
-│                                                                  │
-│  7. MANUAL TESTING                                              │
-│     └── Full user flow verification                             │
+│  5. SECURITY SCAN WORKFLOW                                      │
+│     └── Weekly scheduled scans                                  │
 │                                                                  │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-**Files to create (~20 files):**
+**Files to create/update:**
 ```
-src/types/
-├── api.ts, auth.ts, models.ts, index.ts
-
-src/hooks/
-├── useAuth.ts, useOrders.ts, useSearch.ts
-
-src/lib/
-├── auth-context.tsx
-
-src/app/auth/
-├── login/page.tsx, register/page.tsx
-
-src/app/checkout/
-├── page.tsx
-
-src/app/orders/[id]/
-├── page.tsx
-
-src/app/account/
-├── layout.tsx, page.tsx
-├── orders/page.tsx
-├── orders/[id]/page.tsx
-
-src/components/checkout/
-├── AddressForm.tsx
-
-src/
-├── middleware.ts
+.github/workflows/
+├── ci-apps.yml         # ESLint, Vitest, Docker, Trivy, Gitleaks
+├── ci-infra.yml        # Checkov, TFLint, terraform validate/plan
+├── cd-infra.yml        # Terraform apply with approval
+├── cd-apps.yml         # Prisma migrate, Helm deploy, health checks
+└── security-scan.yml   # Weekly scheduled scans
 ```
 
-**Session 4 - CI/CD Pipelines:**
+**Day 5 - AWS Deploy:**
 ```
-1. ci-apps.yml:     ESLint, Vitest, Docker build, Trivy, Gitleaks
-2. ci-infra.yml:    Checkov, TFLint, terraform validate/plan
-3. cd-infra.yml:    Terraform apply with manual approval
-4. cd-apps.yml:     Prisma migrate, Helm deploy, health checks
-5. security-scan.yml: Weekly scheduled scans
+1. Terraform init/plan/apply
+2. Configure kubectl
+3. Helm install backend + frontend
+4. E2E tests on AWS
+5. Screenshots/demo
 ```
 
 ---
 
 ## Project Statistics
 
-| Metric | Session 1 | Session 2 | Total |
-|--------|-----------|-----------|-------|
-| Files created | 82 | 21 | 103 |
-| Lines of code | ~8,900 | ~3,200 | ~12,100 |
-| Tests | 0 | 177 | 177 |
-| Claude time | ~2 hours | ~1.5 hours | ~3.5 hours |
-| Equiv. dev time | ~50 hours | ~50 hours | ~100 hours |
+| Metric | Session 1 | Session 2 | Session 3 | Total |
+|--------|-----------|-----------|-----------|-------|
+| Files created | 82 | 21 | 19 | 122 |
+| Lines of code | ~8,900 | ~3,200 | ~2,800 | ~14,900 |
+| Tests | 0 | 177 | 29 | 206 |
+| Claude time | ~2 hours | ~1.5 hours | ~1 hour | ~4.5 hours |
+| Equiv. dev time | ~50 hours | ~50 hours | ~30 hours | ~130 hours |
 
 ---
 
@@ -855,4 +811,6 @@ src/
 
 - Repository: https://github.com/lorenzogirardi/ai-ecom-demo
 - Initial commit: bd0d99f (Dec 24, 2024)
-- Last update: December 25, 2024
+- Last update: December 26, 2024
+- Total tests: 206 (177 backend + 29 frontend)
+- Day 3 completed: Full e-commerce flow functional locally

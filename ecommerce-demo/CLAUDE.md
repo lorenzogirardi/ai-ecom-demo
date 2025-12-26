@@ -13,24 +13,33 @@ E-commerce monorepo for AWS EKS deployment with:
 ecommerce-demo/
 ├── apps/
 │   ├── frontend/           # Next.js 16 App Router
-│   │   ├── src/app/        # layout.tsx, page.tsx, providers.tsx, globals.css
-│   │   ├── src/components/ # layout, ui, products, cart components
+│   │   ├── src/
+│   │   │   ├── app/        # Pages (auth, checkout, account, products, etc.)
+│   │   │   ├── components/ # layout, ui, products, cart, checkout
+│   │   │   ├── hooks/      # useProducts, useCart, useAuth, useOrders, useSearch
+│   │   │   ├── lib/        # api.ts, auth-context.tsx
+│   │   │   └── types/      # api.ts, auth.ts, models.ts
+│   │   ├── tests/          # Frontend tests (29 tests)
+│   │   │   ├── hooks/      # useAuth, useOrders, useSearch tests
+│   │   │   └── components/ # AddressForm tests
 │   │   └── Dockerfile      # Multi-stage build with standalone output
 │   └── backend/            # Fastify API
-│       └── Dockerfile      # Multi-stage build with non-root user
+│       ├── Dockerfile      # Multi-stage build with non-root user
 │       ├── src/
-│       │   ├── config/     # Configuration (index.ts)
+│       │   ├── config/     # Configuration with CORS wildcard support
 │       │   ├── middleware/ # auth-guard.ts, error-handler.ts
-│       │   ├── modules/    # auth, catalog, search, orders (routes only)
+│       │   ├── modules/    # auth, catalog, search, orders
 │       │   ├── utils/      # prisma.ts, redis.ts, logger.ts
 │       │   └── server.ts   # Entry point
-│       └── prisma/         # schema.prisma (no seed.ts yet)
+│       ├── prisma/         # schema.prisma, seed.ts
+│       └── tests/          # Backend tests (177 tests)
 ├── infra/terraform/
 │   ├── modules/            # network, eks, database, cache, cdn
 │   └── environments/demo/  # main.tf, variables.tf, providers.tf, backend.tf
 ├── helm/
 │   ├── frontend/           # Chart + templates (deployment, service, ingress, hpa, sa)
 │   └── backend/            # Chart + templates + externalsecret
+├── slides/                 # Session recaps (IT + EN)
 ├── .github/workflows/      # frontend-ci-cd.yml, backend-ci-cd.yml
 ├── scripts/                # setup-infra.sh, deploy-all.sh, local-dev.sh, seed-data.sh
 └── docs/                   # README, SETUP, DEVELOPMENT, DEPLOYMENT, API, EXECUTION_PLAN
@@ -57,17 +66,18 @@ npm run lint                      # Lint all
 
 ## Current State (Accurate)
 
-### Completed ✅
+### Completed ✅ (Sessions 1-3)
 
 **Backend:**
 - Server entry point (server.ts)
-- Configuration module
+- Configuration module with CORS wildcard support
 - Middleware (auth-guard, error-handler)
 - 4 API modules with routes: auth, catalog, search, orders
 - Utilities: Prisma client, Redis client, Pino logger
 - Prisma schema (User, Category, Product, Order, OrderItem)
 - Dockerfile (multi-stage, non-root user, health check)
-- Complete test suite:
+- Seed data (3 users, 9 categories, 18 products, 3 orders)
+- Complete test suite (177 tests):
   - Unit tests: config, error-handler, auth-guard, redis-cache
   - Integration tests: auth, catalog, search, orders routes
   - Database tests with Testcontainers
@@ -76,36 +86,46 @@ npm run lint                      # Lint all
 **Frontend:**
 - Base layout with metadata
 - Homepage with hero section and feature cards
-- Providers (React Query, Toaster)
+- Providers (React Query, Toaster, AuthProvider)
 - Tailwind CSS with custom components (.btn, .card, .input)
 - Next.js 16 config with Turbopack
 - Dockerfile (multi-stage, standalone output)
-- Components: Header, Footer, ProductCard, ProductGrid, SearchBar, CartItem, CartSummary
+- Components: Header, Footer, ProductCard, ProductGrid, SearchBar, CartItem, CartSummary, AddressForm
+- Auth system: AuthContext, useAuth hook, login/register pages
+- Checkout flow: checkout page, order confirmation
+- User account: profile, orders history, order detail
+- Route protection middleware
+- Hooks: useProducts, useCategories, useCart, useAuth, useOrders, useSearch
+- API client (Axios + React Query)
+- Complete pages: /products, /categories, /cart, /auth/login, /auth/register, /checkout, /account, /orders
+- Frontend test suite (29 tests):
+  - useAuth.test.tsx, useOrders.test.tsx, useSearch.test.tsx
+  - AddressForm.test.tsx
 
 **Infrastructure:**
 - Terraform modules: network, eks, database, cache, cdn
 - Demo environment configuration
 - Helm charts for frontend and backend
-- GitHub Actions CI/CD workflows
+- GitHub Actions CI/CD workflows (base)
 - Docker Compose for local development
 - Automation scripts
 
 **Documentation:**
 - README, SETUP, DEVELOPMENT, DEPLOYMENT, API docs
 - Execution plan (IT + EN)
-- Session recap (IT + EN)
+- Session recaps 1-3 (IT + EN)
 
 ### NOT Completed ❌
 
-**Backend:**
-- [x] prisma/seed.ts ✅ (aggiunto in Sessione 2)
+**CI/CD (Day 4):**
+- [ ] Enhanced CI pipelines (Checkov, TFLint, Trivy, Gitleaks)
+- [ ] CD pipelines with approval gates
+- [ ] Security scanning workflows
 
-**Frontend:**
-- [x] Hooks (useProducts, useCategories, useCart) ✅ (aggiunto in Sessione 2)
-- [x] API client (Axios + React Query) ✅ (aggiunto in Sessione 2)
-- [x] Pages (products, categories, cart) ✅ (aggiunto in Sessione 2)
-- [ ] Pages (checkout, auth/login, auth/register)
-- [ ] Middleware for auth
+**AWS Deploy (Day 5):**
+- [ ] Terraform apply
+- [ ] Helm install on EKS
+- [ ] E2E production tests
 
 ## Technical Notes
 
@@ -201,9 +221,11 @@ Implementation:
 4. ~~**Frontend Pages** - /products, /products/[slug], /categories, /categories/[slug], /cart~~ ✅
 5. ~~**Seed Data** - prisma/seed.ts with demo users, categories, products~~ ✅
 6. ~~**Backend Tests** - Unit tests for auth, catalog, orders modules~~ ✅ (177 tests)
-7. **Auth Pages** - /auth/login, /auth/register, /checkout
-8. **Security** - Rate limiting review, CORS config
-9. **AWS Deploy** - Terraform apply, Helm install, E2E testing
+7. ~~**Auth Pages** - /auth/login, /auth/register, /checkout~~ ✅
+8. ~~**Security** - Rate limiting review, CORS config (wildcards)~~ ✅
+9. ~~**Frontend Tests** - useAuth, useOrders, useSearch, AddressForm~~ ✅ (29 tests)
+10. **CI/CD Pipelines** - Checkov, TFLint, Trivy, Gitleaks, quality gates
+11. **AWS Deploy** - Terraform apply, Helm install, E2E testing
 
 ## Planned Refactors
 
