@@ -39,8 +39,14 @@ ecommerce-demo/
 ├── helm/
 │   ├── frontend/           # Chart + templates (deployment, service, ingress, hpa, sa)
 │   └── backend/            # Chart + templates + externalsecret
+├── argocd/                 # (Day 4) ArgoCD configuration
+│   ├── install/            # ArgoCD Helm values
+│   ├── projects/           # ArgoCD Project definitions
+│   └── applications/       # Backend + Frontend Applications
+├── security/               # (Day 4) Security reports
+│   └── reports/            # Trivy JSON reports for Claude analysis
 ├── slides/                 # Session recaps (IT + EN)
-├── .github/workflows/      # frontend-ci-cd.yml, backend-ci-cd.yml
+├── .github/workflows/      # CI/CD workflows (enhanced Day 4)
 ├── scripts/                # setup-infra.sh, deploy-all.sh, local-dev.sh, seed-data.sh
 └── docs/                   # README, SETUP, DEVELOPMENT, DEPLOYMENT, API, EXECUTION_PLAN
 ```
@@ -137,14 +143,25 @@ npm run lint                      # Lint all
 
 ### NOT Completed ❌
 
-**CI/CD (Day 4):**
-- [ ] Enhanced CI pipelines (Checkov, TFLint, Trivy, Gitleaks)
-- [ ] CD pipelines with approval gates
-- [ ] Security scanning workflows
+**CI Security Scanning (Day 4):**
+- [ ] `.checkov.yaml` - Checkov configuration
+- [ ] `.tflint.hcl` - TFLint AWS plugin configuration
+- [ ] `infra-ci.yml` - Infrastructure CI (TFLint, Checkov, Gitleaks)
+- [ ] Backend CI enhancement (Gitleaks + Trivy scan)
+- [ ] Frontend CI enhancement (Gitleaks + Trivy scan)
+- [ ] `security/reports/` - Trivy JSON reports for Claude analysis
+
+**ArgoCD Preparation (Day 4):**
+- [ ] `argocd/projects/ecommerce.yaml` - ArgoCD Project
+- [ ] `argocd/applications/backend.yaml` - Backend Application (manual sync)
+- [ ] `argocd/applications/frontend.yaml` - Frontend Application (manual sync)
+- [ ] `argocd/install/values.yaml` - ArgoCD Helm values
+- [ ] `deploy-argocd.yml` - GitHub Actions workflow for ArgoCD deploy
 
 **AWS Deploy (Day 5):**
-- [ ] Terraform apply
-- [ ] Helm install on EKS
+- [ ] Terraform apply (VPC, EKS, RDS, ElastiCache, CDN)
+- [ ] Run `deploy-argocd.yml` workflow (installs ArgoCD + Applications)
+- [ ] Manual sync via ArgoCD UI
 - [ ] E2E production tests
 
 ## Technical Notes
@@ -233,6 +250,59 @@ Implementation:
 - Environment values: `values-{env}.yaml`
 - ExternalSecrets for AWS Secrets Manager integration
 
+### CI/CD Architecture (Planned)
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    INFRASTRUCTURE CI                             │
+│  Trigger: infra/terraform/** changes                            │
+├─────────────────────────────────────────────────────────────────┤
+│  TFLint → Checkov → Gitleaks  (parallel)                        │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│                    APP CI/CD (Backend/Frontend)                  │
+├─────────────────────────────────────────────────────────────────┤
+│  Gitleaks → Lint & Test → Build → Trivy (warn) → Push ECR      │
+│                                      ↓                           │
+│                          security/reports/trivy-*.json           │
+│                          (for Claude CVE analysis)               │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│                    ARGOCD (GitOps CD)                            │
+├─────────────────────────────────────────────────────────────────┤
+│  deploy-argocd.yml (manual trigger)                             │
+│  ├── Install ArgoCD via Helm                                    │
+│  ├── Apply Project + Applications                               │
+│  └── Manual sync via ArgoCD UI                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### ArgoCD Configuration (Planned)
+```
+argocd/
+├── install/values.yaml           # ArgoCD Helm values
+├── projects/ecommerce.yaml       # ArgoCD Project
+└── applications/
+    ├── backend.yaml              # Backend App (manual sync)
+    └── frontend.yaml             # Frontend App (manual sync)
+```
+
+**Sync Policy:** Manual (require explicit sync trigger via UI/CLI)
+
+### Claude Code CVE Analysis
+After CI runs, Trivy reports are saved to `security/reports/`.
+Use Claude Code to analyze CVEs in application context:
+```
+Analizza security/reports/trivy-backend-latest.json
+Per ogni CVE:
+1. Cerca nel codice se la libreria è usata
+2. Valuta se il vettore di attacco è esposto
+3. Dai priorità contestualizzata
+4. Suggerisci remediation
+```
+
 ## Next Steps (Priority Order)
 
 1. ~~**Dockerfiles** - Backend and frontend multi-stage builds~~ ✅
@@ -244,8 +314,16 @@ Implementation:
 7. ~~**Auth Pages** - /auth/login, /auth/register, /checkout~~ ✅
 8. ~~**Security** - Rate limiting review, CORS config (wildcards)~~ ✅
 9. ~~**Frontend Tests** - useAuth, useOrders, useSearch, AddressForm~~ ✅ (29 tests)
-10. **CI/CD Pipelines** - Checkov, TFLint, Trivy, Gitleaks, quality gates
-11. **AWS Deploy** - Terraform apply, Helm install, E2E testing
+10. **Day 4: CI + ArgoCD Preparation**
+    - CI Security: Checkov, TFLint, Trivy (warn only), Gitleaks
+    - Trivy reports in `security/reports/` for Claude CVE analysis
+    - ArgoCD manifests (Project, Applications with manual sync)
+    - `deploy-argocd.yml` workflow (manual trigger)
+11. **Day 5: AWS Deploy**
+    - Terraform apply
+    - Run deploy-argocd.yml → ArgoCD + Applications
+    - Manual sync via ArgoCD UI
+    - E2E testing
 
 ## Planned Refactors
 
