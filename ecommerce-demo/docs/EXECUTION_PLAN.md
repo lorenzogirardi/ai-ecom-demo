@@ -23,7 +23,7 @@
 |--------|------|-------|-------|
 | 1 | 24 Dic | Foundation + Backend + Helm + CI/CD + Docs | ✅ |
 | 2 | 25 Dic | Dockerfiles + React Components + Test Suite + API Client + Pages + Seed | ✅ |
-| 3 | 26 Dic | Auth Pages + Security Review | ⏳ |
+| 3 | 26 Dic | Auth Pages + Checkout + Account + Search + Security | ✅ |
 | 4 | 27 Dic | GitHub Actions Pipelines (CI/CD completo) | ⏳ |
 | 5 | 28 Dic | Deploy AWS + E2E Test | ⏳ |
 
@@ -102,7 +102,7 @@ Completato in una sessione intensiva (Sessions 1-11, 13-14, 19-24 del piano orig
 
 ---
 
-## Dettaglio Giorno 3 - 26 Dicembre ⏳
+## Dettaglio Giorno 3 - 26 Dicembre ✅
 
 ### Ultimo giorno di sviluppo codice - App completamente funzionante in locale
 
@@ -112,11 +112,11 @@ Completato in una sessione intensiva (Sessions 1-11, 13-14, 19-24 del piano orig
 
 | Task | File | Stato |
 |------|------|-------|
-| useAuth hook | `src/hooks/useAuth.ts` | ⏳ |
-| Auth context/provider | `src/lib/auth-context.tsx` | ⏳ |
-| Login page | `src/app/auth/login/page.tsx` | ⏳ |
-| Register page | `src/app/auth/register/page.tsx` | ⏳ |
-| Auth middleware | `src/middleware.ts` | ⏳ |
+| useAuth hook | `src/hooks/useAuth.ts` | ✅ |
+| Auth context/provider | `src/lib/auth-context.tsx` | ✅ |
+| Login page | `src/app/auth/login/page.tsx` | ✅ |
+| Register page | `src/app/auth/register/page.tsx` | ✅ |
+| Auth middleware | `src/middleware.ts` | ✅ |
 
 ---
 
@@ -124,10 +124,10 @@ Completato in una sessione intensiva (Sessions 1-11, 13-14, 19-24 del piano orig
 
 | Task | File | Stato |
 |------|------|-------|
-| Checkout page | `src/app/checkout/page.tsx` | ⏳ |
-| Address form component | `src/components/checkout/AddressForm.tsx` | ⏳ |
-| Order confirmation | `src/app/orders/[id]/page.tsx` | ⏳ |
-| useOrders hook | `src/hooks/useOrders.ts` | ⏳ |
+| Checkout page | `src/app/checkout/page.tsx` | ✅ |
+| Address form component | `src/components/checkout/AddressForm.tsx` | ✅ |
+| Order confirmation | `src/app/orders/[id]/page.tsx` | ✅ |
+| useOrders hook | `src/hooks/useOrders.ts` | ✅ |
 
 ---
 
@@ -135,10 +135,10 @@ Completato in una sessione intensiva (Sessions 1-11, 13-14, 19-24 del piano orig
 
 | Task | File | Stato |
 |------|------|-------|
-| Account layout | `src/app/account/layout.tsx` | ⏳ |
-| Account profile | `src/app/account/page.tsx` | ⏳ |
-| Order history | `src/app/account/orders/page.tsx` | ⏳ |
-| Order detail | `src/app/account/orders/[id]/page.tsx` | ⏳ |
+| Account layout | `src/app/account/layout.tsx` | ✅ |
+| Account profile | `src/app/account/page.tsx` | ✅ |
+| Order history | `src/app/account/orders/page.tsx` | ✅ |
+| Order detail | `src/app/account/orders/[id]/page.tsx` | ✅ |
 
 ---
 
@@ -146,9 +146,9 @@ Completato in una sessione intensiva (Sessions 1-11, 13-14, 19-24 del piano orig
 
 | Task | File | Stato |
 |------|------|-------|
-| Search query params support | `src/app/products/page.tsx` (update) | ⏳ |
-| Search results integration | `src/components/ui/SearchBar.tsx` (update) | ⏳ |
-| useSearch hook | `src/hooks/useSearch.ts` | ⏳ |
+| Search query params support | `src/app/products/page.tsx` (update) | ✅ |
+| Search results integration | `src/components/ui/SearchBar.tsx` (update) | ✅ |
+| useSearch hook | `src/hooks/useSearch.ts` | ✅ |
 
 ---
 
@@ -156,10 +156,10 @@ Completato in una sessione intensiva (Sessions 1-11, 13-14, 19-24 del piano orig
 
 | Task | File | Stato |
 |------|------|-------|
-| API response types | `src/types/api.ts` | ⏳ |
-| User/Auth types | `src/types/auth.ts` | ⏳ |
-| Product/Order types | `src/types/models.ts` | ⏳ |
-| Types index | `src/types/index.ts` | ⏳ |
+| API response types | `src/types/api.ts` | ✅ |
+| User/Auth types | `src/types/auth.ts` | ✅ |
+| Product/Order types | `src/types/models.ts` | ✅ |
+| Types index | `src/types/index.ts` | ✅ |
 
 ---
 
@@ -167,9 +167,9 @@ Completato in una sessione intensiva (Sessions 1-11, 13-14, 19-24 del piano orig
 
 | Task | Stato |
 |------|-------|
-| Rate limiting config | ⏳ |
-| CORS config | ⏳ |
-| Environment variables review | ⏳ |
+| Rate limiting config | ✅ |
+| CORS config (multi-origin + wildcards) | ✅ |
+| Environment variables review | ✅ |
 
 ---
 
@@ -204,15 +204,15 @@ Completato in una sessione intensiva (Sessions 1-11, 13-14, 19-24 del piano orig
 
 ### Checklist Finale Day 3
 
-- [ ] Utente può registrarsi
-- [ ] Utente può fare login/logout
-- [ ] Utente può cercare prodotti
-- [ ] Utente può aggiungere al carrello
-- [ ] Utente può completare checkout
-- [ ] Utente vede conferma ordine
-- [ ] Utente può vedere storico ordini
-- [ ] Route protette funzionano
-- [ ] Tutti i flussi testati manualmente
+- [x] Utente può registrarsi
+- [x] Utente può fare login/logout
+- [x] Utente può cercare prodotti
+- [x] Utente può aggiungere al carrello
+- [x] Utente può completare checkout
+- [x] Utente vede conferma ordine
+- [x] Utente può vedere storico ordini
+- [x] Route protette funzionano
+- [ ] Tutti i flussi testati manualmente (da verificare)
 
 ---
 
