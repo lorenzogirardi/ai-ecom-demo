@@ -30,7 +30,29 @@ ecommerce-demo/
 
 ### Starting Development
 
+**Option 1: Full Docker (no local Node.js required)**
 ```bash
+# Build and start all services
+docker-compose -f docker-compose.full.yml up --build
+
+# Frontend: http://localhost:3000
+# Backend:  http://localhost:4000
+# Adminer:  http://localhost:8080
+```
+
+**Option 2: Local Development (hot reload)**
+```bash
+# Start database services only
+docker-compose up -d
+
+# Install dependencies
+npm install
+
+# Setup database
+npm run db:generate -w apps/backend
+npm run db:push -w apps/backend
+npm run db:seed -w apps/backend
+
 # Start all services
 npm run dev
 

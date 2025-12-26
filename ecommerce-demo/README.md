@@ -103,56 +103,68 @@ ecommerce-demo/
 
 ### Prerequisites
 
-- Node.js 20+
-- npm 10+
-- Docker & Docker Compose
-- AWS CLI (for deployment)
-- kubectl (for Kubernetes)
-- Terraform 1.5+ (for infrastructure)
-- Helm 3+ (for Kubernetes packages)
+- Docker & Docker Compose (required)
+- Node.js 20+ (only for development mode)
+- AWS CLI, kubectl, Terraform, Helm (only for deployment)
 
-### Local Development
+### Option 1: Full Docker (Recommended)
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd ecommerce-demo
-   ```
+The easiest way to run the complete application:
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+```bash
+# Clone and start
+git clone <repository-url>
+cd ecommerce-demo
+docker-compose -f docker-compose.full.yml up --build
+```
 
-3. **Start infrastructure services**
-   ```bash
-   npm run docker:up
-   ```
+**That's it!** The application will be available at:
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:4000
+- Adminer (DB UI): http://localhost:8080
 
-4. **Set up environment variables**
-   ```bash
-   cp apps/backend/.env.example apps/backend/.env
-   cp apps/frontend/.env.example apps/frontend/.env
-   ```
+**Demo Users:**
+| Email | Password | Role |
+|-------|----------|------|
+| admin@example.com | password123 | Admin |
+| john@example.com | password123 | User |
+| jane@example.com | password123 | User |
 
-5. **Run database migrations**
-   ```bash
-   npm run db:migrate
-   ```
+```bash
+# Stop services
+docker-compose -f docker-compose.full.yml down
 
-6. **Seed the database (optional)**
-   ```bash
-   npm run db:seed
-   ```
+# Reset everything (including data)
+docker-compose -f docker-compose.full.yml down -v
+```
 
-7. **Start development servers**
-   ```bash
-   npm run dev
-   ```
+### Option 2: Development Mode (Hot Reload)
 
-   - Frontend: http://localhost:3000
-   - Backend: http://localhost:4000
-   - Adminer (DB UI): http://localhost:8080
+For active development with hot reload:
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd ecommerce-demo
+
+# Start database services
+docker-compose up -d
+
+# Install dependencies
+npm install
+
+# Setup database
+npm run db:generate -w apps/backend
+npm run db:push -w apps/backend
+npm run db:seed -w apps/backend
+
+# Start development servers
+npm run dev
+```
+
+- Frontend: http://localhost:3000
+- Backend: http://localhost:4000
+- Adminer (DB UI): http://localhost:8080
 
 ### Available Scripts
 

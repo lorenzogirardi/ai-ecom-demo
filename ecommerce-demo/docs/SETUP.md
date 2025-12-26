@@ -72,7 +72,54 @@ curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
 ## Local Development Setup
 
-### Quick Start
+### Option 1: Full Docker Environment (Recommended)
+
+The easiest way to run the complete application with all services:
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd ecommerce-demo
+
+# Start everything with Docker
+docker-compose -f docker-compose.full.yml up --build
+```
+
+This will:
+- Start PostgreSQL and Redis
+- Build and run the backend API
+- Build and run the frontend
+- Automatically run database migrations and seed data
+
+**Service URLs:**
+| Service | URL |
+|---------|-----|
+| Frontend | http://localhost:3000 |
+| Backend API | http://localhost:4000 |
+| Adminer (DB UI) | http://localhost:8080 |
+
+**Demo Users:**
+| Email | Password | Role |
+|-------|----------|------|
+| admin@example.com | password123 | Admin |
+| john@example.com | password123 | User |
+| jane@example.com | password123 | User |
+
+To stop all services:
+```bash
+docker-compose -f docker-compose.full.yml down
+```
+
+To reset everything (including data):
+```bash
+docker-compose -f docker-compose.full.yml down -v
+```
+
+---
+
+### Option 2: Development Mode (Hot Reload)
+
+For active development with hot reload:
 
 ```bash
 # Clone the repository
@@ -86,7 +133,7 @@ cd ecommerce-demo
 ./scripts/local-dev.sh dev
 ```
 
-### Manual Setup
+### Option 3: Manual Setup
 
 1. **Install dependencies**
    ```bash

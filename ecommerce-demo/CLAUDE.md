@@ -47,16 +47,36 @@ ecommerce-demo/
 
 ## Development Commands
 
+### Quick Start (Full Docker)
+
+```bash
+# Start complete environment (no local Node.js required)
+docker-compose -f docker-compose.full.yml up --build
+
+# URLs:
+# - Frontend: http://localhost:3000
+# - Backend:  http://localhost:4000
+# - Adminer:  http://localhost:8080
+
+# Demo users: admin@example.com / john@example.com / jane@example.com (password123)
+
+# Stop all services
+docker-compose -f docker-compose.full.yml down
+
+# Reset everything (including data)
+docker-compose -f docker-compose.full.yml down -v
+```
+
+### Development Mode (Hot Reload)
+
 ```bash
 # Start local environment
 docker-compose up -d              # PostgreSQL + Redis
 npm install                       # Dependencies
-npm run dev                       # Frontend :3000 + Backend :4000
-
-# Database
 npm run db:generate -w apps/backend   # Generate Prisma client
 npm run db:push -w apps/backend       # Push schema to DB
-npm run db:migrate -w apps/backend    # Run migrations
+npm run db:seed -w apps/backend       # Seed demo data
+npm run dev                       # Frontend :3000 + Backend :4000
 
 # Build and test
 npm run build                     # Build all
