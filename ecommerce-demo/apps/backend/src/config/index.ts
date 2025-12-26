@@ -67,9 +67,9 @@ export const config = {
     saltRounds: getEnvNumber("BCRYPT_SALT_ROUNDS", 12),
   },
 
-  // CORS
+  // CORS - supports multiple origins (comma-separated) and wildcards
   cors: {
-    origin: getEnv("CORS_ORIGIN", "http://localhost:3000"),
+    origins: getEnv("CORS_ORIGINS", "http://localhost:3000").split(",").map(o => o.trim()),
     credentials: getEnvBoolean("CORS_CREDENTIALS", true),
   },
 

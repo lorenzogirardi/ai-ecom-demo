@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Search, X, Loader2 } from "lucide-react";
+import { searchApi } from "@/lib/api";
 
 interface SearchResult {
   id: string;
@@ -56,15 +57,19 @@ export function SearchBar({
     const timer = setTimeout(async () => {
       setIsLoading(true);
       try {
-        // TODO: Replace with actual API call
-        // const response = await fetch(`/api/search/autocomplete?q=${encodeURIComponent(query)}`);
-        // const data = await response.json();
-        // setSuggestions(data.results);
-
-        // Mock suggestions for now
-        setSuggestions([]);
+        const results = await searchApi.suggest(query);
+        setSuggestions(
+          results.map((item: { id: string; name: string; slug: string; price: string | number; imageUrl?: string }) => ({
+            id: item.id,
+            name: item.name,
+            slug: item.slug,
+            price: Number(item.price),
+            imageUrl: item.imageUrl,
+          }))
+        );
       } catch (error) {
         console.error("Search error:", error);
+        setSuggestions([]);
       } finally {
         setIsLoading(false);
       }
@@ -80,7 +85,7 @@ export function SearchBar({
       if (onSearch) {
         onSearch(query);
       } else {
-        router.push(`/products?search=${encodeURIComponent(query)}`);
+        router.push(`/products?q=${encodeURIComponent(query)}`);
       }
     }
   };

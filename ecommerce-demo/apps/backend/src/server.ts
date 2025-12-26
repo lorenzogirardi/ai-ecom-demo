@@ -24,9 +24,36 @@ async function buildServer() {
     trustProxy: true,
   });
 
+  // CORS - supports multiple origins and wildcards (*.domain.com)
+  const checkOrigin = (origin: string): boolean => {
+    const allowedOrigins = config.cors.origins;
+
+    return allowedOrigins.some(pattern => {
+      // Handle wildcards like *.k8s.it or *.ngrok-free.app
+      if (pattern.startsWith("*.")) {
+        const domain = pattern.slice(2); // Remove "*."
+        try {
+          const originHost = new URL(origin).hostname;
+          return originHost.endsWith(domain) || originHost === domain.slice(1);
+        } catch {
+          return false;
+        }
+      }
+      // Exact match
+      return origin === pattern;
+    });
+  };
+
   // Register plugins
   await app.register(cors, {
-    origin: config.cors.origin,
+    origin: (origin, cb) => {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin || checkOrigin(origin)) {
+        cb(null, true);
+        return;
+      }
+      cb(new Error(`Origin ${origin} not allowed by CORS`), false);
+    },
     credentials: config.cors.credentials,
   });
 

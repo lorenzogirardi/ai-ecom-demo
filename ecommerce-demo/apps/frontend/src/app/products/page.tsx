@@ -1,17 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useProducts, normalizeProduct } from "@/hooks/useProducts";
 import { useCategories } from "@/hooks/useCategories";
+import { useSearch } from "@/hooks/useSearch";
 import { useCart } from "@/hooks/useCart";
 import { ProductGrid } from "@/components/products/ProductGrid";
-import { Filter, SlidersHorizontal } from "lucide-react";
+import { SlidersHorizontal, X } from "lucide-react";
 import toast from "react-hot-toast";
 
 export default function ProductsPage() {
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get("q") || "";
+  const categoryParam = searchParams.get("category") || "";
+
+  const [selectedCategory, setSelectedCategory] = useState<string>(categoryParam);
   const [page, setPage] = useState(1);
   const limit = 12;
+
+  // Sync category from URL
+  useEffect(() => {
+    setSelectedCategory(categoryParam);
+  }, [categoryParam]);
+
+  // Use search if query exists, otherwise use regular products
+  const { products: searchProducts, isLoading: searchLoading } = useSearch(
+    searchQuery,
+    { enabled: !!searchQuery }
+  );
 
   const { data: productsData, isLoading: productsLoading } = useProducts({
     page,
@@ -19,15 +37,22 @@ export default function ProductsPage() {
     categoryId: selectedCategory || undefined,
   });
 
+  const isSearching = !!searchQuery;
+
   const { data: categories, isLoading: categoriesLoading } = useCategories();
   const { addItem } = useCart();
 
-  const products = productsData?.data || [];
+  const products = isSearching ? searchProducts : (productsData?.data || []);
   const meta = productsData?.meta;
+  const isLoading = isSearching ? searchLoading : productsLoading;
 
   const handleAddToCart = (product: any) => {
     addItem(product);
     toast.success(`${product.name} added to cart`);
+  };
+
+  const clearSearch = () => {
+    router.push("/products");
   };
 
   const normalizedProducts = products.map(normalizeProduct);
@@ -37,11 +62,24 @@ export default function ProductsPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">All Products</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            {isSearching ? `Search: "${searchQuery}"` : "All Products"}
+          </h1>
           <p className="text-gray-600 mt-1">
-            {meta?.total || 0} products available
+            {isSearching
+              ? `${products.length} results found`
+              : `${meta?.total || 0} products available`}
           </p>
         </div>
+        {isSearching && (
+          <button
+            onClick={clearSearch}
+            className="mt-4 md:mt-0 btn btn-outline flex items-center gap-2"
+          >
+            <X className="w-4 h-4" />
+            Clear Search
+          </button>
+        )}
       </div>
 
       <div className="flex flex-col lg:flex-row gap-8">
@@ -97,13 +135,13 @@ export default function ProductsPage() {
         <main className="flex-1">
           <ProductGrid
             products={normalizedProducts}
-            isLoading={productsLoading}
+            isLoading={isLoading}
             onAddToCart={handleAddToCart}
-            emptyMessage="No products found in this category"
+            emptyMessage={isSearching ? "No products match your search" : "No products found in this category"}
           />
 
-          {/* Pagination */}
-          {meta && meta.totalPages > 1 && (
+          {/* Pagination - only show when not searching */}
+          {!isSearching && meta && meta.totalPages > 1 && (
             <div className="mt-8 flex justify-center gap-2">
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
