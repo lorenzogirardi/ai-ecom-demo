@@ -158,8 +158,21 @@ npm run lint                      # Lint all
 - [ ] `argocd/install/values.yaml` - ArgoCD Helm values
 - [ ] `deploy-argocd.yml` - GitHub Actions workflow for ArgoCD deploy
 
+**Terraform Layer Separation (Day 4):**
+- [ ] Create Layer 1 (Platform): `infra/terraform/environments/demo/platform/`
+  - Network (VPC, Subnets, NAT)
+  - EKS (Cluster, Node Groups, IAM)
+  - ECR Repositories (needed for CI image push)
+- [ ] Create Layer 2 (Services): `infra/terraform/environments/demo/services/`
+  - RDS PostgreSQL
+  - ElastiCache Redis
+  - CDN (CloudFront)
+  - Secrets Manager
+- [ ] Update CI/CD to use `terraform_remote_state` between layers
+
 **AWS Deploy (Day 5):**
-- [ ] Terraform apply (VPC, EKS, RDS, ElastiCache, CDN)
+- [ ] Terraform apply Layer 1 (Platform: Network + EKS + ECR)
+- [ ] Terraform apply Layer 2 (Services: RDS + ElastiCache + CDN)
 - [ ] Run `deploy-argocd.yml` workflow (installs ArgoCD + Applications)
 - [ ] Manual sync via ArgoCD UI
 - [ ] E2E production tests
@@ -216,16 +229,16 @@ All resources in one state file: `demo/terraform.tfstate`
 ```
 Layer 1: PLATFORM (core)           → platform/terraform.tfstate
 ├── Network (VPC, Subnets, NAT)
-└── EKS (Cluster, Node Groups, IAM)
+├── EKS (Cluster, Node Groups, IAM)
+└── ECR Repositories              ← Moved here (CI needs it early)
     Frequency: Rare (months)
     Risk: High
     Team: Platform/SRE
 
-Layer 2: APPLICATION (services)    → services/terraform.tfstate
+Layer 2: SERVICES (application)    → services/terraform.tfstate
 ├── Database (RDS PostgreSQL)
 ├── Cache (ElastiCache Redis)
 ├── CDN (CloudFront)
-├── ECR Repositories
 └── Secrets Manager
     Frequency: Often (weeks)
     Risk: Medium
@@ -314,30 +327,34 @@ Per ogni CVE:
 7. ~~**Auth Pages** - /auth/login, /auth/register, /checkout~~ ✅
 8. ~~**Security** - Rate limiting review, CORS config (wildcards)~~ ✅
 9. ~~**Frontend Tests** - useAuth, useOrders, useSearch, AddressForm~~ ✅ (29 tests)
-10. **Day 4: CI + ArgoCD Preparation**
+10. **Day 4: CI + ArgoCD + Terraform Layers**
     - CI Security: Checkov, TFLint, Trivy (warn only), Gitleaks
     - Trivy reports in `security/reports/` for Claude CVE analysis
     - ArgoCD manifests (Project, Applications with manual sync)
     - `deploy-argocd.yml` workflow (manual trigger)
+    - Terraform layer separation:
+      - Layer 1 (Platform): Network + EKS + ECR
+      - Layer 2 (Services): RDS + ElastiCache + CDN
 11. **Day 5: AWS Deploy**
-    - Terraform apply
+    - Terraform apply Layer 1 (Network + EKS + ECR)
+    - Terraform apply Layer 2 (RDS + ElastiCache + CDN)
     - Run deploy-argocd.yml → ArgoCD + Applications
     - Manual sync via ArgoCD UI
     - E2E testing
 
 ## Planned Refactors
 
-### Terraform Layer Separation (Priority: Medium)
-**Status:** Not started
+### Terraform Layer Separation (Priority: High)
+**Status:** Scheduled for Day 4
 **Effort:** ~2-3 hours
 
 Separate Terraform into two layers for better isolation:
-- **Layer 1 (Platform):** Network + EKS → `platform/terraform.tfstate`
-- **Layer 2 (Services):** RDS + ElastiCache + CDN + ECR → `services/terraform.tfstate`
+- **Layer 1 (Platform):** Network + EKS + ECR → `platform/terraform.tfstate`
+- **Layer 2 (Services):** RDS + ElastiCache + CDN → `services/terraform.tfstate`
 
 See "Terraform > Planned Refactor: Layer Separation" section for full details.
 
-**When to implement:** Before production deployment or when team grows beyond 2-3 people.
+**Note:** ECR moved to Layer 1 because CI needs it to push container images before EKS is ready.
 
 ## Links
 
