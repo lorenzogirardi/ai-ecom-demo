@@ -21,7 +21,7 @@ variable "github_repositories" {
 variable "create_oidc_provider" {
   description = "Create OIDC provider (set false if already exists)"
   type        = bool
-  default     = true
+  default     = false  # OIDC provider already exists in AWS account
 }
 
 variable "enable_terraform_state_access" {
