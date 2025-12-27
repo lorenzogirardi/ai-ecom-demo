@@ -344,18 +344,35 @@ demo/terraform.tfstate
 
 **⚠️ IMPORTANTE: MAI usare tfstate locali - SEMPRE remote backend su S3**
 
-**Risorse AWS Create:**
+**Modulo `bootstrap/state-backend`:**
 
-| Risorsa | Nome | Scopo |
-|---------|------|-------|
-| S3 Bucket | `ecommerce-demo-terraform-state` | State storage con versioning + encryption |
-| DynamoDB Table | `ecommerce-demo-terraform-locks` | State locking per concurrency |
+```
+infra/terraform/bootstrap/state-backend/
+├── main.tf          # S3 bucket + DynamoDB table
+├── variables.tf     # Configuration variables
+├── outputs.tf       # Backend config output
+├── providers.tf     # AWS provider
+├── backend.tf       # Remote state (self-referencing)
+└── README.md        # Bootstrap documentation
+```
 
-**State Files Migrati:**
+**Risorse AWS - Tutte Gestite da Terraform:**
+
+| Risorsa | Nome | Modulo Terraform |
+|---------|------|------------------|
+| S3 Bucket | `ecommerce-demo-terraform-state` | `bootstrap/state-backend` |
+| DynamoDB Table | `ecommerce-demo-terraform-locks` | `bootstrap/state-backend` |
+| ECR Repository | `ecommerce-demo/backend` | `bootstrap/ecr` |
+| ECR Repository | `ecommerce-demo/frontend` | `bootstrap/ecr` |
+
+**Nessuna risorsa creata da CLI. Tutto gestito da Terraform.**
+
+**State Files su S3:**
 
 | Layer | State Key | Contenuto |
 |-------|-----------|-----------|
-| Bootstrap OIDC | `bootstrap/github-oidc/terraform.tfstate` | GitHub OIDC provider per CI |
+| State Backend | `bootstrap/state-backend/terraform.tfstate` | S3 + DynamoDB |
+| Bootstrap OIDC | `bootstrap/github-oidc/terraform.tfstate` | GitHub OIDC provider |
 | Bootstrap ECR | `bootstrap/ecr/terraform.tfstate` | ECR repositories |
 | Platform (Day 5) | `demo/platform.tfstate` | Network + EKS + ECR |
 | Services (Day 5) | `demo/services.tfstate` | RDS + ElastiCache + CDN |
