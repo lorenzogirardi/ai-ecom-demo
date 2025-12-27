@@ -7,11 +7,6 @@ terraform {
       version = "~> 5.0"
     }
   }
-
-  # Local backend for bootstrap (no remote state needed)
-  backend "local" {
-    path = "terraform.tfstate"
-  }
 }
 
 provider "aws" {
