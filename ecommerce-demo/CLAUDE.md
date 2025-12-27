@@ -151,7 +151,9 @@ npm run lint                      # Lint all
 - [x] `infra-ci.yml` - Infrastructure CI (TFLint, Checkov, Gitleaks, Helm lint)
 - [x] Backend CI enhancement (Gitleaks + Trivy scan with JSON reports)
 - [x] Frontend CI enhancement (Gitleaks + Trivy scan with JSON reports)
-- [x] `security/reports/` - Directory for Trivy JSON reports (Claude analysis)
+- [x] Trivy CVE Summary visible in GitHub Actions page
+- [x] `security/reports/` - Trivy JSON reports saved to repo
+- [x] Concurrency group for parallel workflow commits
 
 **ArgoCD Preparation:**
 - [x] `argocd/projects/ecommerce.yaml` - ArgoCD Project with RBAC
@@ -161,21 +163,38 @@ npm run lint                      # Lint all
 - [x] `deploy-argocd.yml` - GitHub Actions workflow for ArgoCD deploy
 - [x] `argocd/README.md` - Setup documentation
 
-**Terraform Layer Separation:**
-- [x] Layer 1 (Platform): `infra/terraform/environments/demo/platform/`
-  - Network (VPC, Subnets, NAT)
-  - EKS (Cluster, Node Groups, IAM)
-  - ECR Repositories (needed for CI image push)
-- [x] Layer 2 (Services): `infra/terraform/environments/demo/services/`
-  - RDS PostgreSQL
-  - ElastiCache Redis
-  - CDN (CloudFront)
-- [x] `terraform_remote_state` data source between layers
+**Terraform Remote State (S3):**
+- [x] S3 bucket `ecommerce-demo-terraform-state` with versioning + encryption
+- [x] DynamoDB table `ecommerce-demo-terraform-locks` for state locking
+- [x] Bootstrap state migrated to S3:
+  - `bootstrap/github-oidc/terraform.tfstate`
+  - `bootstrap/ecr/terraform.tfstate`
+- [x] Layer 1 (Platform): `demo/platform.tfstate` (Day 5)
+- [x] Layer 2 (Services): `demo/services.tfstate` (Day 5)
+
+**AWS Resources Created:**
+- [x] ECR Repository `ecommerce-demo/backend`
+- [x] ECR Repository `ecommerce-demo/frontend`
+
+**CVE Analysis:**
+- [x] Claude contextual CVE analysis methodology
+- [x] `slides/CVE_ANALYSIS.md` - Report IT
+- [x] `slides/CVE_ANALYSIS_eng.md` - Report EN
+- [x] 36 CVEs analyzed → 1 action required (fast-jwt issuer validation)
+
+**CI/CD Bug Fixes (10+):**
+- [x] Gitleaks config and allowlist
+- [x] ESLint configuration for both apps
+- [x] npm workspace cache issues
+- [x] Docker build context
+- [x] Trivy SHA mismatch (short vs full)
+- [x] Race condition on parallel commits
+- [x] Husky in CI environment
 
 ### NOT Completed ❌
 
 **AWS Deploy (Day 5):**
-- [ ] Terraform apply Layer 1 (Platform: Network + EKS + ECR)
+- [ ] Terraform apply Layer 1 (Platform: Network + EKS)
 - [ ] Terraform apply Layer 2 (Services: RDS + ElastiCache + CDN)
 - [ ] Run `deploy-argocd.yml` workflow (installs ArgoCD + Applications)
 - [ ] Manual sync via ArgoCD UI

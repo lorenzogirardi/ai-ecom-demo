@@ -24,7 +24,7 @@
 | 1 | 24 Dic | Foundation + Backend + Helm + CI/CD + Docs | ✅ |
 | 2 | 25 Dic | Dockerfiles + React Components + Test Suite + API Client + Pages + Seed | ✅ |
 | 3 | 26 Dic | Auth Pages + Checkout + Account + Search + Security | ✅ |
-| 4 | 27 Dic | GitHub Actions Pipelines (CI/CD completo) | ⏳ |
+| 4 | 27 Dic | CI Security + ArgoCD + Terraform Remote State + CVE Analysis | ✅ |
 | 5 | 28 Dic | Deploy AWS + E2E Test | ⏳ |
 
 ---
@@ -295,182 +295,188 @@ demo/terraform.tfstate
 
 ---
 
-## Dettaglio Giorno 4 - 27 Dicembre ⏳
+## Dettaglio Giorno 4 - 27 Dicembre ✅
 
-### GitHub Actions - Pipeline CI/CD Complete
-
-Le pipeline attuali sono base. Vanno estese con security scanning, code quality e infra-as-code checks.
+### CI Security + ArgoCD + Terraform Remote State + CVE Analysis
 
 ---
 
-### CI Pipeline - Apps (Frontend & Backend)
+### 1. CI Security Scanning ✅
+
+**Architettura Pipeline:**
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    CI PIPELINE - APPS                            │
+│                    INFRASTRUCTURE CI                             │
+│  Trigger: infra/terraform/** changes                            │
 ├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  ┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐         │
-│  │  Lint   │ → │  Test   │ → │  Build  │ → │ Docker  │         │
-│  └─────────┘   └─────────┘   └─────────┘   └─────────┘         │
-│       ↓                                         ↓               │
-│  ┌─────────┐                           ┌─────────────────┐     │
-│  │ Secrets │                           │ Vulnerability   │     │
-│  │  Scan   │                           │     Scan        │     │
-│  └─────────┘                           └─────────────────┘     │
-│       ↓                                         ↓               │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │                    Code Quality Gate                     │   │
-│  └─────────────────────────────────────────────────────────┘   │
-│                              ↓                                  │
-│                    ┌─────────────────┐                         │
-│                    │   Push to ECR   │                         │
-│                    └─────────────────┘                         │
-│                                                                  │
+│  TFLint → Checkov → Gitleaks  (parallel)                        │
 └─────────────────────────────────────────────────────────────────┘
-```
 
-| Step | Tool | File | Stato |
-|------|------|------|-------|
-| Linting | ESLint + Prettier | `.github/workflows/ci-apps.yml` | ⏳ |
-| Unit Tests | Vitest | `.github/workflows/ci-apps.yml` | ⏳ |
-| Code Quality | SonarQube / CodeClimate | `.github/workflows/ci-apps.yml` | ⏳ |
-| Secret Scanning | Gitleaks / TruffleHog | `.github/workflows/ci-apps.yml` | ⏳ |
-| Docker Build | Docker Buildx | `.github/workflows/ci-apps.yml` | ⏳ |
-| Vulnerability Scan | Trivy / Snyk | `.github/workflows/ci-apps.yml` | ⏳ |
-| Push to Registry | AWS ECR | `.github/workflows/ci-apps.yml` | ⏳ |
-
----
-
-### CI Pipeline - Infrastructure (Terraform)
-
-```
 ┌─────────────────────────────────────────────────────────────────┐
-│                 CI PIPELINE - INFRASTRUCTURE                     │
+│                    APP CI/CD (Backend/Frontend)                  │
 ├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  ┌───────────┐   ┌───────────┐   ┌───────────┐                 │
-│  │  Checkov  │ → │  TFLint   │ → │ TF Format │                 │
-│  │ (Security)│   │  (Lint)   │   │  (Style)  │                 │
-│  └───────────┘   └───────────┘   └───────────┘                 │
-│        ↓                                                        │
-│  ┌───────────────────────────────────────────────────────────┐ │
-│  │                    Terraform Validate                      │ │
-│  └───────────────────────────────────────────────────────────┘ │
-│        ↓                                                        │
-│  ┌───────────────────────────────────────────────────────────┐ │
-│  │                     Terraform Plan                         │ │
-│  │              (saved as artifact for CD)                    │ │
-│  └───────────────────────────────────────────────────────────┘ │
-│                                                                  │
+│  Gitleaks → Lint & Test → Build → Trivy (warn) → Push ECR      │
+│                                      ↓                           │
+│                          security/reports/trivy-*.json           │
+│                          (for Claude CVE analysis)               │
+│                          + CVE Summary in GitHub Actions page    │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-| Step | Tool | File | Stato |
-|------|------|------|-------|
-| Security Scan | Checkov | `.github/workflows/ci-infra.yml` | ⏳ |
-| Terraform Lint | TFLint | `.github/workflows/ci-infra.yml` | ⏳ |
-| Format Check | terraform fmt | `.github/workflows/ci-infra.yml` | ⏳ |
-| Validate | terraform validate | `.github/workflows/ci-infra.yml` | ⏳ |
-| Plan | terraform plan | `.github/workflows/ci-infra.yml` | ⏳ |
-| Cost Estimation | Infracost (optional) | `.github/workflows/ci-infra.yml` | ⏳ |
+| File | Contenuto | Stato |
+|------|-----------|-------|
+| `.github/workflows/infra-ci.yml` | TFLint + Checkov + Gitleaks | ✅ |
+| `.github/workflows/backend-ci-cd.yml` | Enhanced with Gitleaks + Trivy + CVE Summary | ✅ |
+| `.github/workflows/frontend-ci-cd.yml` | Enhanced with Gitleaks + Trivy + CVE Summary | ✅ |
+| `.checkov.yaml` | Checkov skip rules per demo | ✅ |
+| `.tflint.hcl` | TFLint AWS plugin config | ✅ |
+| `.gitleaks.toml` | Gitleaks configuration + allowlist | ✅ |
+
+**CVE Summary in GitHub Actions:**
+- Vulnerability counts by severity (Critical, High, Medium, Low)
+- Top CVEs table with package, version, and fix available
+- Visible directly in GitHub Actions page via `$GITHUB_STEP_SUMMARY`
 
 ---
 
-### CD Pipeline - Infrastructure Deploy
+### 2. Terraform Remote State (S3) ✅
+
+**⚠️ IMPORTANTE: MAI usare tfstate locali - SEMPRE remote backend su S3**
+
+**Risorse AWS Create:**
+
+| Risorsa | Nome | Scopo |
+|---------|------|-------|
+| S3 Bucket | `ecommerce-demo-terraform-state` | State storage con versioning + encryption |
+| DynamoDB Table | `ecommerce-demo-terraform-locks` | State locking per concurrency |
+
+**State Files Migrati:**
+
+| Layer | State Key | Contenuto |
+|-------|-----------|-----------|
+| Bootstrap OIDC | `bootstrap/github-oidc/terraform.tfstate` | GitHub OIDC provider per CI |
+| Bootstrap ECR | `bootstrap/ecr/terraform.tfstate` | ECR repositories |
+| Platform (Day 5) | `demo/platform.tfstate` | Network + EKS + ECR |
+| Services (Day 5) | `demo/services.tfstate` | RDS + ElastiCache + CDN |
+
+**Layer Separation:**
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                 CD PIPELINE - INFRASTRUCTURE                     │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │              Manual Approval (main branch)               │   │
-│  └─────────────────────────────────────────────────────────┘   │
-│                              ↓                                  │
-│  ┌───────────────┐   ┌───────────────┐   ┌───────────────┐    │
-│  │   TF Apply    │ → │   Configure   │ → │  Post-Deploy  │    │
-│  │  (Core Infra) │   │    kubectl    │   │   Validation  │    │
-│  └───────────────┘   └───────────────┘   └───────────────┘    │
-│                                                                  │
-│  Core Infrastructure:                                           │
-│  • VPC, Subnets, NAT                                           │
-│  • EKS Cluster                                                  │
-│  • RDS PostgreSQL                                               │
-│  • ElastiCache Redis                                            │
-│  • CloudFront + S3                                              │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
-```
+Layer 1: PLATFORM (core)           → demo/platform.tfstate
+├── Network (VPC, Subnets, NAT)
+├── EKS (Cluster, Node Groups, IAM)
+└── ECR Repositories
+    Frequenza: Raro (mesi)
+    Rischio: Alto
 
-| Step | Tool | File | Stato |
-|------|------|------|-------|
-| Approval Gate | GitHub Environments | `.github/workflows/cd-infra.yml` | ⏳ |
-| Terraform Apply | terraform apply | `.github/workflows/cd-infra.yml` | ⏳ |
-| Configure kubectl | aws eks update-kubeconfig | `.github/workflows/cd-infra.yml` | ⏳ |
-| Validate Cluster | kubectl get nodes | `.github/workflows/cd-infra.yml` | ⏳ |
+Layer 2: SERVICES (application)    → demo/services.tfstate
+├── Database (RDS PostgreSQL)
+├── Cache (ElastiCache Redis)
+├── CDN (CloudFront)
+└── Secrets Manager
+    Frequenza: Spesso (settimane)
+    Rischio: Medio
+```
 
 ---
 
-### CD Pipeline - Apps Deploy
+### 3. ArgoCD Preparation ✅
+
+**Struttura Directory:**
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                    CD PIPELINE - APPS                            │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │                    Pre-Deploy Checks                     │   │
-│  │    • Infrastructure exists (EKS, RDS, Redis ready)       │   │
-│  │    • Secrets configured in AWS Secrets Manager           │   │
-│  └─────────────────────────────────────────────────────────┘   │
-│                              ↓                                  │
-│  ┌───────────────┐   ┌───────────────┐   ┌───────────────┐    │
-│  │    Database   │ → │  Helm Deploy  │ → │  Smoke Tests  │    │
-│  │   Migrations  │   │   (Backend)   │   │               │    │
-│  └───────────────┘   └───────────────┘   └───────────────┘    │
-│                              ↓                                  │
-│  ┌───────────────┐   ┌───────────────┐   ┌───────────────┐    │
-│  │  Helm Deploy  │ → │  Health Check │ → │   E2E Tests   │    │
-│  │  (Frontend)   │   │               │   │  (Optional)   │    │
-│  └───────────────┘   └───────────────┘   └───────────────┘    │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
+argocd/
+├── README.md                      # Setup documentation
+├── install/
+│   └── values.yaml                # ArgoCD Helm values for EKS/ALB
+├── projects/
+│   └── ecommerce.yaml             # ArgoCD Project with RBAC
+└── applications/
+    ├── backend.yaml               # Backend Application (manual sync)
+    └── frontend.yaml              # Frontend Application (manual sync)
 ```
 
-| Step | Tool | File | Stato |
-|------|------|------|-------|
-| Pre-Deploy Validation | AWS CLI checks | `.github/workflows/cd-apps.yml` | ⏳ |
-| Database Migrations | Prisma migrate deploy | `.github/workflows/cd-apps.yml` | ⏳ |
-| Deploy Backend | Helm upgrade --install | `.github/workflows/cd-apps.yml` | ⏳ |
-| Deploy Frontend | Helm upgrade --install | `.github/workflows/cd-apps.yml` | ⏳ |
-| Health Checks | curl + kubectl | `.github/workflows/cd-apps.yml` | ⏳ |
-| Smoke Tests | API endpoint validation | `.github/workflows/cd-apps.yml` | ⏳ |
+| File | Contenuto | Stato |
+|------|-----------|-------|
+| `argocd/projects/ecommerce.yaml` | ArgoCD Project con RBAC | ✅ |
+| `argocd/applications/backend.yaml` | Backend App (manual sync) | ✅ |
+| `argocd/applications/frontend.yaml` | Frontend App (manual sync) | ✅ |
+| `argocd/install/values.yaml` | ArgoCD Helm values per EKS/ALB | ✅ |
+| `.github/workflows/deploy-argocd.yml` | Workflow manuale per deploy ArgoCD | ✅ |
+| `argocd/README.md` | Documentazione setup | ✅ |
+
+**Sync Policy:** Manual (require explicit sync trigger via UI/CLI)
 
 ---
 
-### Workflow Files da Creare/Aggiornare
+### 4. AWS Resources Created ✅
 
-| File | Descrizione | Trigger |
-|------|-------------|---------|
-| `.github/workflows/ci-apps.yml` | CI per frontend e backend | PR, push to main |
-| `.github/workflows/ci-infra.yml` | CI per Terraform (Checkov, TFLint) | PR to infra/** |
-| `.github/workflows/cd-infra.yml` | Deploy infrastruttura AWS | Manual / Tag release |
-| `.github/workflows/cd-apps.yml` | Deploy apps su EKS | Push to main (after CI) |
-| `.github/workflows/security-scan.yml` | Scheduled security scans | Cron weekly |
+| Risorsa | Nome |
+|---------|------|
+| ECR Repository | `ecommerce-demo/backend` |
+| ECR Repository | `ecommerce-demo/frontend` |
 
 ---
 
-### GitHub Secrets Richiesti
+### 5. CVE Analysis ✅
 
-| Secret | Descrizione |
-|--------|-------------|
-| `AWS_ACCESS_KEY_ID` | AWS credentials per deploy |
-| `AWS_SECRET_ACCESS_KEY` | AWS credentials per deploy |
-| `AWS_REGION` | Region (eu-west-1) |
-| `ECR_REGISTRY` | ECR registry URL |
-| `SONAR_TOKEN` | SonarQube token (optional) |
-| `SNYK_TOKEN` | Snyk token per vulnerability scan |
+**Metodologia Claude Code:**
+
+1. Lettura report Trivy JSON (`security/reports/trivy-*.json`)
+2. Per ogni CVE: ricerca nel codice se la libreria è usata
+3. Valutazione se il vettore di attacco è esposto nel contesto applicativo
+4. Priorità contestualizzata (non solo CVSS)
+5. Suggerimenti remediation
+
+**Risultati Analisi:**
+
+| Severity | Totale | Action Required | Ignorabili |
+|----------|--------|-----------------|------------|
+| 🔴 Critical | 1 | 0 | 1 |
+| 🟠 High | 7 | 0 | 7 |
+| 🟡 Medium | 28 | 1 | 27 |
+
+**Rischio Complessivo:** BASSO
+**Azione Immediata:** 1 (JWT issuer validation in fast-jwt)
+
+**Report Generati:**
+- `slides/CVE_ANALYSIS.md` (IT)
+- `slides/CVE_ANALYSIS_eng.md` (EN)
+
+---
+
+### 6. CI/CD Bug Fixes (10+) ✅
+
+| Bug | Fix |
+|-----|-----|
+| Gitleaks config e allowlist | Creato `.gitleaks.toml` con path esclusioni |
+| ESLint configuration | Configurazione per entrambe le app |
+| npm workspace cache issues | Fix cache key strategy |
+| Docker build context | Corretto path context |
+| Trivy SHA mismatch | Short SHA (7 chars) vs full SHA (40 chars) |
+| Race condition parallel commits | Concurrency group `trivy-report-commit` |
+| Git pull with unstaged changes | Moved pull before saving report |
+| Husky in CI environment | Skip hooks in CI |
+
+---
+
+### Checklist Finale Day 4
+
+- [x] CI Security: Gitleaks secret scanning
+- [x] CI Security: Trivy vulnerability scan (warn only)
+- [x] CI Security: CVE Summary in GitHub Actions page
+- [x] CI Security: Checkov + TFLint per Terraform
+- [x] ArgoCD: Project + Applications manifests
+- [x] ArgoCD: deploy-argocd.yml workflow
+- [x] Terraform: Remote state S3 + DynamoDB locking
+- [x] Terraform: State migration da local a S3
+- [x] Terraform: Layer separation (platform/services)
+- [x] AWS: ECR repositories creati
+- [x] CVE Analysis: Report contestualizzato (36→1)
+- [x] Docs: SESSION_04_RECAP (IT + EN)
+- [x] Docs: CVE_ANALYSIS (IT + EN)
+- [x] 10+ bug fixes risolti
 
 ---
 
@@ -716,95 +722,128 @@ Le pipeline attuali sono base. Vanno estese con security scanning, code quality 
 - [x] Execution plan (IT + EN)
 - [x] Session recaps 1-3 (IT + EN)
 
+### Completato ✅ (Sessione 4)
+
+**CI Security Scanning:**
+- [x] Gitleaks secret scanning (apps + infra)
+- [x] Trivy vulnerability scan (warn only, JSON reports)
+- [x] CVE Summary in GitHub Actions page
+- [x] Checkov + TFLint per Terraform
+
+**ArgoCD Preparation:**
+- [x] Project + Applications manifests
+- [x] deploy-argocd.yml workflow (manual trigger)
+
+**Terraform Remote State:**
+- [x] S3 bucket + DynamoDB locking
+- [x] State migration da local a S3
+- [x] Layer separation (platform/services)
+
+**CVE Analysis:**
+- [x] Report contestualizzato (36 CVEs → 1 action required)
+- [x] CVE_ANALYSIS.md (IT + EN)
+
+**Documentation:**
+- [x] SESSION_04_RECAP (IT + EN)
+
 ### Da Completare ⏳
 
-**Giorno 4 - CI/CD Pipelines:**
-- [ ] CI Pipeline Apps (lint, test, docker, vulnerability scan, secret scan)
-- [ ] CI Pipeline Infra (Checkov, TFLint, terraform plan)
-- [ ] CD Pipeline Infra (terraform apply con approval)
-- [ ] CD Pipeline Apps (migrations, helm deploy, health checks)
-- [ ] Security scan scheduled workflow
-
 **Giorno 5 - AWS Deploy:**
-- [ ] Deploy su AWS (Terraform apply + Helm install)
-- [ ] E2E test su AWS
+- [ ] Terraform apply Layer 1 (Platform: Network + EKS + ECR)
+- [ ] Terraform apply Layer 2 (Services: RDS + ElastiCache + CDN)
+- [ ] Run deploy-argocd.yml workflow
+- [ ] Manual sync via ArgoCD UI
+- [ ] E2E tests su AWS
 - [ ] Screenshots/demo
 
 ---
 
 ## Prossima Sessione
 
-**Giorno 4 - CI/CD Pipelines Complete**
+**Giorno 5 - AWS Deploy**
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    SESSIONE 4 - CI/CD PIPELINES                  │
+│                    SESSIONE 5 - AWS DEPLOY                       │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                  │
-│  1. CI PIPELINE - APPS                                          │
-│     ├── ESLint + Prettier                                       │
-│     ├── Vitest (unit + integration)                             │
-│     ├── Docker build + push ECR                                 │
-│     ├── Trivy vulnerability scan                                │
-│     └── Gitleaks secret scan                                    │
+│  1. TERRAFORM APPLY                                              │
+│     ├── Layer 1: Platform (Network + EKS + ECR)                 │
+│     │   cd infra/terraform/environments/demo/platform           │
+│     │   terraform init && terraform apply                       │
+│     │                                                            │
+│     └── Layer 2: Services (RDS + ElastiCache + CDN)             │
+│         cd infra/terraform/environments/demo/services           │
+│         terraform init && terraform apply                       │
 │                                                                  │
-│  2. CI PIPELINE - INFRASTRUCTURE                                │
-│     ├── Checkov security scan                                   │
-│     ├── TFLint                                                  │
-│     ├── terraform fmt check                                     │
-│     ├── terraform validate                                      │
-│     └── terraform plan (artifact)                               │
+│  2. ARGOCD DEPLOY                                                │
+│     ├── Run: .github/workflows/deploy-argocd.yml                │
+│     │   (manual trigger from GitHub Actions)                    │
+│     │                                                            │
+│     └── Workflow steps:                                          │
+│         ├── Configure AWS credentials (OIDC)                    │
+│         ├── Update kubeconfig for EKS                           │
+│         ├── helm upgrade --install argocd                       │
+│         ├── kubectl apply Project + Applications                │
+│         └── Output ArgoCD UI URL + admin password               │
 │                                                                  │
-│  3. CD PIPELINE - INFRASTRUCTURE                                │
-│     ├── Manual approval gate                                    │
-│     ├── terraform apply                                         │
-│     └── Post-deploy validation                                  │
+│  3. APPLICATION DEPLOY                                           │
+│     ├── Access ArgoCD UI                                         │
+│     ├── Manual sync: Backend Application                        │
+│     └── Manual sync: Frontend Application                       │
 │                                                                  │
-│  4. CD PIPELINE - APPS                                          │
-│     ├── Pre-deploy checks                                       │
-│     ├── Database migrations                                     │
-│     ├── Helm deploy backend                                     │
-│     ├── Helm deploy frontend                                    │
-│     ├── Health checks                                           │
-│     └── Smoke tests                                             │
-│                                                                  │
-│  5. SECURITY SCAN WORKFLOW                                      │
-│     └── Weekly scheduled scans                                  │
+│  4. E2E TESTING                                                  │
+│     ├── Verify all endpoints                                     │
+│     ├── Test user flows (register, login, checkout)             │
+│     └── Screenshots/demo                                         │
 │                                                                  │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-**File da creare/aggiornare:**
-```
-.github/workflows/
-├── ci-apps.yml         # ESLint, Vitest, Docker, Trivy, Gitleaks
-├── ci-infra.yml        # Checkov, TFLint, terraform validate/plan
-├── cd-infra.yml        # Terraform apply con approval
-├── cd-apps.yml         # Prisma migrate, Helm deploy, health checks
-└── security-scan.yml   # Weekly scheduled scans
+**Comandi da eseguire:**
+```bash
+# Layer 1: Platform
+cd ecommerce-demo/infra/terraform/environments/demo/platform
+terraform init
+terraform plan
+terraform apply
+
+# Layer 2: Services
+cd ../services
+terraform init
+terraform plan
+terraform apply
+
+# ArgoCD: Run from GitHub Actions UI
+# .github/workflows/deploy-argocd.yml (manual trigger)
+
+# After ArgoCD is running:
+# 1. Access ArgoCD UI (URL from workflow output)
+# 2. Login with admin password (from workflow output)
+# 3. Sync Backend application
+# 4. Sync Frontend application
+# 5. Access e-commerce app and test
 ```
 
-**Giorno 5 - AWS Deploy:**
-```
-1. Terraform init/plan/apply
-2. Configure kubectl
-3. Helm install backend + frontend
-4. E2E tests su AWS
-5. Screenshots/demo
-```
+**⚠️ IMPORTANTE:**
+- Tutti i Terraform state sono su S3 remote backend
+- MAI usare tfstate locali
+- Layer 1 deve completare PRIMA di Layer 2
 
 ---
 
 ## Statistiche Progetto
 
-| Metrica | Sessione 1 | Sessione 2 | Sessione 3 | Totale |
-|---------|------------|------------|------------|--------|
-| File creati | 82 | 21 | 24 | 127 |
-| Linee di codice | ~8,900 | ~3,200 | ~2,500 | ~14,600 |
-| Backend Tests | 0 | 177 | 177 (fixed) | 177 |
-| Frontend Tests | 0 | 0 | 29 | 29 |
-| Tempo Claude | ~2 ore | ~1.5 ore | ~1.5 ore | ~5 ore |
-| Tempo equiv. dev | ~50 ore | ~50 ore | ~26.5 ore | ~126.5 ore |
+| Metrica | Sessione 1 | Sessione 2 | Sessione 3 | Sessione 4 | Totale |
+|---------|------------|------------|------------|------------|--------|
+| File creati | 82 | 21 | 24 | 15 | 142 |
+| Linee di codice | ~8,900 | ~3,200 | ~2,500 | ~1,500 | ~16,100 |
+| Backend Tests | 0 | 177 | 177 (fixed) | 177 | 177 |
+| Frontend Tests | 0 | 0 | 29 | 29 | 29 |
+| Tempo Claude | ~2 ore | ~1.5 ore | ~1.5 ore | ~2 ore | ~7 ore |
+| Tempo equiv. dev | ~50 ore | ~50 ore | ~26.5 ore | ~40 ore | ~166.5 ore |
+| Bug fixes | 0 | 0 | 5 | 10+ | 15+ |
+| CVE analyzed | 0 | 0 | 0 | 36 | 36 |
 
 ---
 
@@ -812,5 +851,6 @@ Le pipeline attuali sono base. Vanno estese con security scanning, code quality 
 
 - Repository: https://github.com/lorenzogirardi/ai-ecom-demo
 - Commit iniziale: bd0d99f (24 Dic 2024)
-- Ultimo aggiornamento: 26 Dic 2024
+- Ultimo aggiornamento: 27 Dic 2024
 - Total tests: 206 (177 backend + 29 frontend)
+- **⚠️ Terraform State: SEMPRE remote backend su S3, MAI locale**
