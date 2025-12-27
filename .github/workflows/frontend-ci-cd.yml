@@ -187,14 +187,14 @@ jobs:
           path: trivy-frontend-${{ steps.sha.outputs.short }}.json
           retention-days: 30
 
+      - name: Pull latest changes
+        run: git pull origin main
+
       - name: Save Trivy report to repo
         run: |
           mkdir -p ecommerce-demo/security/reports
           cp trivy-frontend-${{ steps.sha.outputs.short }}.json ecommerce-demo/security/reports/
           cp trivy-frontend-${{ steps.sha.outputs.short }}.json ecommerce-demo/security/reports/trivy-frontend-latest.json
-
-      - name: Pull latest changes
-        run: git pull origin main --rebase
 
       - name: Commit Trivy report
         uses: stefanzweifel/git-auto-commit-action@v5
