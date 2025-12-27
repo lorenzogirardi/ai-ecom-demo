@@ -66,7 +66,7 @@ export default function CategoryPage() {
             Category Not Found
           </h1>
           <p className="text-gray-600 mb-6">
-            The category you're looking for doesn't exist.
+            The category you&apos;re looking for doesn&apos;t exist.
           </p>
           <Link href="/categories" className="btn btn-primary">
             Browse Categories
