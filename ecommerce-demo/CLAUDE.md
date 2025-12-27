@@ -194,6 +194,7 @@ npm run lint                      # Lint all
 - [x] Trivy SHA mismatch (short vs full)
 - [x] Race condition on parallel commits
 - [x] Husky in CI environment
+- [x] Terraform fmt auto-fix with auto-commit in Infrastructure CI
 
 ### NOT Completed ❌
 
