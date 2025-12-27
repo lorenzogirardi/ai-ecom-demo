@@ -168,7 +168,7 @@ jobs:
         id: build
         uses: docker/build-push-action@v5
         with:
-          context: ecommerce-demo
+          context: ecommerce-demo/apps/backend
           file: ecommerce-demo/apps/backend/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
