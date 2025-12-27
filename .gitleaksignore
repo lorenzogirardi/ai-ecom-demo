@@ -1,0 +1,6 @@
+# Gitleaks Ignore File
+# These are false positives - example tokens in documentation
+
+# Example JWT tokens in API.md
+bd0d99f92cc9ad11cfeaf7538219d6316a4b68f3:ecommerce-demo/docs/API.md:generic-api-key:88
+bd0d99f92cc9ad11cfeaf7538219d6316a4b68f3:ecommerce-demo/docs/API.md:generic-api-key:113
