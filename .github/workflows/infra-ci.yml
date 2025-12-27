@@ -20,7 +20,7 @@ on:
       - 'ecommerce-demo/.tflint.hcl'
 
 permissions:
-  contents: read
+  contents: write
   security-events: write
 
 jobs:
@@ -120,14 +120,46 @@ jobs:
         continue-on-error: true
 
   # ============================================
+  # Terraform Format (Auto-fix)
+  # ============================================
+  terraform-fmt:
+    name: Terraform Format
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.7.0"
+
+      - name: Terraform Format
+        run: terraform fmt -recursive
+        working-directory: ecommerce-demo/infra/terraform
+
+      - name: Commit formatted files
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "style(terraform): auto-format with terraform fmt"
+          file_pattern: "ecommerce-demo/infra/terraform/**/*.tf"
+
+  # ============================================
   # Terraform Validate
   # ============================================
   terraform-validate:
     name: Terraform Validate
     runs-on: ubuntu-latest
+    needs: [terraform-fmt]
+    if: always()
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
