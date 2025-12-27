@@ -163,16 +163,20 @@ npm run lint                      # Lint all
 - [x] `deploy-argocd.yml` - GitHub Actions workflow for ArgoCD deploy
 - [x] `argocd/README.md` - Setup documentation
 
-**Terraform Remote State (S3):**
-- [x] S3 bucket `ecommerce-demo-terraform-state` with versioning + encryption
-- [x] DynamoDB table `ecommerce-demo-terraform-locks` for state locking
-- [x] Bootstrap state migrated to S3:
+**Terraform Remote State (S3) - Tutte risorse gestite da Terraform:**
+- [x] `bootstrap/state-backend` module - S3 bucket + DynamoDB table
+- [x] S3 bucket `ecommerce-demo-terraform-state` with versioning + encryption + lifecycle
+- [x] DynamoDB table `ecommerce-demo-terraform-locks` with point-in-time recovery
+- [x] Bootstrap state on S3:
+  - `bootstrap/state-backend/terraform.tfstate`
   - `bootstrap/github-oidc/terraform.tfstate`
   - `bootstrap/ecr/terraform.tfstate`
 - [x] Layer 1 (Platform): `demo/platform.tfstate` (Day 5)
 - [x] Layer 2 (Services): `demo/services.tfstate` (Day 5)
 
-**AWS Resources Created:**
+**⚠️ IMPORTANTE:** Nessuna risorsa creata da CLI. Tutto gestito da Terraform.
+
+**AWS Resources Created (all via Terraform):**
 - [x] ECR Repository `ecommerce-demo/backend`
 - [x] ECR Repository `ecommerce-demo/frontend`
 

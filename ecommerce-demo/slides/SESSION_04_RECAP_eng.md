@@ -35,9 +35,10 @@
 
 | Metric | Value |
 |--------|-------|
-| Files created/modified | 18 |
+| Files created/modified | 24 |
 | GitHub Actions workflows | 4 |
-| AWS resources created | 4 (S3, DynamoDB, 2 ECR) |
+| Terraform modules | 1 new (state-backend) |
+| AWS resources (all via TF) | 4 (S3, DynamoDB, 2 ECR) |
 | CI/CD bugs fixed | 10+ |
 | CVEs analyzed | 36 |
 
@@ -71,6 +72,13 @@ ecommerce-demo/
 │   └── CVE_ANALYSIS_eng.md  # CVE analysis report (EN)
 └── infra/terraform/bootstrap/
     ├── backend.tf           # S3 remote backend config
+    ├── state-backend/       # NEW: State infrastructure module
+    │   ├── main.tf          # S3 bucket + DynamoDB table
+    │   ├── variables.tf     # Configuration variables
+    │   ├── outputs.tf       # Backend config output
+    │   ├── providers.tf     # AWS provider
+    │   ├── backend.tf       # Remote state (self-referencing)
+    │   └── README.md        # Bootstrap documentation
     └── ecr/
         ├── main.tf          # ECR repositories
         └── backend.tf       # S3 remote backend config
@@ -291,22 +299,25 @@ jobs:
 
 ## Terraform Remote State
 
-### Resources Created
+### AWS Resources - All Managed by Terraform
 
-| Resource | Name | Purpose |
-|----------|------|---------|
-| S3 Bucket | ecommerce-demo-terraform-state | State storage |
-| DynamoDB Table | ecommerce-demo-terraform-locks | State locking |
-| ECR Repository | ecommerce-demo/backend | Backend images |
-| ECR Repository | ecommerce-demo/frontend | Frontend images |
+| Resource | Name | Terraform Module |
+|----------|------|------------------|
+| S3 Bucket | ecommerce-demo-terraform-state | `bootstrap/state-backend` |
+| DynamoDB Table | ecommerce-demo-terraform-locks | `bootstrap/state-backend` |
+| ECR Repository | ecommerce-demo/backend | `bootstrap/ecr` |
+| ECR Repository | ecommerce-demo/frontend | `bootstrap/ecr` |
+
+**⚠️ IMPORTANT**: No resources created via CLI. Everything managed by Terraform with remote state.
 
 ### State Files
 
 ```
 s3://ecommerce-demo-terraform-state/
 ├── bootstrap/
-│   ├── github-oidc/terraform.tfstate
-│   └── ecr/terraform.tfstate
+│   ├── state-backend/terraform.tfstate  # S3 + DynamoDB
+│   ├── github-oidc/terraform.tfstate    # GitHub OIDC
+│   └── ecr/terraform.tfstate            # ECR repos
 ├── demo/
 │   ├── platform.tfstate    # (Day 5)
 │   └── services.tfstate    # (Day 5)
