@@ -110,13 +110,13 @@ resource "aws_db_instance" "main" {
   multi_az               = var.multi_az
 
   # Backup
-  backup_retention_period = var.backup_retention_period
-  backup_window           = "03:00-04:00"
-  maintenance_window      = "sun:04:00-sun:05:00"
-  copy_tags_to_snapshot   = true
-  skip_final_snapshot     = var.environment != "production"
+  backup_retention_period   = var.backup_retention_period
+  backup_window             = "03:00-04:00"
+  maintenance_window        = "sun:04:00-sun:05:00"
+  copy_tags_to_snapshot     = true
+  skip_final_snapshot       = var.environment != "production"
   final_snapshot_identifier = var.environment == "production" ? "${var.project_name}-${var.environment}-final-snapshot" : null
-  deletion_protection     = var.environment == "production"
+  deletion_protection       = var.environment == "production"
 
   # Monitoring
   performance_insights_enabled          = var.performance_insights_enabled

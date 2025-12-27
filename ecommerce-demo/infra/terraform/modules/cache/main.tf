@@ -90,9 +90,9 @@ resource "aws_elasticache_replication_group" "main" {
   auth_token                 = random_password.redis.result
 
   # Maintenance
-  maintenance_window       = "sun:05:00-sun:06:00"
-  snapshot_window          = "04:00-05:00"
-  snapshot_retention_limit = var.snapshot_retention_limit
+  maintenance_window         = "sun:05:00-sun:06:00"
+  snapshot_window            = "04:00-05:00"
+  snapshot_retention_limit   = var.snapshot_retention_limit
   auto_minor_version_upgrade = true
 
   # Notifications

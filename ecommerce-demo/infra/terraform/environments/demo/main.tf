@@ -49,16 +49,16 @@ module "eks" {
 module "database" {
   source = "../../modules/database"
 
-  project_name              = local.project_name
-  environment               = local.environment
-  vpc_id                    = module.network.vpc_id
-  db_subnet_group_name      = module.network.db_subnet_group_name
-  allowed_security_groups   = [module.eks.cluster_security_group_id]
-  instance_class            = var.rds_instance_class
-  allocated_storage         = var.rds_allocated_storage
-  max_allocated_storage     = var.rds_max_allocated_storage
-  multi_az                  = var.rds_multi_az
-  backup_retention_period   = var.rds_backup_retention_period
+  project_name            = local.project_name
+  environment             = local.environment
+  vpc_id                  = module.network.vpc_id
+  db_subnet_group_name    = module.network.db_subnet_group_name
+  allowed_security_groups = [module.eks.cluster_security_group_id]
+  instance_class          = var.rds_instance_class
+  allocated_storage       = var.rds_allocated_storage
+  max_allocated_storage   = var.rds_max_allocated_storage
+  multi_az                = var.rds_multi_az
+  backup_retention_period = var.rds_backup_retention_period
 
   tags = local.common_tags
 }
