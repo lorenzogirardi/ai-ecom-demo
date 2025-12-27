@@ -37,53 +37,59 @@ const changePasswordSchema = z.object({
 
 export async function authRoutes(app: FastifyInstance): Promise<void> {
   // Register
-  app.post("/register", async (request: FastifyRequest, reply: FastifyReply) => {
-    const body = registerSchema.parse(request.body);
+  app.post(
+    "/register",
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      const body = registerSchema.parse(request.body);
 
-    // Check if user exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email: body.email },
-    });
+      // Check if user exists
+      const existingUser = await prisma.user.findUnique({
+        where: { email: body.email },
+      });
 
-    if (existingUser) {
-      throw new ConflictError("User with this email already exists");
-    }
+      if (existingUser) {
+        throw new ConflictError("User with this email already exists");
+      }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(body.password, config.bcrypt.saltRounds);
+      // Hash password
+      const hashedPassword = await bcrypt.hash(
+        body.password,
+        config.bcrypt.saltRounds,
+      );
 
-    // Create user
-    const user = await prisma.user.create({
-      data: {
-        email: body.email,
-        password: hashedPassword,
-        firstName: body.firstName,
-        lastName: body.lastName,
-      },
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        role: true,
-        createdAt: true,
-      },
-    });
+      // Create user
+      const user = await prisma.user.create({
+        data: {
+          email: body.email,
+          password: hashedPassword,
+          firstName: body.firstName,
+          lastName: body.lastName,
+        },
+        select: {
+          id: true,
+          email: true,
+          firstName: true,
+          lastName: true,
+          role: true,
+          createdAt: true,
+        },
+      });
 
-    // Generate token
-    const token = app.jwt.sign({
-      sub: user.id,
-      role: user.role,
-    });
+      // Generate token
+      const token = app.jwt.sign({
+        sub: user.id,
+        role: user.role,
+      });
 
-    return reply.status(201).send({
-      success: true,
-      data: {
-        user,
-        token,
-      },
-    });
-  });
+      return reply.status(201).send({
+        success: true,
+        data: {
+          user,
+          token,
+        },
+      });
+    },
+  );
 
   // Login
   app.post("/login", async (request: FastifyRequest, reply: FastifyReply) => {
@@ -156,7 +162,7 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
         success: true,
         data: user,
       });
-    }
+    },
   );
 
   // Update profile
@@ -197,7 +203,7 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
         success: true,
         data: user,
       });
-    }
+    },
   );
 
   // Change password
@@ -216,7 +222,10 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
       }
 
       // Verify current password
-      const isValidPassword = await bcrypt.compare(body.currentPassword, user.password);
+      const isValidPassword = await bcrypt.compare(
+        body.currentPassword,
+        user.password,
+      );
 
       if (!isValidPassword) {
         throw new BadRequestError("Current password is incorrect");
@@ -225,7 +234,7 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
       // Hash new password
       const hashedPassword = await bcrypt.hash(
         body.newPassword,
-        config.bcrypt.saltRounds
+        config.bcrypt.saltRounds,
       );
 
       await prisma.user.update({
@@ -237,7 +246,7 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
         success: true,
         message: "Password changed successfully",
       });
-    }
+    },
   );
 
   // Logout (client-side token removal, but can invalidate refresh tokens here)
@@ -253,6 +262,6 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
         success: true,
         message: "Logged out successfully",
       });
-    }
+    },
   );
 }

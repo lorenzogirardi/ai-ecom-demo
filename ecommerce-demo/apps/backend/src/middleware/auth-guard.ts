@@ -10,7 +10,7 @@ declare module "fastify" {
 
 export async function authGuard(
   request: FastifyRequest,
-  reply: FastifyReply
+  _reply: FastifyReply,
 ): Promise<void> {
   try {
     const token = request.headers.authorization?.replace("Bearer ", "");
@@ -33,7 +33,7 @@ export async function authGuard(
 
 export async function adminGuard(
   request: FastifyRequest,
-  reply: FastifyReply
+  reply: FastifyReply,
 ): Promise<void> {
   await authGuard(request, reply);
 
@@ -44,7 +44,7 @@ export async function adminGuard(
 
 export async function optionalAuthGuard(
   request: FastifyRequest,
-  reply: FastifyReply
+  _reply: FastifyReply,
 ): Promise<void> {
   try {
     const token = request.headers.authorization?.replace("Bearer ", "");

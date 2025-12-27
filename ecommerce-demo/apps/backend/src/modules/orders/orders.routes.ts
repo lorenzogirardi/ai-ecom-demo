@@ -2,7 +2,10 @@ import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import { z } from "zod";
 import { prisma } from "../../utils/prisma.js";
 import { authGuard, adminGuard } from "../../middleware/auth-guard.js";
-import { NotFoundError, BadRequestError } from "../../middleware/error-handler.js";
+import {
+  NotFoundError,
+  BadRequestError,
+} from "../../middleware/error-handler.js";
 import { Prisma } from "@prisma/client";
 import { randomBytes } from "crypto";
 
@@ -104,7 +107,7 @@ export async function ordersRoutes(app: FastifyInstance): Promise<void> {
 
         if (product.stock < item.quantity) {
           throw new BadRequestError(
-            `Insufficient stock for ${product.name}. Available: ${product.stock}`
+            `Insufficient stock for ${product.name}. Available: ${product.stock}`,
           );
         }
 
@@ -168,7 +171,7 @@ export async function ordersRoutes(app: FastifyInstance): Promise<void> {
       });
 
       return reply.status(201).send({ success: true, data: order });
-    }
+    },
   );
 
   // List user orders
@@ -214,14 +217,17 @@ export async function ordersRoutes(app: FastifyInstance): Promise<void> {
           totalPages: Math.ceil(total / limit),
         },
       });
-    }
+    },
   );
 
   // Get single order
   app.get(
     "/:id",
     { preHandler: [authGuard] },
-    async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
+    async (
+      request: FastifyRequest<{ Params: { id: string } }>,
+      reply: FastifyReply,
+    ) => {
       const { id } = request.params;
       const userId = request.userId!;
       const isAdmin = request.userRole === "ADMIN";
@@ -250,14 +256,17 @@ export async function ordersRoutes(app: FastifyInstance): Promise<void> {
       }
 
       return reply.send({ success: true, data: order });
-    }
+    },
   );
 
   // Cancel order (user can cancel pending orders)
   app.post(
     "/:id/cancel",
     { preHandler: [authGuard] },
-    async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
+    async (
+      request: FastifyRequest<{ Params: { id: string } }>,
+      reply: FastifyReply,
+    ) => {
       const { id } = request.params;
       const userId = request.userId!;
 
@@ -275,7 +284,7 @@ export async function ordersRoutes(app: FastifyInstance): Promise<void> {
 
       if (!["PENDING", "CONFIRMED"].includes(order.status)) {
         throw new BadRequestError(
-          `Cannot cancel order with status: ${order.status}`
+          `Cannot cancel order with status: ${order.status}`,
         );
       }
 
@@ -299,7 +308,7 @@ export async function ordersRoutes(app: FastifyInstance): Promise<void> {
       });
 
       return reply.send({ success: true, message: "Order cancelled" });
-    }
+    },
   );
 
   // ========================================
@@ -327,7 +336,12 @@ export async function ordersRoutes(app: FastifyInstance): Promise<void> {
           orderBy: { createdAt: "desc" },
           include: {
             user: {
-              select: { id: true, email: true, firstName: true, lastName: true },
+              select: {
+                id: true,
+                email: true,
+                firstName: true,
+                lastName: true,
+              },
             },
             _count: { select: { items: true } },
           },
@@ -345,14 +359,17 @@ export async function ordersRoutes(app: FastifyInstance): Promise<void> {
           totalPages: Math.ceil(total / limit),
         },
       });
-    }
+    },
   );
 
   // Update order status (admin)
   app.patch(
     "/:id/status",
     { preHandler: [adminGuard] },
-    async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
+    async (
+      request: FastifyRequest<{ Params: { id: string } }>,
+      reply: FastifyReply,
+    ) => {
       const { id } = request.params;
       const body = updateOrderStatusSchema.parse(request.body);
 
@@ -392,7 +409,7 @@ export async function ordersRoutes(app: FastifyInstance): Promise<void> {
       });
 
       return reply.send({ success: true, data: updatedOrder });
-    }
+    },
   );
 
   // Order statistics (admin)
@@ -427,7 +444,7 @@ export async function ordersRoutes(app: FastifyInstance): Promise<void> {
               acc[item.status] = item._count.id;
               return acc;
             },
-            {} as Record<string, number>
+            {} as Record<string, number>,
           ),
           last30Days: {
             revenue: recentRevenue._sum.totalAmount || 0,
@@ -435,6 +452,6 @@ export async function ordersRoutes(app: FastifyInstance): Promise<void> {
           },
         },
       });
-    }
+    },
   );
 }

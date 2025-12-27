@@ -69,7 +69,9 @@ export const config = {
 
   // CORS - supports multiple origins (comma-separated) and wildcards
   cors: {
-    origins: getEnv("CORS_ORIGINS", "http://localhost:3000").split(",").map(o => o.trim()),
+    origins: getEnv("CORS_ORIGINS", "http://localhost:3000")
+      .split(",")
+      .map((o) => o.trim()),
     credentials: getEnvBoolean("CORS_CREDENTIALS", true),
   },
 

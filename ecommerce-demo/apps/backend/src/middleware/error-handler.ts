@@ -57,7 +57,10 @@ export class ConflictError extends HttpError {
 export class ValidationError extends HttpError {
   errors: Record<string, string[]>;
 
-  constructor(message = "Validation failed", errors: Record<string, string[]> = {}) {
+  constructor(
+    message = "Validation failed",
+    errors: Record<string, string[]> = {},
+  ) {
     super(message, 422, "VALIDATION_ERROR");
     this.name = "ValidationError";
     this.errors = errors;
@@ -67,7 +70,7 @@ export class ValidationError extends HttpError {
 export function errorHandler(
   error: FastifyError | AppError | ZodError,
   request: FastifyRequest,
-  reply: FastifyReply
+  reply: FastifyReply,
 ): void {
   // Log error
   logger.error(
@@ -78,7 +81,7 @@ export function errorHandler(
       params: request.params,
       query: request.query,
     },
-    "Request error"
+    "Request error",
   );
 
   // Handle Zod validation errors

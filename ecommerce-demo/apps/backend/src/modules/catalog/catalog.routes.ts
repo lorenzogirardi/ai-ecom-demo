@@ -3,7 +3,10 @@ import { z } from "zod";
 import { prisma } from "../../utils/prisma.js";
 import { cache, cacheKeys } from "../../utils/redis.js";
 import { adminGuard, optionalAuthGuard } from "../../middleware/auth-guard.js";
-import { NotFoundError, BadRequestError } from "../../middleware/error-handler.js";
+import {
+  NotFoundError,
+  BadRequestError,
+} from "../../middleware/error-handler.js";
 import { Prisma } from "@prisma/client";
 
 // Schemas
@@ -57,31 +60,37 @@ export async function catalogRoutes(app: FastifyInstance): Promise<void> {
   // ========================================
 
   // List categories
-  app.get("/categories", async (request: FastifyRequest, reply: FastifyReply) => {
-    // Try cache first
-    const cached = await cache.get<unknown>(cacheKeys.categoryList());
-    if (cached) {
-      return reply.send({ success: true, data: cached });
-    }
+  app.get(
+    "/categories",
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      // Try cache first
+      const cached = await cache.get<unknown>(cacheKeys.categoryList());
+      if (cached) {
+        return reply.send({ success: true, data: cached });
+      }
 
-    const categories = await prisma.category.findMany({
-      where: { isActive: true },
-      orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
-      include: {
-        _count: { select: { products: true } },
-      },
-    });
+      const categories = await prisma.category.findMany({
+        where: { isActive: true },
+        orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+        include: {
+          _count: { select: { products: true } },
+        },
+      });
 
-    // Cache for 5 minutes
-    await cache.set(cacheKeys.categoryList(), categories, 300);
+      // Cache for 5 minutes
+      await cache.set(cacheKeys.categoryList(), categories, 300);
 
-    return reply.send({ success: true, data: categories });
-  });
+      return reply.send({ success: true, data: categories });
+    },
+  );
 
   // Get single category
   app.get(
     "/categories/:idOrSlug",
-    async (request: FastifyRequest<{ Params: { idOrSlug: string } }>, reply: FastifyReply) => {
+    async (
+      request: FastifyRequest<{ Params: { idOrSlug: string } }>,
+      reply: FastifyReply,
+    ) => {
       const { idOrSlug } = request.params;
 
       const category = await prisma.category.findFirst({
@@ -101,7 +110,7 @@ export async function catalogRoutes(app: FastifyInstance): Promise<void> {
       }
 
       return reply.send({ success: true, data: category });
-    }
+    },
   );
 
   // Create category (admin only)
@@ -119,14 +128,17 @@ export async function catalogRoutes(app: FastifyInstance): Promise<void> {
       await cache.del(cacheKeys.categoryList());
 
       return reply.status(201).send({ success: true, data: category });
-    }
+    },
   );
 
   // Update category (admin only)
   app.patch(
     "/categories/:id",
     { preHandler: [adminGuard] },
-    async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
+    async (
+      request: FastifyRequest<{ Params: { id: string } }>,
+      reply: FastifyReply,
+    ) => {
       const { id } = request.params;
       const body = updateCategorySchema.parse(request.body);
 
@@ -140,14 +152,17 @@ export async function catalogRoutes(app: FastifyInstance): Promise<void> {
       await cache.del(cacheKeys.category(id));
 
       return reply.send({ success: true, data: category });
-    }
+    },
   );
 
   // Delete category (admin only)
   app.delete(
     "/categories/:id",
     { preHandler: [adminGuard] },
-    async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
+    async (
+      request: FastifyRequest<{ Params: { id: string } }>,
+      reply: FastifyReply,
+    ) => {
       const { id } = request.params;
 
       // Check if category has products
@@ -157,7 +172,7 @@ export async function catalogRoutes(app: FastifyInstance): Promise<void> {
 
       if (productCount > 0) {
         throw new BadRequestError(
-          `Cannot delete category with ${productCount} products. Move or delete products first.`
+          `Cannot delete category with ${productCount} products. Move or delete products first.`,
         );
       }
 
@@ -168,7 +183,7 @@ export async function catalogRoutes(app: FastifyInstance): Promise<void> {
       await cache.del(cacheKeys.category(id));
 
       return reply.send({ success: true, message: "Category deleted" });
-    }
+    },
   );
 
   // ========================================
@@ -228,14 +243,17 @@ export async function catalogRoutes(app: FastifyInstance): Promise<void> {
           totalPages: Math.ceil(total / limit),
         },
       });
-    }
+    },
   );
 
   // Get single product
   app.get(
     "/products/:idOrSlug",
     { preHandler: [optionalAuthGuard] },
-    async (request: FastifyRequest<{ Params: { idOrSlug: string } }>, reply: FastifyReply) => {
+    async (
+      request: FastifyRequest<{ Params: { idOrSlug: string } }>,
+      reply: FastifyReply,
+    ) => {
       const { idOrSlug } = request.params;
 
       const product = await prisma.product.findFirst({
@@ -253,7 +271,7 @@ export async function catalogRoutes(app: FastifyInstance): Promise<void> {
       }
 
       return reply.send({ success: true, data: product });
-    }
+    },
   );
 
   // Create product (admin only)
@@ -282,14 +300,17 @@ export async function catalogRoutes(app: FastifyInstance): Promise<void> {
       });
 
       return reply.status(201).send({ success: true, data: product });
-    }
+    },
   );
 
   // Update product (admin only)
   app.patch(
     "/products/:id",
     { preHandler: [adminGuard] },
-    async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
+    async (
+      request: FastifyRequest<{ Params: { id: string } }>,
+      reply: FastifyReply,
+    ) => {
       const { id } = request.params;
       const body = updateProductSchema.parse(request.body);
 
@@ -309,7 +330,9 @@ export async function catalogRoutes(app: FastifyInstance): Promise<void> {
         data: {
           ...body,
           price: body.price ? new Prisma.Decimal(body.price) : undefined,
-          compareAt: body.compareAt ? new Prisma.Decimal(body.compareAt) : undefined,
+          compareAt: body.compareAt
+            ? new Prisma.Decimal(body.compareAt)
+            : undefined,
         } as any,
         include: { category: true },
       });
@@ -318,14 +341,17 @@ export async function catalogRoutes(app: FastifyInstance): Promise<void> {
       await cache.del(cacheKeys.product(id));
 
       return reply.send({ success: true, data: product });
-    }
+    },
   );
 
   // Delete product (admin only)
   app.delete(
     "/products/:id",
     { preHandler: [adminGuard] },
-    async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
+    async (
+      request: FastifyRequest<{ Params: { id: string } }>,
+      reply: FastifyReply,
+    ) => {
       const { id } = request.params;
 
       // Check if product is in any orders
@@ -352,6 +378,6 @@ export async function catalogRoutes(app: FastifyInstance): Promise<void> {
       await cache.del(cacheKeys.product(id));
 
       return reply.send({ success: true, message: "Product deleted" });
-    }
+    },
   );
 }

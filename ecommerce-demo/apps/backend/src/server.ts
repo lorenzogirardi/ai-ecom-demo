@@ -28,7 +28,7 @@ async function buildServer() {
   const checkOrigin = (origin: string): boolean => {
     const allowedOrigins = config.cors.origins;
 
-    return allowedOrigins.some(pattern => {
+    return allowedOrigins.some((pattern) => {
       // Handle wildcards like *.k8s.it or *.ngrok-free.app
       if (pattern.startsWith("*.")) {
         const domain = pattern.slice(2); // Remove "*."
@@ -158,7 +158,9 @@ async function main() {
     await app.listen({ port: config.port, host: config.host });
     logger.info(`Server running at http://${config.host}:${config.port}`);
     if (config.swagger.enabled) {
-      logger.info(`API docs available at http://${config.host}:${config.port}/docs`);
+      logger.info(
+        `API docs available at http://${config.host}:${config.port}/docs`,
+      );
     }
   } catch (error) {
     logger.error(error);

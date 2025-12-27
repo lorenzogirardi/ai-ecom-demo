@@ -44,7 +44,8 @@ export const cache = {
   },
 
   async set(key: string, value: unknown, ttlSeconds?: number): Promise<void> {
-    const serialized = typeof value === "string" ? value : JSON.stringify(value);
+    const serialized =
+      typeof value === "string" ? value : JSON.stringify(value);
     if (ttlSeconds) {
       await redis.setex(key, ttlSeconds, serialized);
     } else {
@@ -84,7 +85,8 @@ export const cache = {
 // Cache key generators
 export const cacheKeys = {
   product: (id: string) => `product:${id}`,
-  productList: (page: number, limit: number) => `products:list:${page}:${limit}`,
+  productList: (page: number, limit: number) =>
+    `products:list:${page}:${limit}`,
   category: (id: string) => `category:${id}`,
   categoryList: () => `categories:list`,
   user: (id: string) => `user:${id}`,
