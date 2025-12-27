@@ -203,13 +203,37 @@ jobs:
           file_pattern: 'ecommerce-demo/security/reports/trivy-frontend-*.json'
           commit_author: 'GitHub Actions <actions@github.com>'
 
-      - name: Generate Trivy summary
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: '${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ steps.sha.outputs.short }}'
-          format: 'table'
-          severity: 'CRITICAL,HIGH'
-          exit-code: '0'
+      - name: Generate Trivy summary for GitHub Actions
+        run: |
+          echo "## 🔒 Trivy Security Scan - Frontend" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Image:** \`${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ steps.sha.outputs.short }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Parse JSON and create summary
+          if [ -f "trivy-frontend-${{ steps.sha.outputs.short }}.json" ]; then
+            CRITICAL=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="CRITICAL")] | length' trivy-frontend-${{ steps.sha.outputs.short }}.json 2>/dev/null || echo "0")
+            HIGH=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="HIGH")] | length' trivy-frontend-${{ steps.sha.outputs.short }}.json 2>/dev/null || echo "0")
+            MEDIUM=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity=="MEDIUM")] | length' trivy-frontend-${{ steps.sha.outputs.short }}.json 2>/dev/null || echo "0")
+
+            echo "### Vulnerability Summary" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "| Severity | Count |" >> $GITHUB_STEP_SUMMARY
+            echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+            echo "| 🔴 Critical | $CRITICAL |" >> $GITHUB_STEP_SUMMARY
+            echo "| 🟠 High | $HIGH |" >> $GITHUB_STEP_SUMMARY
+            echo "| 🟡 Medium | $MEDIUM |" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+
+            # Show top 10 Critical/High CVEs
+            echo "### Top Critical/High CVEs" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "| CVE | Package | Severity | Fixed Version |" >> $GITHUB_STEP_SUMMARY
+            echo "|-----|---------|----------|---------------|" >> $GITHUB_STEP_SUMMARY
+            jq -r '[.Results[]?.Vulnerabilities[]? | select(.Severity=="CRITICAL" or .Severity=="HIGH")] | .[0:10][] | "| \(.VulnerabilityID) | \(.PkgName) | \(.Severity) | \(.FixedVersion // "N/A") |"' trivy-frontend-${{ steps.sha.outputs.short }}.json 2>/dev/null >> $GITHUB_STEP_SUMMARY || echo "| No critical/high CVEs found | - | - | - |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Trivy report not found" >> $GITHUB_STEP_SUMMARY
+          fi
 
   # ============================================
   # Deploy to EKS (commented out - using ArgoCD)
