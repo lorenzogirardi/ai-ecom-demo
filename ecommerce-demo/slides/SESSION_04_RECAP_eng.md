@@ -413,6 +413,7 @@ await app.register(jwt, {
 | Trivy SHA mismatch | Used short SHA (7 chars) |
 | Race condition Trivy commit | Concurrency group + git pull |
 | Husky not found in CI | `HUSKY: "0"` env var |
+| Terraform fmt check fails | Auto-fix with `terraform fmt` + auto-commit |
 
 ### Trivy SHA Fix
 
@@ -444,6 +445,26 @@ trivy-scan:
 
     - name: Commit Trivy report
       uses: stefanzweifel/git-auto-commit-action@v5
+```
+
+### Terraform Format Auto-Fix
+
+```yaml
+# Auto-format and auto-commit
+terraform-fmt:
+  name: Terraform Format
+  runs-on: ubuntu-latest
+  if: github.event_name == 'push'
+  steps:
+    - name: Terraform Format
+      run: terraform fmt -recursive
+      working-directory: ecommerce-demo/infra/terraform
+
+    - name: Commit formatted files
+      uses: stefanzweifel/git-auto-commit-action@v5
+      with:
+        commit_message: "style(terraform): auto-format with terraform fmt"
+        file_pattern: "ecommerce-demo/infra/terraform/**/*.tf"
 ```
 
 ---
