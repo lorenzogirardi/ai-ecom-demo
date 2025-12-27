@@ -1,6 +1,13 @@
 name: Frontend CI/CD
 
 on:
+  workflow_dispatch:
+    inputs:
+      skip_trivy:
+        description: 'Skip Trivy scan'
+        required: false
+        default: false
+        type: boolean
   push:
     branches:
       - main
