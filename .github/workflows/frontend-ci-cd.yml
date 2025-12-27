@@ -164,12 +164,16 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+      - name: Get short SHA
+        id: sha
+        run: echo "short=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
+
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: '${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}'
+          image-ref: '${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ steps.sha.outputs.short }}'
           format: 'json'
-          output: 'trivy-frontend-${{ github.sha }}.json'
+          output: 'trivy-frontend-${{ steps.sha.outputs.short }}.json'
           severity: 'CRITICAL,HIGH,MEDIUM'
           exit-code: '0'  # Warn only, don't fail
 
@@ -177,14 +181,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: trivy-frontend-report
-          path: trivy-frontend-${{ github.sha }}.json
+          path: trivy-frontend-${{ steps.sha.outputs.short }}.json
           retention-days: 30
 
       - name: Save Trivy report to repo
         run: |
           mkdir -p ecommerce-demo/security/reports
-          cp trivy-frontend-${{ github.sha }}.json ecommerce-demo/security/reports/
-          cp trivy-frontend-${{ github.sha }}.json ecommerce-demo/security/reports/trivy-frontend-latest.json
+          cp trivy-frontend-${{ steps.sha.outputs.short }}.json ecommerce-demo/security/reports/
+          cp trivy-frontend-${{ steps.sha.outputs.short }}.json ecommerce-demo/security/reports/trivy-frontend-latest.json
 
       - name: Commit Trivy report
         uses: stefanzweifel/git-auto-commit-action@v5
@@ -196,7 +200,7 @@ jobs:
       - name: Generate Trivy summary
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: '${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}'
+          image-ref: '${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ steps.sha.outputs.short }}'
           format: 'table'
           severity: 'CRITICAL,HIGH'
           exit-code: '0'
