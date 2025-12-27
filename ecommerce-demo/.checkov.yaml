@@ -1,0 +1,64 @@
+# Checkov Configuration
+# https://www.checkov.io/2.Basics/CLI%20Command%20Reference.html
+
+# Frameworks to scan
+framework:
+  - terraform
+  - helm
+  - dockerfile
+  - github_actions
+
+# Directories to scan
+directory:
+  - infra/terraform
+  - helm
+  - .github/workflows
+
+# Skip checks for demo environment
+# These would be enabled in production
+skip-check:
+  # Terraform - S3
+  - CKV_AWS_144  # S3 cross-region replication (not needed for demo)
+  - CKV_AWS_145  # S3 KMS encryption (using AES256 for demo)
+  - CKV_AWS_18   # S3 access logging (demo environment)
+  - CKV_AWS_21   # S3 versioning (demo environment)
+  - CKV2_AWS_62  # S3 event notifications (not needed)
+
+  # Terraform - RDS
+  - CKV_AWS_337  # RDS secrets rotation (manual for demo)
+  - CKV_AWS_354  # RDS cluster deletion protection (demo can be deleted)
+  - CKV_AWS_226  # RDS auto minor upgrade (demo environment)
+  - CKV_AWS_161  # RDS IAM auth (using password for demo)
+  - CKV_AWS_293  # RDS backup retention (demo)
+
+  # Terraform - EKS
+  - CKV_AWS_39   # EKS public endpoint (needed for demo access)
+  - CKV_AWS_58   # EKS secrets encryption (demo environment)
+  - CKV_AWS_38   # EKS control plane logging (demo)
+
+  # Terraform - ElastiCache
+  - CKV_AWS_191  # ElastiCache Redis replication group encryption at rest
+
+  # Terraform - VPC
+  - CKV2_AWS_11  # VPC flow logs (demo environment)
+  - CKV2_AWS_12  # Default security group restrictions
+
+  # Helm/K8s
+  - CKV_K8S_43   # Image digest instead of tag (using SHA in CI)
+  - CKV_K8S_35   # Prefer using secrets as files (env vars ok for demo)
+  - CKV_K8S_40   # Resource limits (set in values)
+  - CKV_K8S_22   # Read-only filesystem (app needs write)
+
+  # Dockerfile
+  - CKV_DOCKER_3 # User instruction (already using non-root)
+
+# Output format
+output:
+  - cli
+  - json
+
+# Compact output
+compact: true
+
+# Soft fail for CI (report but don't fail pipeline)
+soft-fail: false

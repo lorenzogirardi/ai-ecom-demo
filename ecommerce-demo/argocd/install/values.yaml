@@ -1,0 +1,136 @@
+# ArgoCD Helm Values for EKS
+# https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd
+
+global:
+  # Domain for ArgoCD (update after ALB is created)
+  domain: argocd.ecommerce-demo.local
+
+# Server configuration
+server:
+  # Replicas for HA
+  replicas: 1
+
+  # Ingress configuration (AWS ALB)
+  ingress:
+    enabled: true
+    ingressClassName: alb
+    annotations:
+      alb.ingress.kubernetes.io/scheme: internet-facing
+      alb.ingress.kubernetes.io/target-type: ip
+      alb.ingress.kubernetes.io/backend-protocol: HTTPS
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+      alb.ingress.kubernetes.io/certificate-arn: ${ACM_CERTIFICATE_ARN}
+      alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS13-1-2-2021-06
+      alb.ingress.kubernetes.io/healthcheck-path: /healthz
+      alb.ingress.kubernetes.io/healthcheck-protocol: HTTPS
+    hosts:
+      - argocd.ecommerce-demo.local
+    tls:
+      - hosts:
+          - argocd.ecommerce-demo.local
+
+  # Extra args for insecure mode (terminate TLS at ALB)
+  extraArgs:
+    - --insecure
+
+  # Resources
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+# Controller configuration
+controller:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+# Repo server configuration
+repoServer:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+
+# Redis configuration (use built-in)
+redis:
+  enabled: true
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+
+# Dex (SSO) - disabled for demo
+dex:
+  enabled: false
+
+# Notifications - disabled for demo
+notifications:
+  enabled: false
+
+# ApplicationSet controller
+applicationSet:
+  enabled: false
+
+# Config
+configs:
+  # Repository credentials (if private repo)
+  # repositories:
+  #   ecommerce-demo:
+  #     url: https://github.com/lorenzogirardi/ai-ecom-demo.git
+  #     type: git
+
+  # ConfigMap settings
+  cm:
+    # Disable anonymous access
+    users.anonymous.enabled: "false"
+
+    # Admin enabled
+    admin.enabled: "true"
+
+    # Timeout settings
+    timeout.reconciliation: 180s
+
+    # Resource tracking
+    resource.customizations.health.argoproj.io_Application: |
+      hs = {}
+      hs.status = "Progressing"
+      hs.message = ""
+      if obj.status ~= nil then
+        if obj.status.health ~= nil then
+          hs.status = obj.status.health.status
+          if obj.status.health.message ~= nil then
+            hs.message = obj.status.health.message
+          end
+        end
+      end
+      return hs
+
+  # RBAC configuration
+  rbac:
+    policy.default: role:readonly
+    policy.csv: |
+      p, role:admin, applications, *, */*, allow
+      p, role:admin, clusters, *, *, allow
+      p, role:admin, repositories, *, *, allow
+      p, role:admin, projects, *, *, allow
+      g, admin, role:admin
+
+  # Secret for initial admin password (generated if not provided)
+  secret:
+    createSecret: true

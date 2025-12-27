@@ -35,7 +35,9 @@ ecommerce-demo/
 │       └── tests/          # Backend tests (177 tests)
 ├── infra/terraform/
 │   ├── modules/            # network, eks, database, cache, cdn
-│   └── environments/demo/  # main.tf, variables.tf, providers.tf, backend.tf
+│   └── environments/demo/
+│       ├── platform/       # Layer 1: Network + EKS + ECR
+│       └── services/       # Layer 2: RDS + ElastiCache + CDN
 ├── helm/
 │   ├── frontend/           # Chart + templates (deployment, service, ingress, hpa, sa)
 │   └── backend/            # Chart + templates + externalsecret
@@ -141,34 +143,36 @@ npm run lint                      # Lint all
 - Execution plan (IT + EN)
 - Session recaps 1-3 (IT + EN)
 
-### NOT Completed ❌
+### Completed ✅ (Day 4)
 
-**CI Security Scanning (Day 4):**
-- [ ] `.checkov.yaml` - Checkov configuration
-- [ ] `.tflint.hcl` - TFLint AWS plugin configuration
-- [ ] `infra-ci.yml` - Infrastructure CI (TFLint, Checkov, Gitleaks)
-- [ ] Backend CI enhancement (Gitleaks + Trivy scan)
-- [ ] Frontend CI enhancement (Gitleaks + Trivy scan)
-- [ ] `security/reports/` - Trivy JSON reports for Claude analysis
+**CI Security Scanning:**
+- [x] `.checkov.yaml` - Checkov configuration with skip rules for demo
+- [x] `.tflint.hcl` - TFLint AWS plugin configuration
+- [x] `infra-ci.yml` - Infrastructure CI (TFLint, Checkov, Gitleaks, Helm lint)
+- [x] Backend CI enhancement (Gitleaks + Trivy scan with JSON reports)
+- [x] Frontend CI enhancement (Gitleaks + Trivy scan with JSON reports)
+- [x] `security/reports/` - Directory for Trivy JSON reports (Claude analysis)
 
-**ArgoCD Preparation (Day 4):**
-- [ ] `argocd/projects/ecommerce.yaml` - ArgoCD Project
-- [ ] `argocd/applications/backend.yaml` - Backend Application (manual sync)
-- [ ] `argocd/applications/frontend.yaml` - Frontend Application (manual sync)
-- [ ] `argocd/install/values.yaml` - ArgoCD Helm values
-- [ ] `deploy-argocd.yml` - GitHub Actions workflow for ArgoCD deploy
+**ArgoCD Preparation:**
+- [x] `argocd/projects/ecommerce.yaml` - ArgoCD Project with RBAC
+- [x] `argocd/applications/backend.yaml` - Backend Application (manual sync)
+- [x] `argocd/applications/frontend.yaml` - Frontend Application (manual sync)
+- [x] `argocd/install/values.yaml` - ArgoCD Helm values for EKS/ALB
+- [x] `deploy-argocd.yml` - GitHub Actions workflow for ArgoCD deploy
+- [x] `argocd/README.md` - Setup documentation
 
-**Terraform Layer Separation (Day 4):**
-- [ ] Create Layer 1 (Platform): `infra/terraform/environments/demo/platform/`
+**Terraform Layer Separation:**
+- [x] Layer 1 (Platform): `infra/terraform/environments/demo/platform/`
   - Network (VPC, Subnets, NAT)
   - EKS (Cluster, Node Groups, IAM)
   - ECR Repositories (needed for CI image push)
-- [ ] Create Layer 2 (Services): `infra/terraform/environments/demo/services/`
+- [x] Layer 2 (Services): `infra/terraform/environments/demo/services/`
   - RDS PostgreSQL
   - ElastiCache Redis
   - CDN (CloudFront)
-  - Secrets Manager
-- [ ] Update CI/CD to use `terraform_remote_state` between layers
+- [x] `terraform_remote_state` data source between layers
+
+### NOT Completed ❌
 
 **AWS Deploy (Day 5):**
 - [ ] Terraform apply Layer 1 (Platform: Network + EKS + ECR)
@@ -220,12 +224,12 @@ JWT_SECRET=your-secret-key
 - Environment configs in `infra/terraform/environments/{env}/`
 - S3 + DynamoDB backend for state
 
-#### Current State (Single State)
-All resources in one state file: `demo/terraform.tfstate`
-- Network, EKS, RDS, ElastiCache, CDN, ECR deployed together
-- High blast radius, slow applies, coupled lifecycles
+#### Current State (Layer Separation - Implemented Day 4)
+Two separate state files for isolated blast radius:
+- `demo/platform.tfstate` - Network, EKS, ECR (core infrastructure)
+- `demo/services.tfstate` - RDS, ElastiCache, CDN (application services)
 
-#### Planned Refactor: Layer Separation
+#### Layer Architecture
 ```
 Layer 1: PLATFORM (core)           → platform/terraform.tfstate
 ├── Network (VPC, Subnets, NAT)
@@ -327,7 +331,7 @@ Per ogni CVE:
 7. ~~**Auth Pages** - /auth/login, /auth/register, /checkout~~ ✅
 8. ~~**Security** - Rate limiting review, CORS config (wildcards)~~ ✅
 9. ~~**Frontend Tests** - useAuth, useOrders, useSearch, AddressForm~~ ✅ (29 tests)
-10. **Day 4: CI + ArgoCD + Terraform Layers**
+10. ~~**Day 4: CI + ArgoCD + Terraform Layers**~~ ✅
     - CI Security: Checkov, TFLint, Trivy (warn only), Gitleaks
     - Trivy reports in `security/reports/` for Claude CVE analysis
     - ArgoCD manifests (Project, Applications with manual sync)
@@ -335,26 +339,25 @@ Per ogni CVE:
     - Terraform layer separation:
       - Layer 1 (Platform): Network + EKS + ECR
       - Layer 2 (Services): RDS + ElastiCache + CDN
-11. **Day 5: AWS Deploy**
+11. **Day 5: AWS Deploy** (Next)
     - Terraform apply Layer 1 (Network + EKS + ECR)
     - Terraform apply Layer 2 (RDS + ElastiCache + CDN)
     - Run deploy-argocd.yml → ArgoCD + Applications
     - Manual sync via ArgoCD UI
     - E2E testing
 
-## Planned Refactors
+## Completed Refactors
 
-### Terraform Layer Separation (Priority: High)
-**Status:** Scheduled for Day 4
-**Effort:** ~2-3 hours
+### Terraform Layer Separation ✅
+**Status:** Completed (Day 4)
 
-Separate Terraform into two layers for better isolation:
-- **Layer 1 (Platform):** Network + EKS + ECR → `platform/terraform.tfstate`
-- **Layer 2 (Services):** RDS + ElastiCache + CDN → `services/terraform.tfstate`
+Terraform separated into two layers for better isolation:
+- **Layer 1 (Platform):** Network + EKS + ECR → `demo/platform.tfstate`
+- **Layer 2 (Services):** RDS + ElastiCache + CDN → `demo/services.tfstate`
 
-See "Terraform > Planned Refactor: Layer Separation" section for full details.
+Services layer uses `terraform_remote_state` to read platform outputs.
 
-**Note:** ECR moved to Layer 1 because CI needs it to push container images before EKS is ready.
+**Note:** ECR is in Layer 1 because CI needs it to push container images before services exist.
 
 ## Links
 

@@ -1,0 +1,50 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: frontend
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: ecommerce
+
+  source:
+    repoURL: https://github.com/lorenzogirardi/ai-ecom-demo.git
+    targetRevision: main
+    path: helm/frontend
+    helm:
+      valueFiles:
+        - values-demo.yaml
+      # Image tag will be updated by CI or manually
+      # parameters:
+      #   - name: image.tag
+      #     value: latest
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ecommerce
+
+  # Sync policy - MANUAL (no automated sync)
+  syncPolicy:
+    # syncOptions for manual sync
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+    # Retry on failure
+    retry:
+      limit: 3
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+
+  # Health checks
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas  # Ignore replica count (managed by HPA)
+
+  # Revision history limit
+  revisionHistoryLimit: 5

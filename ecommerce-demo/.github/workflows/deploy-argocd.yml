@@ -1,0 +1,170 @@
+name: Deploy ArgoCD
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Action to perform'
+        required: true
+        default: 'install'
+        type: choice
+        options:
+          - install
+          - upgrade
+          - uninstall
+      sync_apps:
+        description: 'Sync applications after install'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  AWS_REGION: us-east-1
+  EKS_CLUSTER_NAME: ecommerce-demo-demo-eks
+  ARGOCD_NAMESPACE: argocd
+  ARGOCD_VERSION: '7.3.3'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy-argocd:
+    name: Deploy ArgoCD to EKS
+    runs-on: ubuntu-latest
+    environment: demo
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: 'v3.13.0'
+
+      - name: Add ArgoCD Helm repository
+        run: |
+          helm repo add argo https://argoproj.github.io/argo-helm
+          helm repo update
+
+      - name: Create ArgoCD namespace
+        if: ${{ inputs.action != 'uninstall' }}
+        run: |
+          kubectl create namespace ${{ env.ARGOCD_NAMESPACE }} --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Install/Upgrade ArgoCD
+        if: ${{ inputs.action != 'uninstall' }}
+        run: |
+          helm upgrade --install argocd argo/argo-cd \
+            --namespace ${{ env.ARGOCD_NAMESPACE }} \
+            --version ${{ env.ARGOCD_VERSION }} \
+            --values argocd/install/values.yaml \
+            --wait \
+            --timeout 10m
+
+      - name: Wait for ArgoCD server
+        if: ${{ inputs.action != 'uninstall' }}
+        run: |
+          kubectl rollout status deployment/argocd-server -n ${{ env.ARGOCD_NAMESPACE }} --timeout=5m
+
+      - name: Apply ArgoCD Project
+        if: ${{ inputs.action != 'uninstall' }}
+        run: |
+          kubectl apply -f argocd/projects/ecommerce.yaml
+
+      - name: Apply ArgoCD Applications
+        if: ${{ inputs.action != 'uninstall' }}
+        run: |
+          kubectl apply -f argocd/applications/backend.yaml
+          kubectl apply -f argocd/applications/frontend.yaml
+
+      - name: Get ArgoCD admin password
+        if: ${{ inputs.action != 'uninstall' }}
+        id: argocd-password
+        run: |
+          PASSWORD=$(kubectl -n ${{ env.ARGOCD_NAMESPACE }} get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
+          echo "::add-mask::$PASSWORD"
+          echo "password=$PASSWORD" >> $GITHUB_OUTPUT
+
+      - name: Get ArgoCD URL
+        if: ${{ inputs.action != 'uninstall' }}
+        id: argocd-url
+        run: |
+          # Wait for ingress to get address
+          echo "Waiting for ALB to be provisioned..."
+          for i in {1..30}; do
+            URL=$(kubectl get ingress argocd-server -n ${{ env.ARGOCD_NAMESPACE }} -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null || echo "")
+            if [ -n "$URL" ]; then
+              echo "url=https://$URL" >> $GITHUB_OUTPUT
+              break
+            fi
+            echo "Attempt $i/30: Waiting for ALB..."
+            sleep 10
+          done
+
+      - name: Sync Applications (optional)
+        if: ${{ inputs.action != 'uninstall' && inputs.sync_apps }}
+        run: |
+          # Install argocd CLI
+          curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          chmod +x /usr/local/bin/argocd
+
+          # Login to ArgoCD
+          argocd login argocd-server.${{ env.ARGOCD_NAMESPACE }}.svc.cluster.local:443 \
+            --username admin \
+            --password ${{ steps.argocd-password.outputs.password }} \
+            --insecure \
+            --grpc-web
+
+          # Sync applications
+          argocd app sync backend --prune
+          argocd app sync frontend --prune
+
+      - name: Uninstall ArgoCD
+        if: ${{ inputs.action == 'uninstall' }}
+        run: |
+          # Delete applications first
+          kubectl delete -f argocd/applications/ --ignore-not-found
+          kubectl delete -f argocd/projects/ --ignore-not-found
+
+          # Uninstall ArgoCD
+          helm uninstall argocd -n ${{ env.ARGOCD_NAMESPACE }} || true
+
+          # Delete namespace
+          kubectl delete namespace ${{ env.ARGOCD_NAMESPACE }} --ignore-not-found
+
+      - name: Summary
+        if: ${{ inputs.action != 'uninstall' }}
+        run: |
+          echo "## ArgoCD Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Action | ${{ inputs.action }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Namespace | ${{ env.ARGOCD_NAMESPACE }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Version | ${{ env.ARGOCD_VERSION }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| URL | ${{ steps.argocd-url.outputs.url }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Login Credentials" >> $GITHUB_STEP_SUMMARY
+          echo "- **Username:** admin" >> $GITHUB_STEP_SUMMARY
+          echo "- **Password:** (see GitHub Actions secrets or retrieve from cluster)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Applications" >> $GITHUB_STEP_SUMMARY
+          echo "- backend (manual sync required)" >> $GITHUB_STEP_SUMMARY
+          echo "- frontend (manual sync required)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Next Steps" >> $GITHUB_STEP_SUMMARY
+          echo "1. Access ArgoCD UI at the URL above" >> $GITHUB_STEP_SUMMARY
+          echo "2. Login with admin credentials" >> $GITHUB_STEP_SUMMARY
+          echo "3. Click 'Sync' on backend and frontend applications" >> $GITHUB_STEP_SUMMARY

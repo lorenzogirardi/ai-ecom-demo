@@ -1,0 +1,68 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: ecommerce
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: E-commerce Demo Project
+
+  # Source repositories
+  sourceRepos:
+    - 'https://github.com/lorenzogirardi/ai-ecom-demo.git'
+
+  # Destination clusters and namespaces
+  destinations:
+    - namespace: ecommerce
+      server: https://kubernetes.default.svc
+    - namespace: argocd
+      server: https://kubernetes.default.svc
+
+  # Cluster resources allowed to be managed
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+
+  # Namespace resources allowed to be managed
+  namespaceResourceWhitelist:
+    - group: ''
+      kind: ConfigMap
+    - group: ''
+      kind: Secret
+    - group: ''
+      kind: Service
+    - group: ''
+      kind: ServiceAccount
+    - group: ''
+      kind: PersistentVolumeClaim
+    - group: apps
+      kind: Deployment
+    - group: apps
+      kind: StatefulSet
+    - group: apps
+      kind: ReplicaSet
+    - group: autoscaling
+      kind: HorizontalPodAutoscaler
+    - group: networking.k8s.io
+      kind: Ingress
+    - group: networking.k8s.io
+      kind: NetworkPolicy
+    - group: external-secrets.io
+      kind: ExternalSecret
+
+  # Roles for RBAC
+  roles:
+    - name: admin
+      description: Admin role for ecommerce project
+      policies:
+        - p, proj:ecommerce:admin, applications, *, ecommerce/*, allow
+      groups:
+        - ecommerce-admins
+
+    - name: readonly
+      description: Read-only access to ecommerce project
+      policies:
+        - p, proj:ecommerce:readonly, applications, get, ecommerce/*, allow
+      groups:
+        - ecommerce-viewers

@@ -1,0 +1,169 @@
+name: Infrastructure CI
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'infra/terraform/**'
+      - 'helm/**'
+      - '.github/workflows/infra-ci.yml'
+      - '.checkov.yaml'
+      - '.tflint.hcl'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'infra/terraform/**'
+      - 'helm/**'
+      - '.github/workflows/infra-ci.yml'
+      - '.checkov.yaml'
+      - '.tflint.hcl'
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  # ============================================
+  # Gitleaks - Secret Detection
+  # ============================================
+  gitleaks:
+    name: Gitleaks Secret Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_NOTIFY_USER_LIST: '@${{ github.actor }}'
+
+  # ============================================
+  # TFLint - Terraform Linting
+  # ============================================
+  tflint:
+    name: TFLint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.7.0"
+
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: "v0.50.3"
+
+      - name: Init TFLint
+        run: tflint --init
+        working-directory: infra/terraform/environments/demo
+
+      - name: Run TFLint on modules
+        run: |
+          for module in infra/terraform/modules/*/; do
+            echo "Linting $module..."
+            tflint --config=../../.tflint.hcl "$module" || true
+          done
+
+      - name: Run TFLint on demo environment
+        run: tflint --config=../../../../.tflint.hcl .
+        working-directory: infra/terraform/environments/demo
+
+  # ============================================
+  # Checkov - Security Scanning
+  # ============================================
+  checkov:
+    name: Checkov Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Checkov on Terraform
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: infra/terraform
+          config_file: .checkov.yaml
+          framework: terraform
+          output_format: cli,sarif
+          output_file_path: console,results.sarif
+          soft_fail: true
+
+      - name: Run Checkov on Helm
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: helm
+          config_file: .checkov.yaml
+          framework: helm
+          output_format: cli
+          soft_fail: true
+
+      - name: Upload Checkov SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif
+        continue-on-error: true
+
+  # ============================================
+  # Terraform Validate
+  # ============================================
+  terraform-validate:
+    name: Terraform Validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.7.0"
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+        working-directory: infra/terraform
+
+      - name: Validate Modules
+        run: |
+          for module in infra/terraform/modules/*/; do
+            echo "Validating $module..."
+            cd "$module"
+            terraform init -backend=false
+            terraform validate
+            cd -
+          done
+
+  # ============================================
+  # Helm Lint
+  # ============================================
+  helm-lint:
+    name: Helm Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: 'v3.13.0'
+
+      - name: Lint Backend Chart
+        run: helm lint helm/backend
+
+      - name: Lint Frontend Chart
+        run: helm lint helm/frontend
+
+      - name: Template Backend Chart
+        run: helm template backend helm/backend -f helm/backend/values-demo.yaml
+
+      - name: Template Frontend Chart
+        run: helm template frontend helm/frontend -f helm/frontend/values-demo.yaml
