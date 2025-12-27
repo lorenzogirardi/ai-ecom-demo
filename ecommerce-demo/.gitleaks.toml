@@ -1,0 +1,28 @@
+# Gitleaks Configuration
+# https://github.com/gitleaks/gitleaks
+
+title = "Gitleaks Configuration for E-commerce Demo"
+
+# Allow specific paths (documentation with example tokens)
+[allowlist]
+  description = "Allow example tokens in documentation"
+  paths = [
+    '''docs/.*\.md$''',
+    '''.*README\.md$''',
+    '''.*\.example$''',
+    '''.*\.example\..*$''',
+  ]
+  regexTarget = "match"
+
+# Allow specific patterns (example/placeholder tokens)
+[[rules]]
+  id = "example-jwt-token"
+  description = "Allow truncated example JWT tokens in docs"
+  regex = '''eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\.\.\.'''
+  allowlist = { regexTarget = "match" }
+
+[[rules]]
+  id = "example-api-key"
+  description = "Allow placeholder API keys"
+  regex = '''your-.*-key'''
+  allowlist = { regexTarget = "match" }
