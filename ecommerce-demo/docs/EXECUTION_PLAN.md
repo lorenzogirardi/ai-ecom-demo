@@ -475,6 +475,7 @@ argocd/
 | Race condition parallel commits | Concurrency group `trivy-report-commit` |
 | Git pull with unstaged changes | Moved pull before saving report |
 | Husky in CI environment | Skip hooks in CI |
+| Terraform fmt check fails | Auto-fix con `terraform fmt` + auto-commit |
 
 ---
 
