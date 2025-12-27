@@ -13,15 +13,15 @@ on:
       - main
       - develop
     paths:
-      - 'apps/frontend/**'
-      - 'helm/frontend/**'
+      - 'ecommerce-demo/apps/frontend/**'
+      - 'ecommerce-demo/helm/frontend/**'
       - '.github/workflows/frontend-ci-cd.yml'
   pull_request:
     branches:
       - main
       - develop
     paths:
-      - 'apps/frontend/**'
+      - 'ecommerce-demo/apps/frontend/**'
       - '.github/workflows/frontend-ci-cd.yml'
 
 env:
@@ -60,7 +60,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: apps/frontend
+        working-directory: ecommerce-demo/apps/frontend
 
     steps:
       - name: Checkout code
@@ -71,6 +71,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+          cache-dependency-path: ecommerce-demo/apps/frontend/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -127,8 +128,8 @@ jobs:
         id: build
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: apps/frontend/Dockerfile
+          context: ecommerce-demo
+          file: ecommerce-demo/apps/frontend/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -178,15 +179,15 @@ jobs:
 
       - name: Save Trivy report to repo
         run: |
-          mkdir -p security/reports
-          cp trivy-frontend-${{ github.sha }}.json security/reports/
-          cp trivy-frontend-${{ github.sha }}.json security/reports/trivy-frontend-latest.json
+          mkdir -p ecommerce-demo/security/reports
+          cp trivy-frontend-${{ github.sha }}.json ecommerce-demo/security/reports/
+          cp trivy-frontend-${{ github.sha }}.json ecommerce-demo/security/reports/trivy-frontend-latest.json
 
       - name: Commit Trivy report
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "security: Update Trivy frontend scan report [${{ github.sha }}]"
-          file_pattern: 'security/reports/trivy-frontend-*.json'
+          file_pattern: 'ecommerce-demo/security/reports/trivy-frontend-*.json'
           commit_author: 'GitHub Actions <actions@github.com>'
 
       - name: Generate Trivy summary
@@ -232,10 +233,10 @@ jobs:
   #
   #     - name: Deploy with Helm
   #       run: |
-  #         helm upgrade --install frontend ./helm/frontend \
+  #         helm upgrade --install frontend ./ecommerce-demo/helm/frontend \
   #           --namespace ecommerce \
   #           --create-namespace \
-  #           --values ./helm/frontend/values-demo.yaml \
+  #           --values ./ecommerce-demo/helm/frontend/values-demo.yaml \
   #           --set image.repository=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }} \
   #           --set image.tag=${{ github.sha }} \
   #           --wait \

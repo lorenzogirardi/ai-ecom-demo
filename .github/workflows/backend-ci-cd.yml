@@ -13,15 +13,15 @@ on:
       - main
       - develop
     paths:
-      - 'apps/backend/**'
-      - 'helm/backend/**'
+      - 'ecommerce-demo/apps/backend/**'
+      - 'ecommerce-demo/helm/backend/**'
       - '.github/workflows/backend-ci-cd.yml'
   pull_request:
     branches:
       - main
       - develop
     paths:
-      - 'apps/backend/**'
+      - 'ecommerce-demo/apps/backend/**'
       - '.github/workflows/backend-ci-cd.yml'
 
 env:
@@ -60,7 +60,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: apps/backend
+        working-directory: ecommerce-demo/apps/backend
 
     services:
       postgres:
@@ -96,6 +96,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+          cache-dependency-path: ecommerce-demo/apps/backend/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -160,8 +161,8 @@ jobs:
         id: build
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: apps/backend/Dockerfile
+          context: ecommerce-demo
+          file: ecommerce-demo/apps/backend/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -209,15 +210,15 @@ jobs:
 
       - name: Save Trivy report to repo
         run: |
-          mkdir -p security/reports
-          cp trivy-backend-${{ github.sha }}.json security/reports/
-          cp trivy-backend-${{ github.sha }}.json security/reports/trivy-backend-latest.json
+          mkdir -p ecommerce-demo/security/reports
+          cp trivy-backend-${{ github.sha }}.json ecommerce-demo/security/reports/
+          cp trivy-backend-${{ github.sha }}.json ecommerce-demo/security/reports/trivy-backend-latest.json
 
       - name: Commit Trivy report
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "security: Update Trivy backend scan report [${{ github.sha }}]"
-          file_pattern: 'security/reports/trivy-backend-*.json'
+          file_pattern: 'ecommerce-demo/security/reports/trivy-backend-*.json'
           commit_author: 'GitHub Actions <actions@github.com>'
 
       - name: Generate Trivy summary
@@ -263,10 +264,10 @@ jobs:
   #
   #     - name: Deploy with Helm
   #       run: |
-  #         helm upgrade --install backend ./helm/backend \
+  #         helm upgrade --install backend ./ecommerce-demo/helm/backend \
   #           --namespace ecommerce \
   #           --create-namespace \
-  #           --values ./helm/backend/values-demo.yaml \
+  #           --values ./ecommerce-demo/helm/backend/values-demo.yaml \
   #           --set image.repository=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }} \
   #           --set image.tag=${{ github.sha }} \
   #           --wait \

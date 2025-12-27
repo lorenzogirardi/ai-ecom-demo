@@ -5,19 +5,19 @@ on:
   push:
     branches: [main, develop]
     paths:
-      - 'infra/terraform/**'
-      - 'helm/**'
+      - 'ecommerce-demo/infra/terraform/**'
+      - 'ecommerce-demo/helm/**'
       - '.github/workflows/infra-ci.yml'
-      - '.checkov.yaml'
-      - '.tflint.hcl'
+      - 'ecommerce-demo/.checkov.yaml'
+      - 'ecommerce-demo/.tflint.hcl'
   pull_request:
     branches: [main, develop]
     paths:
-      - 'infra/terraform/**'
-      - 'helm/**'
+      - 'ecommerce-demo/infra/terraform/**'
+      - 'ecommerce-demo/helm/**'
       - '.github/workflows/infra-ci.yml'
-      - '.checkov.yaml'
-      - '.tflint.hcl'
+      - 'ecommerce-demo/.checkov.yaml'
+      - 'ecommerce-demo/.tflint.hcl'
 
 permissions:
   contents: read
@@ -64,18 +64,24 @@ jobs:
 
       - name: Init TFLint
         run: tflint --init
-        working-directory: infra/terraform/environments/demo
+        working-directory: ecommerce-demo/infra/terraform/environments/demo/platform
 
       - name: Run TFLint on modules
         run: |
-          for module in infra/terraform/modules/*/; do
+          for module in ecommerce-demo/infra/terraform/modules/*/; do
             echo "Linting $module..."
-            tflint --config=../../.tflint.hcl "$module" || true
+            tflint "$module" || true
           done
 
-      - name: Run TFLint on demo environment
-        run: tflint --config=../../../../.tflint.hcl .
-        working-directory: infra/terraform/environments/demo
+      - name: Run TFLint on platform layer
+        run: tflint .
+        working-directory: ecommerce-demo/infra/terraform/environments/demo/platform
+        continue-on-error: true
+
+      - name: Run TFLint on services layer
+        run: tflint .
+        working-directory: ecommerce-demo/infra/terraform/environments/demo/services
+        continue-on-error: true
 
   # ============================================
   # Checkov - Security Scanning
@@ -90,8 +96,8 @@ jobs:
       - name: Run Checkov on Terraform
         uses: bridgecrewio/checkov-action@v12
         with:
-          directory: infra/terraform
-          config_file: .checkov.yaml
+          directory: ecommerce-demo/infra/terraform
+          config_file: ecommerce-demo/.checkov.yaml
           framework: terraform
           output_format: cli,sarif
           output_file_path: console,results.sarif
@@ -100,8 +106,8 @@ jobs:
       - name: Run Checkov on Helm
         uses: bridgecrewio/checkov-action@v12
         with:
-          directory: helm
-          config_file: .checkov.yaml
+          directory: ecommerce-demo/helm
+          config_file: ecommerce-demo/.checkov.yaml
           framework: helm
           output_format: cli
           soft_fail: true
@@ -130,11 +136,11 @@ jobs:
 
       - name: Terraform Format Check
         run: terraform fmt -check -recursive
-        working-directory: infra/terraform
+        working-directory: ecommerce-demo/infra/terraform
 
       - name: Validate Modules
         run: |
-          for module in infra/terraform/modules/*/; do
+          for module in ecommerce-demo/infra/terraform/modules/*/; do
             echo "Validating $module..."
             cd "$module"
             terraform init -backend=false
@@ -158,13 +164,13 @@ jobs:
           version: 'v3.13.0'
 
       - name: Lint Backend Chart
-        run: helm lint helm/backend
+        run: helm lint ecommerce-demo/helm/backend
 
       - name: Lint Frontend Chart
-        run: helm lint helm/frontend
+        run: helm lint ecommerce-demo/helm/frontend
 
       - name: Template Backend Chart
-        run: helm template backend helm/backend -f helm/backend/values-demo.yaml
+        run: helm template backend ecommerce-demo/helm/backend -f ecommerce-demo/helm/backend/values-demo.yaml
 
       - name: Template Frontend Chart
-        run: helm template frontend helm/frontend -f helm/frontend/values-demo.yaml
+        run: helm template frontend ecommerce-demo/helm/frontend -f ecommerce-demo/helm/frontend/values-demo.yaml

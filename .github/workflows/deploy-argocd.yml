@@ -69,7 +69,7 @@ jobs:
           helm upgrade --install argocd argo/argo-cd \
             --namespace ${{ env.ARGOCD_NAMESPACE }} \
             --version ${{ env.ARGOCD_VERSION }} \
-            --values argocd/install/values.yaml \
+            --values ecommerce-demo/argocd/install/values.yaml \
             --wait \
             --timeout 10m
 
@@ -81,13 +81,13 @@ jobs:
       - name: Apply ArgoCD Project
         if: ${{ inputs.action != 'uninstall' }}
         run: |
-          kubectl apply -f argocd/projects/ecommerce.yaml
+          kubectl apply -f ecommerce-demo/argocd/projects/ecommerce.yaml
 
       - name: Apply ArgoCD Applications
         if: ${{ inputs.action != 'uninstall' }}
         run: |
-          kubectl apply -f argocd/applications/backend.yaml
-          kubectl apply -f argocd/applications/frontend.yaml
+          kubectl apply -f ecommerce-demo/argocd/applications/backend.yaml
+          kubectl apply -f ecommerce-demo/argocd/applications/frontend.yaml
 
       - name: Get ArgoCD admin password
         if: ${{ inputs.action != 'uninstall' }}
@@ -135,8 +135,8 @@ jobs:
         if: ${{ inputs.action == 'uninstall' }}
         run: |
           # Delete applications first
-          kubectl delete -f argocd/applications/ --ignore-not-found
-          kubectl delete -f argocd/projects/ --ignore-not-found
+          kubectl delete -f ecommerce-demo/argocd/applications/ --ignore-not-found
+          kubectl delete -f ecommerce-demo/argocd/projects/ --ignore-not-found
 
           # Uninstall ArgoCD
           helm uninstall argocd -n ${{ env.ARGOCD_NAMESPACE }} || true
