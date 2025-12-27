@@ -60,7 +60,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ecommerce-demo/apps/frontend
+        working-directory: ecommerce-demo
 
     steps:
       - name: Checkout code
@@ -71,7 +71,7 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: ecommerce-demo/apps/frontend/package-lock.json
+          cache-dependency-path: ecommerce-demo/package-lock.json
 
       - name: Install dependencies
         run: npm ci --ignore-scripts
@@ -79,13 +79,13 @@ jobs:
           HUSKY: 0
 
       - name: Run linter
-        run: npm run lint
+        run: npm run lint -w apps/frontend
 
       - name: Run type check
-        run: npm run type-check
+        run: npm run type-check -w apps/frontend
 
       - name: Run tests
-        run: npm run test
+        run: npm run test -w apps/frontend
 
   # ============================================
   # Build Docker Image
