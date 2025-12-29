@@ -519,6 +519,28 @@ argocd/
 | CORS Configuration | ✅ |
 | Terraform Documentation CLI Changes | ✅ |
 | Shutdown/Startup Scripts | ✅ |
+| C-Level Presentation (IT + EN) | ✅ |
+| Presentation PDF Export | ✅ |
+| Demo Video Upload (GitHub Releases) | ✅ |
+| SESSION_05_RECAP (IT + EN) | ✅ |
+
+### Presentazione C-Level
+
+| Asset | Location |
+|-------|----------|
+| Presentazione IT (HTML) | `docs/presentation/index-it.html` |
+| Presentazione EN (HTML) | `docs/presentation/index-en.html` |
+| PDF IT (20 slide) | `docs/presentation/presentation-it.pdf` |
+| PDF EN (20 slide) | `docs/presentation/presentation-en.pdf` |
+| Demo Video (223MB) | [GitHub Release v1.0.0-presentation](https://github.com/lorenzogirardi/ai-ecom-demo/releases/tag/v1.0.0-presentation) |
+
+**Contenuti Presentazione:**
+- Executive Summary (sfida, opportunità)
+- PoC Details (architettura, timeline, qualità)
+- Economics (costi, licensing, ROI 8-12x)
+- Distribuzione codice (~19.5K linee) con pie chart
+- 89 risorse AWS / 13 servizi
+- Adoption Strategy e Roadmap
 
 ### Risorse AWS Deployate
 
@@ -1052,15 +1074,43 @@ terraform apply
 
 | Metrica | Sessione 1 | Sessione 2 | Sessione 3 | Sessione 4 | Sessione 5 | Totale |
 |---------|------------|------------|------------|------------|------------|--------|
-| File creati | 82 | 21 | 24 | 15 | 8 | 150 |
-| Linee di codice | ~8,900 | ~3,200 | ~2,500 | ~1,500 | ~500 | ~16,600 |
+| File creati | 82 | 21 | 24 | 15 | 12 | 154 |
+| Linee di codice | ~8,900 | ~3,200 | ~2,500 | ~1,500 | ~3,400 | ~19,500 |
 | Backend Tests | 0 | 177 | 177 | 177 | 177 | 177 |
 | Frontend Tests | 0 | 0 | 29 | 29 | 29 | 29 |
-| Tempo Claude | ~2 ore | ~1.5 ore | ~1.5 ore | ~2 ore | ~4 ore | ~11 ore |
-| Tempo equiv. dev | ~50 ore | ~50 ore | ~26.5 ore | ~40 ore | ~14 ore | ~180.5 ore |
+| Tempo Claude | ~2 ore | ~1.5 ore | ~1.5 ore | ~2 ore | ~5 ore | ~12 ore |
+| Tempo equiv. dev | ~50 ore | ~50 ore | ~26.5 ore | ~40 ore | ~20 ore | ~186.5 ore |
 | Bug fixes | 0 | 0 | 5 | 10+ | 8 | 23+ |
 | CVE analyzed | 0 | 0 | 0 | 36 | 0 | 36 |
-| AWS Resources | 0 | 0 | 0 | 4 | 15+ | 19+ |
+| AWS Resources | 0 | 0 | 0 | 4 | 85 | 89 |
+
+### Distribuzione Codice (~19.500 linee)
+
+| Categoria | Linee | % |
+|-----------|-------|---|
+| Application (Frontend + Backend) | 6,917 | 35.6% |
+| QA / Tests | 5,110 | 26.3% |
+| Infrastructure (Terraform + Helm + ArgoCD) | 4,950 | 25.5% |
+| DevOps / Scripts | 1,321 | 6.8% |
+| CI/CD Pipelines | 985 | 5.1% |
+| Security Config | 158 | 0.8% |
+
+### Risorse AWS (89 totali - 13 servizi)
+
+| Servizio | Risorse |
+|----------|---------|
+| IAM (Roles, Policies, OIDC) | 22 |
+| VPC (Network, Subnets, NAT) | 15 |
+| ECR (Repositories) | 12 |
+| Security Groups | 11 |
+| S3 (State + Assets) | 10 |
+| CloudFront (CDN) | 6 |
+| Secrets Manager | 6 |
+| RDS PostgreSQL | 3 |
+| ElastiCache Redis | 3 |
+| EKS (Cluster + Nodes) | 2 |
+| CloudWatch (Alarms) | 2 |
+| DynamoDB (TF Locks) | 1 |
 
 ---
 
@@ -1068,6 +1118,10 @@ terraform apply
 
 - Repository: https://github.com/lorenzogirardi/ai-ecom-demo
 - Commit iniziale: bd0d99f (24 Dic 2024)
-- Ultimo aggiornamento: 27 Dic 2024
+- Ultimo aggiornamento: 29 Dic 2024
 - Total tests: 206 (177 backend + 29 frontend)
+- Total linee codice: ~19,500
+- Total risorse AWS: 89 (13 servizi)
 - **⚠️ Terraform State: SEMPRE remote backend su S3, MAI locale**
+- **📊 Presentazione C-Level:** `docs/presentation/` (locale, in .gitignore)
+- **🎬 Demo Video:** [GitHub Release v1.0.0-presentation](https://github.com/lorenzogirardi/ai-ecom-demo/releases/tag/v1.0.0-presentation)

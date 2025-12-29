@@ -495,6 +495,28 @@ Current pipelines are basic. They need to be extended with security scanning, co
 | CORS Configuration | ✅ |
 | Terraform Documentation CLI Changes | ✅ |
 | Shutdown/Startup Scripts | ✅ |
+| C-Level Presentation (IT + EN) | ✅ |
+| Presentation PDF Export | ✅ |
+| Demo Video Upload (GitHub Releases) | ✅ |
+| SESSION_05_RECAP (IT + EN) | ✅ |
+
+### C-Level Presentation
+
+| Asset | Location |
+|-------|----------|
+| Presentation IT (HTML) | `docs/presentation/index-it.html` |
+| Presentation EN (HTML) | `docs/presentation/index-en.html` |
+| PDF IT (20 slides) | `docs/presentation/presentation-it.pdf` |
+| PDF EN (20 slides) | `docs/presentation/presentation-en.pdf` |
+| Demo Video (223MB) | [GitHub Release v1.0.0-presentation](https://github.com/lorenzogirardi/ai-ecom-demo/releases/tag/v1.0.0-presentation) |
+
+**Presentation Contents:**
+- Executive Summary (challenge, opportunity)
+- PoC Details (architecture, timeline, quality)
+- Economics (costs, licensing, ROI 8-12x)
+- Code distribution (~19.5K lines) with pie chart
+- 89 AWS resources / 13 services
+- Adoption Strategy and Roadmap
 
 ### AWS Resources Deployed
 
@@ -908,13 +930,45 @@ KUBERNETES
 
 ## Project Statistics
 
-| Metric | Session 1 | Session 2 | Session 3 | Total |
-|--------|-----------|-----------|-----------|-------|
-| Files created | 82 | 21 | 19 | 122 |
-| Lines of code | ~8,900 | ~3,200 | ~2,800 | ~14,900 |
-| Tests | 0 | 177 | 29 | 206 |
-| Claude time | ~2 hours | ~1.5 hours | ~1 hour | ~4.5 hours |
-| Equiv. dev time | ~50 hours | ~50 hours | ~30 hours | ~130 hours |
+| Metric | Session 1 | Session 2 | Session 3 | Session 4 | Session 5 | Total |
+|--------|-----------|-----------|-----------|-----------|-----------|-------|
+| Files created | 82 | 21 | 24 | 15 | 12 | 154 |
+| Lines of code | ~8,900 | ~3,200 | ~2,500 | ~1,500 | ~3,400 | ~19,500 |
+| Backend Tests | 0 | 177 | 177 | 177 | 177 | 177 |
+| Frontend Tests | 0 | 0 | 29 | 29 | 29 | 29 |
+| Claude time | ~2 hrs | ~1.5 hrs | ~1.5 hrs | ~2 hrs | ~5 hrs | ~12 hrs |
+| Equiv. dev time | ~50 hrs | ~50 hrs | ~26.5 hrs | ~40 hrs | ~20 hrs | ~186.5 hrs |
+| Bug fixes | 0 | 0 | 5 | 10+ | 8 | 23+ |
+| CVE analyzed | 0 | 0 | 0 | 36 | 0 | 36 |
+| AWS Resources | 0 | 0 | 0 | 4 | 85 | 89 |
+
+### Code Distribution (~19,500 lines)
+
+| Category | Lines | % |
+|----------|-------|---|
+| Application (Frontend + Backend) | 6,917 | 35.6% |
+| QA / Tests | 5,110 | 26.3% |
+| Infrastructure (Terraform + Helm + ArgoCD) | 4,950 | 25.5% |
+| DevOps / Scripts | 1,321 | 6.8% |
+| CI/CD Pipelines | 985 | 5.1% |
+| Security Config | 158 | 0.8% |
+
+### AWS Resources (89 total - 13 services)
+
+| Service | Resources |
+|---------|-----------|
+| IAM (Roles, Policies, OIDC) | 22 |
+| VPC (Network, Subnets, NAT) | 15 |
+| ECR (Repositories) | 12 |
+| Security Groups | 11 |
+| S3 (State + Assets) | 10 |
+| CloudFront (CDN) | 6 |
+| Secrets Manager | 6 |
+| RDS PostgreSQL | 3 |
+| ElastiCache Redis | 3 |
+| EKS (Cluster + Nodes) | 2 |
+| CloudWatch (Alarms) | 2 |
+| DynamoDB (TF Locks) | 1 |
 
 ---
 
@@ -922,6 +976,10 @@ KUBERNETES
 
 - Repository: https://github.com/lorenzogirardi/ai-ecom-demo
 - Initial commit: bd0d99f (Dec 24, 2024)
-- Last update: December 26, 2024
+- Last update: December 29, 2024
 - Total tests: 206 (177 backend + 29 frontend)
-- Day 3 completed: Full e-commerce flow functional locally
+- Total lines of code: ~19,500
+- Total AWS resources: 89 (13 services)
+- **⚠️ Terraform State: ALWAYS remote backend on S3, NEVER local**
+- **📊 C-Level Presentation:** `docs/presentation/` (local, in .gitignore)
+- **🎬 Demo Video:** [GitHub Release v1.0.0-presentation](https://github.com/lorenzogirardi/ai-ecom-demo/releases/tag/v1.0.0-presentation)
