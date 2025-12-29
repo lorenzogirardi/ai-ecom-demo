@@ -70,12 +70,30 @@ output "cdn_s3_bucket_id" {
   value       = module.cdn.assets_bucket_id
 }
 
+output "alb_cdn_distribution_id" {
+  description = "CloudFront distribution ID for ALB (if configured)"
+  value       = length(aws_cloudfront_distribution.alb) > 0 ? aws_cloudfront_distribution.alb[0].id : null
+}
+
+output "alb_cdn_domain_name" {
+  description = "CloudFront domain name for ALB HTTPS access (if configured)"
+  value       = length(aws_cloudfront_distribution.alb) > 0 ? aws_cloudfront_distribution.alb[0].domain_name : null
+}
+
 # ============================================
 # JWT Secret Outputs
 # ============================================
 output "jwt_secret_arn" {
   description = "Secrets Manager ARN for JWT secret"
   value       = aws_secretsmanager_secret.jwt.arn
+}
+
+# ============================================
+# External Secrets Outputs
+# ============================================
+output "external_secrets_role_arn" {
+  description = "IAM role ARN for External Secrets Operator"
+  value       = aws_iam_role.external_secrets.arn
 }
 
 # ============================================

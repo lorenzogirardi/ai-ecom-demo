@@ -71,3 +71,10 @@ variable "cdn_price_class" {
   type        = string
   default     = "PriceClass_100"
 }
+
+# ALB CloudFront (for HTTPS access to ALB-based applications)
+variable "alb_dns_name" {
+  description = "DNS name of the ALB created by AWS Load Balancer Controller (optional, for CloudFront HTTPS access)"
+  type        = string
+  default     = null
+}
