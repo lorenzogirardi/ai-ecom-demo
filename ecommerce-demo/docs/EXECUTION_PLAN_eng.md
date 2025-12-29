@@ -552,7 +552,24 @@ KUBERNETES
 
 ---
 
-## Day 6 Details - Load Testing ⏳
+## Day 6 Details - Load Testing + CI Enhancement ⏳
+
+### CI Pipeline Enhancement
+
+| Task | Status |
+|------|--------|
+| Lighthouse integration (HTML reports, all categories) | ⏳ |
+| Google Checks integration (checks.google.com) | ⏳ |
+
+**Lighthouse:**
+- Performance, Accessibility, Best Practices, SEO, PWA
+- HTML report saved as artifact
+- Threshold for CI pass/fail
+
+**Google Checks:**
+- Privacy compliance analysis
+- Data safety reports
+- SDK analysis
 
 ### k6 Performance Testing
 
@@ -567,6 +584,23 @@ KUBERNETES
 | Query optimization | ⏳ |
 | Caching strategy evaluation | ⏳ |
 | HPA tuning recommendations | ⏳ |
+
+### Load Test Metrics Correlation
+
+| Task | Status |
+|------|--------|
+| CloudWatch metrics during load test | ⏳ |
+| Kubernetes metrics (CPU, Memory, Network) | ⏳ |
+| Response time vs resources correlation | ⏳ |
+| Saturation threshold identification | ⏳ |
+| Metrics correlation dashboard | ⏳ |
+
+**Metrics to correlate:**
+- Response time (p50, p95, p99) vs CPU/Memory usage
+- Throughput (req/s) vs Pod scaling (HPA)
+- Error rate vs available resources
+- Connection pool vs DB connections
+- Cache hit ratio vs latency
 
 ---
 
