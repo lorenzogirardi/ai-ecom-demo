@@ -111,3 +111,6 @@ docker-compose.override.yml
 **/public/sw.js
 **/public/workbox-*.js
 **/public/swe-worker-*.js
+
+# Local presentations (not for repository)
+docs/presentation/
