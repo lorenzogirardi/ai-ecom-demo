@@ -25,7 +25,11 @@
 | 2 | 25 Dic | Dockerfiles + React Components + Test Suite + API Client + Pages + Seed | ✅ |
 | 3 | 26 Dic | Auth Pages + Checkout + Account + Search + Security | ✅ |
 | 4 | 27 Dic | CI Security + ArgoCD + Terraform Remote State + CVE Analysis | ✅ |
-| 5 | 28 Dic | Deploy AWS + E2E Test | ⏳ |
+| 5 | 29 Dic | Deploy AWS + ArgoCD + External Secrets + CloudFront | ✅ |
+| 6 | TBD | Load Testing con k6 + Performance Evaluation | ⏳ |
+| 7 | TBD | Datadog Monitoring Integration | ⏳ |
+| 8 | TBD | Advanced Load Testing + Optimization | ⏳ |
+| 9 | TBD | Security Review & Hardening | ⏳ |
 
 ---
 
@@ -498,19 +502,213 @@ argocd/
 
 ---
 
-## Dettaglio Giorno 5 - 28 Dicembre ⏳
+## Dettaglio Giorno 5 - 29 Dicembre ✅
 
-### Deploy AWS & E2E
+### Deploy AWS Completo
 
 | Task | Stato |
 |------|-------|
-| Terraform init/plan | ⏳ |
-| Terraform apply | ⏳ |
-| Configure kubectl | ⏳ |
-| Helm install backend | ⏳ |
-| Helm install frontend | ⏳ |
-| E2E test su AWS | ⏳ |
-| Screenshots/demo | ⏳ |
+| Terraform apply Layer 1 (Platform) | ✅ |
+| Terraform apply Layer 2 (Services) | ✅ |
+| External Secrets Operator Installation | ✅ |
+| ArgoCD Installation & Configuration | ✅ |
+| Backend + Frontend Deployment | ✅ |
+| Database Migration & Seeding | ✅ |
+| CloudFront HTTPS Access | ✅ |
+| Security Group Fixes | ✅ |
+| CORS Configuration | ✅ |
+| Terraform Documentation CLI Changes | ✅ |
+| Shutdown/Startup Scripts | ✅ |
+
+### Risorse AWS Deployate
+
+```
+LAYER 1: PLATFORM
+├── VPC + 4 Subnets (2 public, 2 private)
+├── NAT Gateway + Internet Gateway
+├── EKS Cluster (ecommerce-demo-demo-eks)
+├── EKS Node Group (2x t3.small)
+└── ECR Repositories (backend, frontend)
+
+LAYER 2: SERVICES
+├── RDS PostgreSQL (db.t3.micro)
+├── ElastiCache Redis (cache.t3.micro)
+├── CloudFront Distribution (ALB HTTPS)
+├── Secrets Manager (RDS, Redis, JWT)
+└── IAM Role (External Secrets IRSA)
+
+KUBERNETES
+├── ArgoCD (argocd namespace)
+├── External Secrets Operator (external-secrets namespace)
+├── AWS Load Balancer Controller (kube-system)
+├── Backend Deployment (ecommerce namespace)
+└── Frontend Deployment (ecommerce namespace)
+```
+
+### URLs Applicazione
+
+| Servizio | URL |
+|----------|-----|
+| E-commerce Frontend | https://dls03qes9fc77.cloudfront.net |
+| API Health | https://dls03qes9fc77.cloudfront.net/api/health |
+
+---
+
+## Dettaglio Giorno 6 - Load Testing ⏳
+
+### k6 Performance Testing
+
+| Task | Stato |
+|------|-------|
+| Install k6 locally | ⏳ |
+| Create test scripts for key endpoints | ⏳ |
+| Define test scenarios (smoke, load, stress, spike) | ⏳ |
+| Baseline performance tests | ⏳ |
+| Identify bottlenecks | ⏳ |
+| Resource utilization analysis | ⏳ |
+| Query optimization | ⏳ |
+| Caching strategy evaluation | ⏳ |
+| HPA tuning recommendations | ⏳ |
+
+### Test Scenarios
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    K6 TEST SCENARIOS                             │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  1. SMOKE TEST                                                   │
+│     ├── 1-5 VUs for 1 minute                                    │
+│     └── Verify system works under minimal load                  │
+│                                                                  │
+│  2. LOAD TEST                                                    │
+│     ├── Ramp up to 50 VUs over 5 minutes                        │
+│     ├── Stay at 50 VUs for 10 minutes                           │
+│     └── Ramp down over 5 minutes                                │
+│                                                                  │
+│  3. STRESS TEST                                                  │
+│     ├── Ramp up to 100+ VUs                                     │
+│     └── Find breaking point                                     │
+│                                                                  │
+│  4. SPIKE TEST                                                   │
+│     ├── Normal load → sudden spike → normal                     │
+│     └── Test auto-scaling behavior                              │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Dettaglio Giorno 7 - Datadog Monitoring ⏳
+
+### Datadog Integration
+
+| Task | Stato |
+|------|-------|
+| Datadog account setup | ⏳ |
+| Datadog Agent Helm chart | ⏳ |
+| APM instrumentation (backend) | ⏳ |
+| RUM setup (frontend) | ⏳ |
+| Custom dashboards | ⏳ |
+| Alerts configuration | ⏳ |
+| Log aggregation | ⏳ |
+| Distributed tracing | ⏳ |
+
+### Monitoring Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    DATADOG MONITORING                            │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ┌──────────────┐      ┌──────────────┐      ┌──────────────┐  │
+│  │   Frontend   │ ──→  │  Datadog RUM │ ──→  │  Dashboards  │  │
+│  │   (Next.js)  │      │  (Browser)   │      │              │  │
+│  └──────────────┘      └──────────────┘      │  ┌────────┐  │  │
+│                                               │  │ Alerts │  │  │
+│  ┌──────────────┐      ┌──────────────┐      │  └────────┘  │  │
+│  │   Backend    │ ──→  │ Datadog APM  │ ──→  │              │  │
+│  │   (Fastify)  │      │  (Traces)    │      │  ┌────────┐  │  │
+│  └──────────────┘      └──────────────┘      │  │  Logs  │  │  │
+│                                               │  └────────┘  │  │
+│  ┌──────────────┐      ┌──────────────┐      │              │  │
+│  │  Kubernetes  │ ──→  │Datadog Agent │ ──→  │  ┌────────┐  │  │
+│  │   (Nodes)    │      │  (DaemonSet) │      │  │Metrics │  │  │
+│  └──────────────┘      └──────────────┘      │  └────────┘  │  │
+│                                               └──────────────┘  │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Dettaglio Giorno 8 - Advanced Load Testing ⏳
+
+### Post-Optimization Testing
+
+| Task | Stato |
+|------|-------|
+| Re-run baseline tests | ⏳ |
+| Compare before/after metrics | ⏳ |
+| Test with Datadog monitoring | ⏳ |
+| Validate HPA behavior | ⏳ |
+| Database connection pooling | ⏳ |
+| Redis cache effectiveness | ⏳ |
+| CDN cache hit ratio | ⏳ |
+| Cost per request analysis | ⏳ |
+
+---
+
+## Dettaglio Giorno 9 - Security Review ⏳
+
+### Security Hardening
+
+| Task | Stato |
+|------|-------|
+| OWASP Top 10 review | ⏳ |
+| Penetration testing (basic) | ⏳ |
+| Network policies (Kubernetes) | ⏳ |
+| Pod security policies | ⏳ |
+| Secrets rotation strategy | ⏳ |
+| WAF configuration | ⏳ |
+| Security headers audit | ⏳ |
+| Dependency audit (npm audit) | ⏳ |
+| Container image hardening | ⏳ |
+| IAM least privilege review | ⏳ |
+
+### Security Checklist
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    SECURITY REVIEW CHECKLIST                     │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  APPLICATION SECURITY                                            │
+│  ├── [ ] SQL Injection prevention (Prisma ORM)                  │
+│  ├── [ ] XSS prevention (React escaping)                        │
+│  ├── [ ] CSRF protection                                         │
+│  ├── [ ] Rate limiting configured                                │
+│  ├── [ ] Input validation (Zod schemas)                         │
+│  └── [ ] Secure headers (HSTS, CSP, etc.)                       │
+│                                                                  │
+│  INFRASTRUCTURE SECURITY                                         │
+│  ├── [ ] Network isolation (VPC, subnets)                       │
+│  ├── [ ] Security groups minimal access                         │
+│  ├── [ ] Encryption at rest (RDS, S3)                           │
+│  ├── [ ] Encryption in transit (TLS)                            │
+│  ├── [ ] Secrets management (AWS Secrets Manager)               │
+│  └── [ ] IAM roles with least privilege                         │
+│                                                                  │
+│  KUBERNETES SECURITY                                             │
+│  ├── [ ] Non-root containers                                     │
+│  ├── [ ] Read-only root filesystem                              │
+│  ├── [ ] Network policies                                        │
+│  ├── [ ] Pod security standards                                  │
+│  ├── [ ] Service accounts with minimal permissions              │
+│  └── [ ] RBAC configured correctly                               │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
@@ -852,16 +1050,17 @@ terraform apply
 
 ## Statistiche Progetto
 
-| Metrica | Sessione 1 | Sessione 2 | Sessione 3 | Sessione 4 | Totale |
-|---------|------------|------------|------------|------------|--------|
-| File creati | 82 | 21 | 24 | 15 | 142 |
-| Linee di codice | ~8,900 | ~3,200 | ~2,500 | ~1,500 | ~16,100 |
-| Backend Tests | 0 | 177 | 177 (fixed) | 177 | 177 |
-| Frontend Tests | 0 | 0 | 29 | 29 | 29 |
-| Tempo Claude | ~2 ore | ~1.5 ore | ~1.5 ore | ~2 ore | ~7 ore |
-| Tempo equiv. dev | ~50 ore | ~50 ore | ~26.5 ore | ~40 ore | ~166.5 ore |
-| Bug fixes | 0 | 0 | 5 | 10+ | 15+ |
-| CVE analyzed | 0 | 0 | 0 | 36 | 36 |
+| Metrica | Sessione 1 | Sessione 2 | Sessione 3 | Sessione 4 | Sessione 5 | Totale |
+|---------|------------|------------|------------|------------|------------|--------|
+| File creati | 82 | 21 | 24 | 15 | 8 | 150 |
+| Linee di codice | ~8,900 | ~3,200 | ~2,500 | ~1,500 | ~500 | ~16,600 |
+| Backend Tests | 0 | 177 | 177 | 177 | 177 | 177 |
+| Frontend Tests | 0 | 0 | 29 | 29 | 29 | 29 |
+| Tempo Claude | ~2 ore | ~1.5 ore | ~1.5 ore | ~2 ore | ~4 ore | ~11 ore |
+| Tempo equiv. dev | ~50 ore | ~50 ore | ~26.5 ore | ~40 ore | ~14 ore | ~180.5 ore |
+| Bug fixes | 0 | 0 | 5 | 10+ | 8 | 23+ |
+| CVE analyzed | 0 | 0 | 0 | 36 | 0 | 36 |
+| AWS Resources | 0 | 0 | 0 | 4 | 15+ | 19+ |
 
 ---
 

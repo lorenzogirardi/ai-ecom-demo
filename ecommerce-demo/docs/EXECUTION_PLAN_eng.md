@@ -24,8 +24,12 @@
 | 1 | Dec 24 | Foundation + Backend + Helm + CI/CD + Docs | ✅ |
 | 2 | Dec 25 | Dockerfiles + React Components + Test Suite + API Client + Pages + Seed | ✅ |
 | 3 | Dec 26 | Auth Pages + Checkout + Account + Search + Security | ✅ |
-| 4 | Dec 27 | GitHub Actions Pipelines (Complete CI/CD) | ⏳ |
-| 5 | Dec 28 | AWS Deploy + E2E Test | ⏳ |
+| 4 | Dec 27 | CI Security + ArgoCD + Terraform Remote State + CVE Analysis | ✅ |
+| 5 | Dec 29 | AWS Deploy + ArgoCD + External Secrets + CloudFront | ✅ |
+| 6 | TBD | Load Testing with k6 + Performance Evaluation | ⏳ |
+| 7 | TBD | Datadog Monitoring Integration | ⏳ |
+| 8 | TBD | Advanced Load Testing + Optimization | ⏳ |
+| 9 | TBD | Security Review & Hardening | ⏳ |
 
 ---
 
@@ -474,19 +478,126 @@ Current pipelines are basic. They need to be extended with security scanning, co
 
 ---
 
-## Day 5 Details - December 28 ⏳
+## Day 5 Details - December 29 ✅
 
-### AWS Deploy & E2E
+### Complete AWS Deploy
 
 | Task | Status |
 |------|--------|
-| Terraform init/plan | ⏳ |
-| Terraform apply | ⏳ |
-| Configure kubectl | ⏳ |
-| Helm install backend | ⏳ |
-| Helm install frontend | ⏳ |
-| E2E test on AWS | ⏳ |
-| Screenshots/demo | ⏳ |
+| Terraform apply Layer 1 (Platform) | ✅ |
+| Terraform apply Layer 2 (Services) | ✅ |
+| External Secrets Operator Installation | ✅ |
+| ArgoCD Installation & Configuration | ✅ |
+| Backend + Frontend Deployment | ✅ |
+| Database Migration & Seeding | ✅ |
+| CloudFront HTTPS Access | ✅ |
+| Security Group Fixes | ✅ |
+| CORS Configuration | ✅ |
+| Terraform Documentation CLI Changes | ✅ |
+| Shutdown/Startup Scripts | ✅ |
+
+### AWS Resources Deployed
+
+```
+LAYER 1: PLATFORM
+├── VPC + 4 Subnets (2 public, 2 private)
+├── NAT Gateway + Internet Gateway
+├── EKS Cluster (ecommerce-demo-demo-eks)
+├── EKS Node Group (2x t3.small)
+└── ECR Repositories (backend, frontend)
+
+LAYER 2: SERVICES
+├── RDS PostgreSQL (db.t3.micro)
+├── ElastiCache Redis (cache.t3.micro)
+├── CloudFront Distribution (ALB HTTPS)
+├── Secrets Manager (RDS, Redis, JWT)
+└── IAM Role (External Secrets IRSA)
+
+KUBERNETES
+├── ArgoCD (argocd namespace)
+├── External Secrets Operator (external-secrets namespace)
+├── AWS Load Balancer Controller (kube-system)
+├── Backend Deployment (ecommerce namespace)
+└── Frontend Deployment (ecommerce namespace)
+```
+
+### Application URLs
+
+| Service | URL |
+|---------|-----|
+| E-commerce Frontend | https://dls03qes9fc77.cloudfront.net |
+| API Health | https://dls03qes9fc77.cloudfront.net/api/health |
+
+---
+
+## Day 6 Details - Load Testing ⏳
+
+### k6 Performance Testing
+
+| Task | Status |
+|------|--------|
+| Install k6 locally | ⏳ |
+| Create test scripts for key endpoints | ⏳ |
+| Define test scenarios (smoke, load, stress, spike) | ⏳ |
+| Baseline performance tests | ⏳ |
+| Identify bottlenecks | ⏳ |
+| Resource utilization analysis | ⏳ |
+| Query optimization | ⏳ |
+| Caching strategy evaluation | ⏳ |
+| HPA tuning recommendations | ⏳ |
+
+---
+
+## Day 7 Details - Datadog Monitoring ⏳
+
+### Datadog Integration
+
+| Task | Status |
+|------|--------|
+| Datadog account setup | ⏳ |
+| Datadog Agent Helm chart | ⏳ |
+| APM instrumentation (backend) | ⏳ |
+| RUM setup (frontend) | ⏳ |
+| Custom dashboards | ⏳ |
+| Alerts configuration | ⏳ |
+| Log aggregation | ⏳ |
+| Distributed tracing | ⏳ |
+
+---
+
+## Day 8 Details - Advanced Load Testing ⏳
+
+### Post-Optimization Testing
+
+| Task | Status |
+|------|--------|
+| Re-run baseline tests | ⏳ |
+| Compare before/after metrics | ⏳ |
+| Test with Datadog monitoring | ⏳ |
+| Validate HPA behavior | ⏳ |
+| Database connection pooling | ⏳ |
+| Redis cache effectiveness | ⏳ |
+| CDN cache hit ratio | ⏳ |
+| Cost per request analysis | ⏳ |
+
+---
+
+## Day 9 Details - Security Review ⏳
+
+### Security Hardening
+
+| Task | Status |
+|------|--------|
+| OWASP Top 10 review | ⏳ |
+| Penetration testing (basic) | ⏳ |
+| Network policies (Kubernetes) | ⏳ |
+| Pod security policies | ⏳ |
+| Secrets rotation strategy | ⏳ |
+| WAF configuration | ⏳ |
+| Security headers audit | ⏳ |
+| Dependency audit (npm audit) | ⏳ |
+| Container image hardening | ⏳ |
+| IAM least privilege review | ⏳ |
 
 ---
 

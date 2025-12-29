@@ -196,14 +196,46 @@ npm run lint                      # Lint all
 - [x] Husky in CI environment
 - [x] Terraform fmt auto-fix with auto-commit in Infrastructure CI
 
-### NOT Completed ❌
+### Completed ✅ (Day 5)
 
-**AWS Deploy (Day 5):**
-- [ ] Terraform apply Layer 1 (Platform: Network + EKS)
-- [ ] Terraform apply Layer 2 (Services: RDS + ElastiCache + CDN)
-- [ ] Run `deploy-argocd.yml` workflow (installs ArgoCD + Applications)
-- [ ] Manual sync via ArgoCD UI
-- [ ] E2E production tests
+**AWS Deploy:**
+- [x] Terraform apply Layer 1 (Platform: Network + EKS + ECR)
+- [x] Terraform apply Layer 2 (Services: RDS + ElastiCache + CDN)
+- [x] External Secrets Operator installation (v0.9.20)
+- [x] ArgoCD installation and configuration
+- [x] Backend + Frontend deployment via ArgoCD
+- [x] Database migration and seeding
+- [x] CloudFront HTTPS distribution for ALB
+- [x] Security group fixes (node SG → RDS/Redis)
+- [x] CORS configuration for CloudFront domain
+- [x] Terraform documentation of all CLI changes
+- [x] Shutdown/startup scripts for cost optimization
+
+**Application URLs:**
+- E-commerce: https://dls03qes9fc77.cloudfront.net
+- API Health: https://dls03qes9fc77.cloudfront.net/api/health
+
+### NOT Completed ❌ (Future Sessions)
+
+**Day 6 - Load Testing:**
+- [ ] k6 setup and test scripts
+- [ ] Smoke, load, stress, spike tests
+- [ ] Performance baseline and optimization
+
+**Day 7 - Datadog Monitoring:**
+- [ ] Datadog Agent deployment
+- [ ] APM instrumentation
+- [ ] Custom dashboards and alerts
+
+**Day 8 - Advanced Load Testing:**
+- [ ] Post-optimization testing
+- [ ] HPA validation
+- [ ] Cost per request analysis
+
+**Day 9 - Security Review:**
+- [ ] OWASP Top 10 review
+- [ ] Network policies
+- [ ] Container hardening
 
 ## Technical Notes
 
@@ -360,15 +392,27 @@ Per ogni CVE:
     - Trivy reports in `security/reports/` for Claude CVE analysis
     - ArgoCD manifests (Project, Applications with manual sync)
     - `deploy-argocd.yml` workflow (manual trigger)
-    - Terraform layer separation:
-      - Layer 1 (Platform): Network + EKS + ECR
-      - Layer 2 (Services): RDS + ElastiCache + CDN
-11. **Day 5: AWS Deploy** (Next)
-    - Terraform apply Layer 1 (Network + EKS + ECR)
-    - Terraform apply Layer 2 (RDS + ElastiCache + CDN)
-    - Run deploy-argocd.yml → ArgoCD + Applications
-    - Manual sync via ArgoCD UI
-    - E2E testing
+    - Terraform layer separation
+11. ~~**Day 5: AWS Deploy**~~ ✅
+    - Terraform apply Layer 1 + Layer 2
+    - External Secrets Operator + ArgoCD
+    - CloudFront HTTPS access
+    - Shutdown/startup scripts
+12. **Day 6: Load Testing** (Next)
+    - k6 test scripts for API endpoints
+    - Performance baseline
+    - Bottleneck identification
+13. **Day 7: Datadog Monitoring**
+    - Datadog Agent + APM
+    - Custom dashboards
+    - Alerts configuration
+14. **Day 8: Advanced Load Testing**
+    - Post-optimization tests
+    - HPA validation
+15. **Day 9: Security Review**
+    - OWASP Top 10 review
+    - Network policies
+    - Container hardening
 
 ## Completed Refactors
 
