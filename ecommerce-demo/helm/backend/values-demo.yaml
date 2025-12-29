@@ -43,7 +43,7 @@ env:
   LOG_LEVEL: info
   ENABLE_SWAGGER: "true"
   ENABLE_RATE_LIMITING: "true"
-  CORS_ORIGINS: "https://demo.example.com"
+  CORS_ORIGINS: "https://dls03qes9fc77.cloudfront.net,https://demo.example.com"
   # Redis configuration (ElastiCache requires TLS)
   REDIS_PORT: "6379"
   REDIS_TLS_ENABLED: "true"
