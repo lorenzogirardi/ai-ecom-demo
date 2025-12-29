@@ -37,5 +37,7 @@ autoscaling:
   targetCPUUtilizationPercentage: 70
 
 env:
-  NEXT_PUBLIC_API_URL: "https://api.demo.example.com"
+  # Empty API URL means frontend will use relative URLs (/api/*)
+  # This works when frontend and backend are behind the same domain (CloudFront/ALB)
+  NEXT_PUBLIC_API_URL: ""
   NEXT_PUBLIC_APP_NAME: "E-commerce Demo"
