@@ -2,7 +2,7 @@
 replicaCount: 2
 
 image:
-  repository: ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/ecommerce-demo/backend
+  repository: 170674040462.dkr.ecr.us-east-1.amazonaws.com/ecommerce-demo/backend
   pullPolicy: Always
   tag: latest
 
