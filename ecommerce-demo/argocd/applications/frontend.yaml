@@ -11,7 +11,7 @@ spec:
   source:
     repoURL: https://github.com/lorenzogirardi/ai-ecom-demo.git
     targetRevision: main
-    path: helm/frontend
+    path: ecommerce-demo/helm/frontend
     helm:
       valueFiles:
         - values-demo.yaml
