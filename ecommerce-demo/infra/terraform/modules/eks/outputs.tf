@@ -29,8 +29,13 @@ output "cluster_version" {
 }
 
 output "cluster_security_group_id" {
-  description = "Security group ID for the cluster"
+  description = "Security group ID for the cluster control plane"
   value       = aws_security_group.cluster.id
+}
+
+output "node_security_group_id" {
+  description = "Security group ID for the node group"
+  value       = aws_security_group.nodes.id
 }
 
 output "node_group_arn" {
@@ -61,6 +66,16 @@ output "lb_controller_role_arn" {
 output "kubeconfig_command" {
   description = "Command to update kubeconfig"
   value       = "aws eks update-kubeconfig --name ${aws_eks_cluster.main.name} --region ${data.aws_region.current.name}"
+}
+
+output "admin_prefix_list_id" {
+  description = "Prefix list ID for admin access IPs"
+  value       = aws_ec2_managed_prefix_list.admin.id
+}
+
+output "github_actions_prefix_list_id" {
+  description = "Prefix list ID for GitHub Actions IPs"
+  value       = aws_ec2_managed_prefix_list.github_actions.id
 }
 
 data "aws_region" "current" {}

@@ -43,7 +43,10 @@ env:
   LOG_LEVEL: info
   ENABLE_SWAGGER: "true"
   ENABLE_RATE_LIMITING: "true"
-  CORS_ORIGIN: "https://demo.example.com"
+  CORS_ORIGINS: "https://demo.example.com"
+  # Redis configuration (ElastiCache requires TLS)
+  REDIS_PORT: "6379"
+  REDIS_TLS_ENABLED: "true"
 
 # Use External Secrets for sensitive data
 externalSecrets:
@@ -53,14 +56,22 @@ externalSecrets:
     name: aws-secrets-manager
     kind: ClusterSecretStore
   data:
+    # Database connection string
     - secretKey: DATABASE_URL
       remoteRef:
         key: ecommerce-demo-demo-rds-password
         property: connection_string
+    # Redis host from Secrets Manager
+    - secretKey: REDIS_HOST
+      remoteRef:
+        key: ecommerce-demo-demo-redis-auth
+        property: host
+    # Redis password
     - secretKey: REDIS_PASSWORD
       remoteRef:
         key: ecommerce-demo-demo-redis-auth
         property: auth_token
+    # JWT secret
     - secretKey: JWT_SECRET
       remoteRef:
         key: ecommerce-demo-demo-jwt

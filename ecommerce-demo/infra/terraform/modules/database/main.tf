@@ -73,11 +73,12 @@ resource "aws_secretsmanager_secret" "rds_password" {
 resource "aws_secretsmanager_secret_version" "rds_password" {
   secret_id = aws_secretsmanager_secret.rds_password.id
   secret_string = jsonencode({
-    username = var.db_username
-    password = random_password.rds.result
-    host     = aws_db_instance.main.address
-    port     = aws_db_instance.main.port
-    dbname   = var.db_name
+    username          = var.db_username
+    password          = random_password.rds.result
+    host              = aws_db_instance.main.address
+    port              = aws_db_instance.main.port
+    dbname            = var.db_name
+    connection_string = "postgresql://${var.db_username}:${random_password.rds.result}@${aws_db_instance.main.address}:${aws_db_instance.main.port}/${var.db_name}"
   })
 }
 

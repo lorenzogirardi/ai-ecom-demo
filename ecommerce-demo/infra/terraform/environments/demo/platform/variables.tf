@@ -51,6 +51,24 @@ variable "eks_endpoint_public_access" {
   default     = true
 }
 
+variable "eks_public_access_cidrs" {
+  description = "CIDR blocks allowed to access EKS public API endpoint"
+  type        = list(string)
+  default     = ["0.0.0.0/0"] # Restrict this in production!
+}
+
+variable "eks_admin_access_cidrs" {
+  description = "CIDR blocks for admin access (kubectl) - your IP"
+  type        = list(string)
+  default     = [] # Set your IP here: ["1.2.3.4/32"]
+}
+
+variable "eks_github_actions_cidrs" {
+  description = "GitHub Actions IP ranges for CI/CD access"
+  type        = list(string)
+  default     = [] # Populated from https://api.github.com/meta
+}
+
 variable "eks_node_instance_types" {
   description = "Instance types for EKS nodes"
   type        = list(string)

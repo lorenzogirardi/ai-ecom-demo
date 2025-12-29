@@ -48,6 +48,9 @@ module "eks" {
   subnet_ids             = module.network.private_subnet_ids
   environment            = local.environment
   endpoint_public_access = var.eks_endpoint_public_access
+  public_access_cidrs    = var.eks_public_access_cidrs
+  admin_access_cidrs     = var.eks_admin_access_cidrs
+  github_actions_cidrs   = var.eks_github_actions_cidrs
   node_instance_types    = var.eks_node_instance_types
   capacity_type          = var.eks_capacity_type
   node_desired_size      = var.eks_node_desired_size

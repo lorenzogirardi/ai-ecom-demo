@@ -71,3 +71,26 @@ module "cdn" {
 
   tags = local.common_tags
 }
+
+# ============================================
+# JWT Secret
+# ============================================
+resource "random_password" "jwt_secret" {
+  length  = 64
+  special = false
+}
+
+resource "aws_secretsmanager_secret" "jwt" {
+  name                    = "${local.project_name}-${local.environment}-jwt"
+  description             = "JWT secret for ${local.project_name}"
+  recovery_window_in_days = local.environment == "production" ? 30 : 0
+
+  tags = local.common_tags
+}
+
+resource "aws_secretsmanager_secret_version" "jwt" {
+  secret_id = aws_secretsmanager_secret.jwt.id
+  secret_string = jsonencode({
+    secret = random_password.jwt_secret.result
+  })
+}

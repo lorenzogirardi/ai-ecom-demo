@@ -30,6 +30,24 @@ variable "endpoint_public_access" {
   default     = true
 }
 
+variable "public_access_cidrs" {
+  description = "List of CIDR blocks that can access the EKS public API endpoint"
+  type        = list(string)
+  default     = ["0.0.0.0/0"] # Should be restricted in production
+}
+
+variable "admin_access_cidrs" {
+  description = "List of CIDR blocks for admin access (kubectl)"
+  type        = list(string)
+  default     = []
+}
+
+variable "github_actions_cidrs" {
+  description = "List of GitHub Actions IP ranges for CI/CD access"
+  type        = list(string)
+  default     = []
+}
+
 variable "enabled_cluster_log_types" {
   description = "List of control plane logging to enable"
   type        = list(string)

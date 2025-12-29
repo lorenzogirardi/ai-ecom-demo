@@ -5,46 +5,51 @@
 # ============================================
 output "database_endpoint" {
   description = "RDS endpoint"
-  value       = module.database.endpoint
+  value       = module.database.db_endpoint
+}
+
+output "database_address" {
+  description = "RDS address (hostname)"
+  value       = module.database.db_address
 }
 
 output "database_port" {
   description = "RDS port"
-  value       = module.database.port
+  value       = module.database.db_port
 }
 
 output "database_name" {
   description = "Database name"
-  value       = module.database.database_name
+  value       = module.database.db_name
 }
 
 output "database_username" {
   description = "Database master username"
-  value       = module.database.username
+  value       = module.database.db_username
   sensitive   = true
 }
 
 output "database_secret_arn" {
   description = "Secrets Manager ARN for database credentials"
-  value       = module.database.secret_arn
+  value       = module.database.db_secret_arn
 }
 
 # ============================================
 # Cache Outputs
 # ============================================
 output "redis_endpoint" {
-  description = "Redis endpoint"
-  value       = module.cache.endpoint
+  description = "Redis primary endpoint"
+  value       = module.cache.redis_primary_endpoint
 }
 
 output "redis_port" {
   description = "Redis port"
-  value       = module.cache.port
+  value       = module.cache.redis_port
 }
 
-output "redis_auth_token_secret_arn" {
+output "redis_secret_arn" {
   description = "Secrets Manager ARN for Redis auth token"
-  value       = module.cache.auth_token_secret_arn
+  value       = module.cache.redis_secret_arn
 }
 
 # ============================================
@@ -60,9 +65,17 @@ output "cdn_distribution_domain_name" {
   value       = module.cdn.distribution_domain_name
 }
 
-output "cdn_s3_bucket_name" {
-  description = "CDN origin S3 bucket name"
-  value       = module.cdn.s3_bucket_name
+output "cdn_s3_bucket_id" {
+  description = "CDN origin S3 bucket ID"
+  value       = module.cdn.assets_bucket_id
+}
+
+# ============================================
+# JWT Secret Outputs
+# ============================================
+output "jwt_secret_arn" {
+  description = "Secrets Manager ARN for JWT secret"
+  value       = aws_secretsmanager_secret.jwt.arn
 }
 
 # ============================================
