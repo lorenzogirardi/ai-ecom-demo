@@ -65,6 +65,14 @@ async function buildServer() {
     await app.register(rateLimit, {
       max: config.rateLimit.max,
       timeWindow: config.rateLimit.timeWindow,
+      // Bypass rate limit for load testing with valid token
+      skip: (request) => {
+        const bypassHeader = request.headers["x-load-test-bypass"];
+        if (bypassHeader === config.rateLimit.bypassToken) {
+          return true; // Skip rate limiting
+        }
+        return false;
+      },
     });
   }
 

@@ -6,6 +6,9 @@ export const config = {
   baseUrl: __ENV.BASE_URL || 'https://dls03qes9fc77.cloudfront.net',
   apiUrl: __ENV.API_URL || 'https://dls03qes9fc77.cloudfront.net/api',
 
+  // Rate limit bypass token (must match backend RATE_LIMIT_BYPASS_TOKEN)
+  rateLimitBypassToken: __ENV.RATE_LIMIT_BYPASS_TOKEN || 'k6-load-test-bypass-token-2025',
+
   // Test users (from seed data)
   testUsers: {
     admin: {

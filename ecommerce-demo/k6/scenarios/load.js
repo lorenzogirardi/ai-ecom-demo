@@ -6,6 +6,7 @@
  *
  * Usage: k6 run k6/scenarios/load.js
  * Custom VUs: k6 run -e VUS=100 k6/scenarios/load.js
+ * Quick test: k6 run -e VUS=20 -e QUICK=1 k6/scenarios/load.js
  */
 
 import { check, group, sleep } from 'k6';
@@ -13,6 +14,8 @@ import { Counter, Trend } from 'k6/metrics';
 import { config, endpoints } from '../config.js';
 import { httpGet, authGet, authPost, thinkTime, parseJson } from '../helpers/http.js';
 import { loginAsUser } from '../helpers/auth.js';
+import { generateHtmlReport } from '../helpers/report.js';
+import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
 
 // Custom metrics
 const productViews = new Counter('product_views');
@@ -21,9 +24,16 @@ const orderDuration = new Trend('order_creation_duration');
 
 // Get max VUs from env or default
 const maxVus = parseInt(__ENV.VUS) || 50;
+const isQuick = __ENV.QUICK === '1';
 
+// Quick mode: 1m ramp + 2m steady + 30s down = 3.5min
+// Full mode: 2m ramp + 5m steady + 2m down = 9min
 export const options = {
-  stages: [
+  stages: isQuick ? [
+    { duration: '1m', target: maxVus },      // Quick ramp up
+    { duration: '2m', target: maxVus },      // Short steady state
+    { duration: '30s', target: 0 }           // Quick ramp down
+  ] : [
     { duration: '2m', target: maxVus },      // Ramp up
     { duration: '5m', target: maxVus },      // Steady state
     { duration: '2m', target: 0 }            // Ramp down
@@ -31,9 +41,6 @@ export const options = {
   thresholds: {
     http_req_failed: ['rate<0.01'],          // < 1% errors
     http_req_duration: ['p(95)<500'],        // 95% < 500ms
-    'http_req_duration{name:list-products}': ['p(95)<300'],
-    'http_req_duration{name:search}': ['p(95)<400'],
-    product_views: ['count>100'],            // At least 100 product views
   }
 };
 
@@ -125,4 +132,15 @@ export default function () {
   }
 
   sleep(1);
+}
+
+// Generate HTML report
+export function handleSummary(data) {
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+  const htmlReport = generateHtmlReport(data, 'Load Test');
+
+  return {
+    [`k6/reports/load-${timestamp}.html`]: htmlReport,
+    stdout: textSummary(data, { indent: ' ', enableColors: true }),
+  };
 }

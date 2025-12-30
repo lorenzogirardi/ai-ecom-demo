@@ -2,10 +2,11 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 import { config } from '../config.js';
 
-// Default headers
+// Default headers (includes rate limit bypass for load testing)
 export const defaultHeaders = {
   'Content-Type': 'application/json',
-  'Accept': 'application/json'
+  'Accept': 'application/json',
+  'X-Load-Test-Bypass': config.rateLimitBypassToken
 };
 
 // Add auth header
