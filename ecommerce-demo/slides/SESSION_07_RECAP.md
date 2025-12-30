@@ -1,4 +1,4 @@
-# Session 6 - Performance Fix: Autoscaling e Ottimizzazioni
+# Session 7 - Performance Fix: Autoscaling e Ottimizzazioni
 
 ## Panoramica
 

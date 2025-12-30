@@ -28,8 +28,7 @@
 | 5 | 29 Dic | Deploy AWS + ArgoCD + External Secrets + CloudFront | ✅ |
 | 6 | 30 Dic | k6 Load Testing + Cluster Autoscaler + CloudWatch Analysis | ✅ |
 | 7 | 30 Dic | Performance Fix: Pod Anti-Affinity + HPA + k6 Bug Fix | ✅ |
-| 8 | TBD | Datadog Monitoring Integration | ⏳ |
-| 9 | TBD | Advanced Load Testing + Security Review | ⏳ |
+| 8 | TBD | Advanced Load Testing + Security Review | ⏳ |
 
 ---
 
@@ -753,50 +752,7 @@ k6/
 
 ---
 
-## Dettaglio Giorno 8 - Datadog Monitoring ⏳
-
-### Datadog Integration
-
-| Task | Stato |
-|------|-------|
-| Datadog account setup | ⏳ |
-| Datadog Agent Helm chart | ⏳ |
-| APM instrumentation (backend) | ⏳ |
-| RUM setup (frontend) | ⏳ |
-| Custom dashboards | ⏳ |
-| Alerts configuration | ⏳ |
-| Log aggregation | ⏳ |
-| Distributed tracing | ⏳ |
-
-### Monitoring Architecture
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    DATADOG MONITORING                            │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  ┌──────────────┐      ┌──────────────┐      ┌──────────────┐  │
-│  │   Frontend   │ ──→  │  Datadog RUM │ ──→  │  Dashboards  │  │
-│  │   (Next.js)  │      │  (Browser)   │      │              │  │
-│  └──────────────┘      └──────────────┘      │  ┌────────┐  │  │
-│                                               │  │ Alerts │  │  │
-│  ┌──────────────┐      ┌──────────────┐      │  └────────┘  │  │
-│  │   Backend    │ ──→  │ Datadog APM  │ ──→  │              │  │
-│  │   (Fastify)  │      │  (Traces)    │      │  ┌────────┐  │  │
-│  └──────────────┘      └──────────────┘      │  │  Logs  │  │  │
-│                                               │  └────────┘  │  │
-│  ┌──────────────┐      ┌──────────────┐      │              │  │
-│  │  Kubernetes  │ ──→  │Datadog Agent │ ──→  │  ┌────────┐  │  │
-│  │   (Nodes)    │      │  (DaemonSet) │      │  │Metrics │  │  │
-│  └──────────────┘      └──────────────┘      │  └────────┘  │  │
-│                                               └──────────────┘  │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## Dettaglio Giorno 8 - Advanced Load Testing ⏳
+## Dettaglio Giorno 8 - Advanced Load Testing & Security ⏳
 
 ### Post-Optimization Testing
 
@@ -804,7 +760,6 @@ k6/
 |------|-------|
 | Re-run baseline tests | ⏳ |
 | Compare before/after metrics | ⏳ |
-| Test with Datadog monitoring | ⏳ |
 | Validate HPA behavior | ⏳ |
 | Database connection pooling | ⏳ |
 | Redis cache effectiveness | ⏳ |

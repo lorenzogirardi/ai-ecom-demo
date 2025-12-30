@@ -1,4 +1,4 @@
-# Session 6 - Performance Fix: Autoscaling and Optimizations
+# Session 7 - Performance Fix: Autoscaling and Optimizations
 
 ## Overview
 

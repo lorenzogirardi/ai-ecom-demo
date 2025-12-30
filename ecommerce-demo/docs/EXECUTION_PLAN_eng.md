@@ -28,8 +28,7 @@
 | 5 | Dec 29 | AWS Deploy + ArgoCD + External Secrets + CloudFront | ✅ |
 | 6 | Dec 30 | k6 Load Testing + Cluster Autoscaler + CloudWatch Analysis | ✅ |
 | 7 | Dec 30 | Performance Fix: Pod Anti-Affinity + HPA + k6 Bug Fix | ✅ |
-| 8 | TBD | Datadog Monitoring Integration | ⏳ |
-| 9 | TBD | Advanced Load Testing + Security Review | ⏳ |
+| 8 | TBD | Advanced Load Testing + Security Review | ⏳ |
 
 ---
 
@@ -729,24 +728,7 @@ k6/
 
 ---
 
-## Day 8 Details - Datadog Monitoring ⏳
-
-### Datadog Integration
-
-| Task | Status |
-|------|--------|
-| Datadog account setup | ⏳ |
-| Datadog Agent Helm chart | ⏳ |
-| APM instrumentation (backend) | ⏳ |
-| RUM setup (frontend) | ⏳ |
-| Custom dashboards | ⏳ |
-| Alerts configuration | ⏳ |
-| Log aggregation | ⏳ |
-| Distributed tracing | ⏳ |
-
----
-
-## Day 9 Details - Advanced Load Testing & Security ⏳
+## Day 8 Details - Advanced Load Testing & Security ⏳
 
 ### Post-Optimization Testing
 
@@ -754,27 +736,19 @@ k6/
 |------|--------|
 | Re-run baseline tests | ⏳ |
 | Compare before/after metrics | ⏳ |
-| Test with Datadog monitoring | ⏳ |
 | Validate HPA behavior | ⏳ |
 | Database connection pooling | ⏳ |
 | Redis cache effectiveness | ⏳ |
 | CDN cache hit ratio | ⏳ |
 | Cost per request analysis | ⏳ |
 
----
-
-## Day 9 Details - Security Review ⏳
-
 ### Security Hardening
 
 | Task | Status |
 |------|--------|
 | OWASP Top 10 review | ⏳ |
-| Penetration testing (basic) | ⏳ |
 | Network policies (Kubernetes) | ⏳ |
 | Pod security policies | ⏳ |
-| Secrets rotation strategy | ⏳ |
-| WAF configuration | ⏳ |
 | Security headers audit | ⏳ |
 | Dependency audit (npm audit) | ⏳ |
 | Container image hardening | ⏳ |
