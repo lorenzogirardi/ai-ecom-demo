@@ -41,3 +41,14 @@ env:
   # This works when frontend and backend are behind the same domain (CloudFront/ALB)
   NEXT_PUBLIC_API_URL: ""
   NEXT_PUBLIC_APP_NAME: "E-commerce Demo"
+
+# Pod Anti-Affinity: distribute pods across different nodes for HA
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: frontend
+          topologyKey: kubernetes.io/hostname

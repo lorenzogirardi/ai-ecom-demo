@@ -79,3 +79,14 @@ externalSecrets:
 
 migration:
   enabled: true
+
+# Pod Anti-Affinity: distribute pods across different nodes for HA
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: backend
+          topologyKey: kubernetes.io/hostname
