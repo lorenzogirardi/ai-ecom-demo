@@ -26,7 +26,7 @@
 | 3 | Dec 26 | Auth Pages + Checkout + Account + Search + Security | ✅ |
 | 4 | Dec 27 | CI Security + ArgoCD + Terraform Remote State + CVE Analysis | ✅ |
 | 5 | Dec 29 | AWS Deploy + ArgoCD + External Secrets + CloudFront | ✅ |
-| 6 | TBD | Load Testing with k6 + Performance Evaluation | ⏳ |
+| 6 | Dec 30 | k6 Load Testing + Cluster Autoscaler + CloudWatch Analysis | ✅ |
 | 7 | TBD | Datadog Monitoring Integration | ⏳ |
 | 8 | TBD | Advanced Load Testing + Optimization | ⏳ |
 | 9 | TBD | Security Review & Hardening | ⏳ |
@@ -552,55 +552,132 @@ KUBERNETES
 
 ---
 
-## Day 6 Details - Load Testing + CI Enhancement ⏳
+## Day 6 Details - December 30 ✅
 
-### CI Pipeline Enhancement
-
-| Task | Status |
-|------|--------|
-| Lighthouse integration (HTML reports, all categories) | ⏳ |
-| Google Checks integration (checks.google.com) | ⏳ |
-
-**Lighthouse:**
-- Performance, Accessibility, Best Practices, SEO, PWA
-- HTML report saved as artifact
-- Threshold for CI pass/fail
-
-**Google Checks:**
-- Privacy compliance analysis
-- Data safety reports
-- SDK analysis
-
-### k6 Performance Testing
+### k6 Load Testing Framework
 
 | Task | Status |
 |------|--------|
-| Install k6 locally | ⏳ |
-| Create test scripts for key endpoints | ⏳ |
-| Define test scenarios (smoke, load, stress, spike) | ⏳ |
-| Baseline performance tests | ⏳ |
-| Identify bottlenecks | ⏳ |
-| Resource utilization analysis | ⏳ |
-| Query optimization | ⏳ |
-| Caching strategy evaluation | ⏳ |
-| HPA tuning recommendations | ⏳ |
+| k6 framework (config.js, helpers) | ✅ |
+| Smoke test scenario (30s health check) | ✅ |
+| Load test scenario (3.5-9min standard) | ✅ |
+| Stress test scenario (13min, up to 200 VUs) | ✅ |
+| Spike test scenario (traffic spike analysis) | ✅ |
+| HTML report generation | ✅ |
+| k6 v0.49.0 compatibility fixes | ✅ |
 
-### Load Test Metrics Correlation
+**Framework Structure:**
+
+```
+k6/
+├── config.js                 # Centralized configuration
+├── helpers/
+│   ├── http.js              # HTTP helper with rate limit bypass
+│   ├── auth.js              # Authentication helper
+│   └── report.js            # HTML report generator
+└── scenarios/
+    ├── smoke.js             # 30s - Quick health check
+    ├── load.js              # 3.5-9min - Standard load test
+    ├── stress.js            # 13min - Stress test
+    └── spike.js             # Spike test with recovery analysis
+```
+
+### Rate Limit Bypass
 
 | Task | Status |
 |------|--------|
-| CloudWatch metrics during load test | ⏳ |
-| Kubernetes metrics (CPU, Memory, Network) | ⏳ |
-| Response time vs resources correlation | ⏳ |
-| Saturation threshold identification | ⏳ |
-| Metrics correlation dashboard | ⏳ |
+| Backend allowList configuration | ✅ |
+| X-Load-Test-Bypass header | ✅ |
+| Secure token-based bypass | ✅ |
 
-**Metrics to correlate:**
-- Response time (p50, p95, p99) vs CPU/Memory usage
-- Throughput (req/s) vs Pod scaling (HPA)
-- Error rate vs available resources
-- Connection pool vs DB connections
-- Cache hit ratio vs latency
+### GitHub Actions Pipeline
+
+| Task | Status |
+|------|--------|
+| `load-test.yml` workflow | ✅ |
+| Configurable test types (quick, load, stress, smoke) | ✅ |
+| HTML reports as artifacts (30 days) | ✅ |
+| VUs and target URL parameters | ✅ |
+
+### Cluster Autoscaler
+
+| Task | Status |
+|------|--------|
+| Deployment with IRSA | ✅ |
+| Node group discovery tags | ✅ |
+| Scale range: 2-5 nodes (t3.medium) | ✅ |
+| Scale down threshold: 50%, 10min idle | ✅ |
+| Documentation (IT + EN) | ✅ |
+
+### CloudWatch Metrics Analysis
+
+| Task | Status |
+|------|--------|
+| k6 to CloudWatch correlation | ✅ |
+| Bottleneck identification (backend pod 97% CPU) | ✅ |
+| RDS analysis (18% CPU, 6 connections) | ✅ |
+| ElastiCache analysis (99.9% cache hit rate) | ✅ |
+| ALB analysis (328 RPS peak, 0 5xx errors) | ✅ |
+| Documentation (IT + EN) | ✅ |
+
+### Stress Test Results
+
+```
+┌──────────────────────────────────────────────────┐
+│              STRESS TEST RESULTS                  │
+├──────────────────────────────────────────────────┤
+│  Total Requests:     183,203                     │
+│  Average RPS:        234.8 req/s                 │
+│  Test Duration:      13 minutes                  │
+├──────────────────────────────────────────────────┤
+│  RESPONSE TIMES                                   │
+│  p50:                89ms                        │
+│  p95:                380ms                       │
+│  p99:                892ms                       │
+├──────────────────────────────────────────────────┤
+│  ERROR RATE                                       │
+│  Failed Requests:    5.33%                       │
+│  Requests <500ms:    99.3%                       │
+│  Requests <1s:       100%                        │
+├──────────────────────────────────────────────────┤
+│  THRESHOLDS          ALL PASSED ✅               │
+└──────────────────────────────────────────────────┘
+```
+
+### Bottleneck Analysis
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    BOTTLENECK IDENTIFICATION                     │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ⚠️  EC2 Node 1 (Backend Pod): 97% CPU                          │
+│      └── Single pod handling all API requests                   │
+│      └── Recommendation: Scale to 2-3 replicas with HPA        │
+│                                                                  │
+│  ✅ RDS PostgreSQL: 18% CPU                                     │
+│      └── Connection pooling effective (6 connections)           │
+│                                                                  │
+│  ✅ ElastiCache Redis: 4% CPU                                   │
+│      └── 99.9% cache hit rate (76,865 hits, 63 misses)         │
+│                                                                  │
+│  ✅ ALB: No 5xx errors                                          │
+│      └── Peak: 328 RPS, max latency 1.9s                       │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Day 6 Final Checklist
+
+- [x] k6 framework with 4 scenarios (smoke, load, stress, spike)
+- [x] Rate limit bypass for load testing
+- [x] GitHub Actions load-test pipeline
+- [x] Cluster Autoscaler deployment + IRSA
+- [x] CloudWatch metrics correlation
+- [x] Bottleneck identification + recommendations
+- [x] HTML report generation
+- [x] k6 v0.49.0 compatibility (no optional chaining/spread)
+- [x] Documentation (IT + EN): SESSION_06_RECAP, CLOUDWATCH_STRESS_ANALYSIS, CLUSTER_AUTOSCALER
 
 ---
 
@@ -964,17 +1041,18 @@ KUBERNETES
 
 ## Project Statistics
 
-| Metric | Session 1 | Session 2 | Session 3 | Session 4 | Session 5 | Total |
-|--------|-----------|-----------|-----------|-----------|-----------|-------|
-| Files created | 82 | 21 | 24 | 15 | 12 | 154 |
-| Lines of code | ~8,900 | ~3,200 | ~2,500 | ~1,500 | ~3,400 | ~19,500 |
-| Backend Tests | 0 | 177 | 177 | 177 | 177 | 177 |
-| Frontend Tests | 0 | 0 | 29 | 29 | 29 | 29 |
-| Claude time | ~2 hrs | ~1.5 hrs | ~1.5 hrs | ~2 hrs | ~5 hrs | ~12 hrs |
-| Equiv. dev time | ~50 hrs | ~50 hrs | ~26.5 hrs | ~40 hrs | ~20 hrs | ~186.5 hrs |
-| Bug fixes | 0 | 0 | 5 | 10+ | 8 | 23+ |
-| CVE analyzed | 0 | 0 | 0 | 36 | 0 | 36 |
-| AWS Resources | 0 | 0 | 0 | 4 | 85 | 89 |
+| Metric | Session 1 | Session 2 | Session 3 | Session 4 | Session 5 | Session 6 | Total |
+|--------|-----------|-----------|-----------|-----------|-----------|-----------|-------|
+| Files created | 82 | 21 | 24 | 15 | 12 | 12 | 166 |
+| Lines of code | ~8,900 | ~3,200 | ~2,500 | ~1,500 | ~3,400 | ~1,800 | ~21,300 |
+| Backend Tests | 0 | 177 | 177 | 177 | 177 | 177 | 177 |
+| Frontend Tests | 0 | 0 | 29 | 29 | 29 | 29 | 29 |
+| Claude time | ~2 hrs | ~1.5 hrs | ~1.5 hrs | ~2 hrs | ~5 hrs | ~2 hrs | ~14 hrs |
+| Equiv. dev time | ~50 hrs | ~50 hrs | ~26.5 hrs | ~40 hrs | ~20 hrs | ~18 hrs | ~204.5 hrs |
+| Bug fixes | 0 | 0 | 5 | 10+ | 8 | 3 | 26+ |
+| CVE analyzed | 0 | 0 | 0 | 36 | 0 | 0 | 36 |
+| AWS Resources | 0 | 0 | 0 | 4 | 85 | 89 | 89 |
+| Load Tests | 0 | 0 | 0 | 0 | 0 | 183K req | 183K req |
 
 ### Code Distribution (~19,500 lines)
 
@@ -1010,10 +1088,11 @@ KUBERNETES
 
 - Repository: https://github.com/lorenzogirardi/ai-ecom-demo
 - Initial commit: bd0d99f (Dec 24, 2024)
-- Last update: December 29, 2024
+- Last update: December 30, 2024
 - Total tests: 206 (177 backend + 29 frontend)
-- Total lines of code: ~19,500
+- Total lines of code: ~21,300
 - Total AWS resources: 89 (13 services)
+- Load tests executed: 183K+ requests
 - **⚠️ Terraform State: ALWAYS remote backend on S3, NEVER local**
 - **📊 C-Level Presentation:** `docs/presentation/` (local, in .gitignore)
 - **🎬 Demo Video:** [GitHub Release v1.0.0-presentation](https://github.com/lorenzogirardi/ai-ecom-demo/releases/tag/v1.0.0-presentation)
