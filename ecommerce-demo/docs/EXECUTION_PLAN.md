@@ -27,9 +27,9 @@
 | 4 | 27 Dic | CI Security + ArgoCD + Terraform Remote State + CVE Analysis | ✅ |
 | 5 | 29 Dic | Deploy AWS + ArgoCD + External Secrets + CloudFront | ✅ |
 | 6 | 30 Dic | k6 Load Testing + Cluster Autoscaler + CloudWatch Analysis | ✅ |
-| 7 | TBD | Datadog Monitoring Integration | ⏳ |
-| 8 | TBD | Advanced Load Testing + Optimization | ⏳ |
-| 9 | TBD | Security Review & Hardening | ⏳ |
+| 7 | 30 Dic | Performance Fix: Pod Anti-Affinity + HPA + k6 Bug Fix | ✅ |
+| 8 | TBD | Datadog Monitoring Integration | ⏳ |
+| 9 | TBD | Advanced Load Testing + Security Review | ⏳ |
 
 ---
 
@@ -705,7 +705,55 @@ k6/
 
 ---
 
-## Dettaglio Giorno 7 - Datadog Monitoring ⏳
+## Dettaglio Giorno 7 - 30 Dicembre (Performance Fix) ✅
+
+### Pod Anti-Affinity
+
+| Task | File | Stato |
+|------|------|-------|
+| Backend Pod Anti-Affinity | `helm/backend/values-demo.yaml` | ✅ |
+| Frontend Pod Anti-Affinity | `helm/frontend/values-demo.yaml` | ✅ |
+| Pods distribuiti su nodi diversi | (cluster config) | ✅ |
+
+### HPA Optimization
+
+| Task | Stato |
+|------|-------|
+| CPU threshold ridotto (70% → 45%) | ✅ |
+| maxReplicas aumentato (5 → 7) | ✅ |
+| Metrics Server installato per EKS | ✅ |
+| Patch `--kubelet-insecure-tls` | ✅ |
+
+### Risultati Stress Test (con Autoscaling)
+
+| Metrica | Day 6 | Day 7 | Variazione |
+|---------|-------|-------|------------|
+| Total Requests | 183,203 | 291,480 | +59% |
+| Average RPS | 234.8 | 373.4 | +59% |
+| p95 Latency | 380ms | 206ms | -46% |
+| Error Rate | 5.33% | 5.27% | ~0% |
+
+### Autoscaling Behavior
+
+- HPA: 2 → 7 pods in ~8 minuti
+- Cluster Autoscaler: 3 → 5 nodi
+- Tutti i pod distribuiti su nodi diversi
+
+### Bug Fix
+
+| Bug | Fix | Commit |
+|-----|-----|--------|
+| k6 `/me` endpoint path sbagliato | Uso `endpoints.me` invece di `/auth/me` | `6b9291e` |
+| 15,356 errori su check `me ok` | Risolto | ✅ |
+
+### Documentation
+
+- [x] SESSION_06_RECAP_PERFORMANCE_FIX.md (IT)
+- [x] SESSION_06_RECAP_PERFORMANCE_FIX_eng.md (EN)
+
+---
+
+## Dettaglio Giorno 8 - Datadog Monitoring ⏳
 
 ### Datadog Integration
 

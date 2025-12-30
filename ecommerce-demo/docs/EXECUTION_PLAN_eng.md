@@ -27,9 +27,9 @@
 | 4 | Dec 27 | CI Security + ArgoCD + Terraform Remote State + CVE Analysis | ✅ |
 | 5 | Dec 29 | AWS Deploy + ArgoCD + External Secrets + CloudFront | ✅ |
 | 6 | Dec 30 | k6 Load Testing + Cluster Autoscaler + CloudWatch Analysis | ✅ |
-| 7 | TBD | Datadog Monitoring Integration | ⏳ |
-| 8 | TBD | Advanced Load Testing + Optimization | ⏳ |
-| 9 | TBD | Security Review & Hardening | ⏳ |
+| 7 | Dec 30 | Performance Fix: Pod Anti-Affinity + HPA + k6 Bug Fix | ✅ |
+| 8 | TBD | Datadog Monitoring Integration | ⏳ |
+| 9 | TBD | Advanced Load Testing + Security Review | ⏳ |
 
 ---
 
@@ -681,7 +681,55 @@ k6/
 
 ---
 
-## Day 7 Details - Datadog Monitoring ⏳
+## Day 7 Details - December 30 (Performance Fix) ✅
+
+### Pod Anti-Affinity
+
+| Task | File | Status |
+|------|------|--------|
+| Backend Pod Anti-Affinity | `helm/backend/values-demo.yaml` | ✅ |
+| Frontend Pod Anti-Affinity | `helm/frontend/values-demo.yaml` | ✅ |
+| Pods distributed across different nodes | (cluster config) | ✅ |
+
+### HPA Optimization
+
+| Task | Status |
+|------|--------|
+| CPU threshold reduced (70% → 45%) | ✅ |
+| maxReplicas increased (5 → 7) | ✅ |
+| Metrics Server installed for EKS | ✅ |
+| Patch `--kubelet-insecure-tls` | ✅ |
+
+### Stress Test Results (with Autoscaling)
+
+| Metric | Day 6 | Day 7 | Change |
+|--------|-------|-------|--------|
+| Total Requests | 183,203 | 291,480 | +59% |
+| Average RPS | 234.8 | 373.4 | +59% |
+| p95 Latency | 380ms | 206ms | -46% |
+| Error Rate | 5.33% | 5.27% | ~0% |
+
+### Autoscaling Behavior
+
+- HPA: 2 → 7 pods in ~8 minutes
+- Cluster Autoscaler: 3 → 5 nodes
+- All pods distributed across different nodes
+
+### Bug Fix
+
+| Bug | Fix | Commit |
+|-----|-----|--------|
+| k6 `/me` endpoint path wrong | Use `endpoints.me` instead of `/auth/me` | `6b9291e` |
+| 15,356 errors on `me ok` check | Resolved | ✅ |
+
+### Documentation
+
+- [x] SESSION_06_RECAP_PERFORMANCE_FIX.md (IT)
+- [x] SESSION_06_RECAP_PERFORMANCE_FIX_eng.md (EN)
+
+---
+
+## Day 8 Details - Datadog Monitoring ⏳
 
 ### Datadog Integration
 
@@ -698,7 +746,7 @@ k6/
 
 ---
 
-## Day 8 Details - Advanced Load Testing ⏳
+## Day 9 Details - Advanced Load Testing & Security ⏳
 
 ### Post-Optimization Testing
 

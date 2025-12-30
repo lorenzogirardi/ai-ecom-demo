@@ -32,7 +32,7 @@ affinity:
 | Parameter | Before | After |
 |-----------|--------|-------|
 | `targetCPUUtilizationPercentage` | 70% | 45% |
-| `maxReplicas` | 5 | 9 |
+| `maxReplicas` | 5 | 7 |
 | `minReplicas` | 2 | 2 |
 
 **Effect:** More aggressive and responsive scaling under load.
@@ -231,7 +231,7 @@ variable "node_max_size" {
 ### Successes
 
 1. **HPA Works Correctly**
-   - Reactive scaling from 2 to 9 pods
+   - Reactive scaling from 2 to 7 pods
    - 45% threshold effective for anticipating load
 
 2. **Cluster Autoscaler Operational**
@@ -275,12 +275,35 @@ variable "node_max_size" {
 
 ---
 
+## Bug Fixes Identified
+
+### k6 Stress Test - /me Endpoint
+
+During results analysis, a bug was identified in the k6 test:
+
+```javascript
+// BEFORE (wrong) - 15,356 errors
+const meRes = authGet('/auth/me', token, {...})
+
+// AFTER (correct)
+const meRes = authGet(endpoints.me, token, {...})  // = '/api/auth/me'
+```
+
+**Problem:** The path `/auth/me` doesn't exist, the correct endpoint is `/api/auth/me`.
+
+**Impact:** All `me ok` checks failed (0% success rate, 15,356 errors).
+
+**Fix:** Commit `6b9291e` - Use `endpoints.me` instead of hardcoded path.
+
+---
+
 ## Modified Files
 
 | File | Change |
 |------|--------|
-| `helm/backend/values-demo.yaml` | Pod Anti-Affinity, HPA 45%, maxReplicas 9 |
+| `helm/backend/values-demo.yaml` | Pod Anti-Affinity, HPA 45%, maxReplicas 7 |
 | `helm/frontend/values-demo.yaml` | Pod Anti-Affinity |
+| `k6/scenarios/stress.js` | Fix /me endpoint path |
 
 ---
 

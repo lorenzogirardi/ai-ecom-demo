@@ -252,26 +252,54 @@ npm run lint                      # Lint all
 - [x] ALB analysis (328 RPS peak, 0 5xx errors)
 - [x] Documentation in slides/ (IT + EN)
 
-**Stress Test Results:**
+**Stress Test Results (Day 6):**
 - Total Requests: 183,203
 - Average RPS: 234.8
 - p95 Latency: 380ms
 - Error Rate: 5.33% (auth endpoint, not server errors)
 - All thresholds PASSED
 
+### Completed ✅ (Day 7 - Performance Fix)
+
+**Pod Anti-Affinity:**
+- [x] Backend pods distributed across different nodes
+- [x] Frontend pods distributed across different nodes
+- [x] `topologyKey: kubernetes.io/hostname` configuration
+- [x] `preferredDuringSchedulingIgnoredDuringExecution` (soft rule)
+
+**HPA Optimization:**
+- [x] CPU threshold reduced from 70% to 45%
+- [x] maxReplicas increased from 5 to 7
+- [x] Faster, more reactive scaling under load
+- [x] Metrics Server installed for EKS
+
+**Stress Test Results (Day 7 - With Autoscaling):**
+- Total Requests: 291,480 (+59% vs Day 6)
+- Average RPS: 373.4 (+59% vs Day 6)
+- p95 Latency: 206ms (-46% vs Day 6)
+- Error Rate: 5.27%
+- HPA scaled from 2 to 7 pods
+- Cluster Autoscaler added 2 nodes (3→5)
+
+**Bug Fixes:**
+- [x] k6 stress test `/me` endpoint path fixed (`/auth/me` → `endpoints.me`)
+- [x] All 15,356 `/me` errors resolved
+
+**Documentation:**
+- [x] SESSION_06_RECAP_PERFORMANCE_FIX.md (IT)
+- [x] SESSION_06_RECAP_PERFORMANCE_FIX_eng.md (EN)
+
 ### NOT Completed ❌ (Future Sessions)
 
-**Day 7 - Datadog Monitoring:**
+**Day 8 - Datadog Monitoring:**
 - [ ] Datadog Agent deployment
 - [ ] APM instrumentation
 - [ ] Custom dashboards and alerts
 
-**Day 8 - Advanced Load Testing:**
+**Day 9 - Advanced Load Testing & Security:**
 - [ ] Post-optimization testing
 - [ ] HPA validation
 - [ ] Cost per request analysis
-
-**Day 9 - Security Review:**
 - [ ] OWASP Top 10 review
 - [ ] Network policies
 - [ ] Container hardening
@@ -443,17 +471,21 @@ Per ogni CVE:
     - CloudWatch metrics correlation
     - Bottleneck identified: single backend pod at 97% CPU
     - GitHub Actions load test pipeline
-13. **Day 7: Datadog Monitoring** (Next)
+13. ~~**Day 7: Performance Fix**~~ ✅
+    - Pod Anti-Affinity for backend + frontend
+    - HPA optimization (45% CPU threshold, maxReplicas 7)
+    - Metrics Server installation for EKS
+    - k6 /me endpoint bug fix
+    - +59% throughput, -46% p95 latency
+14. **Day 8: Datadog Monitoring** (Next)
     - Datadog Agent + APM
     - Custom dashboards
     - Alerts configuration
-14. **Day 8: Advanced Load Testing**
+15. **Day 9: Advanced Load Testing & Security**
     - Post-optimization tests
     - HPA validation
-15. **Day 9: Security Review**
     - OWASP Top 10 review
     - Network policies
-    - Container hardening
 
 ## Completed Refactors
 
