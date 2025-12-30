@@ -95,7 +95,8 @@ function spikeUserBehavior() {
     check(productsRes, { 'products ok': (r) => r.status === 200 });
 
     // Random product view
-    const products = parseJson(productsRes)?.data || [];
+    const parsedProducts = parseJson(productsRes);
+    const products = (parsedProducts && parsedProducts.data) || [];
     if (products.length > 0) {
       const product = products[Math.floor(Math.random() * products.length)];
       const productRes = httpGet(endpoints.product(product.slug), {
@@ -136,17 +137,17 @@ export function handleSummary(data) {
   if (metrics.normal_phase_latency) {
     const np = metrics.normal_phase_latency.values;
     console.log(`\nNormal Phase (baseline):`);
-    console.log(`  p50: ${np['p(50)']?.toFixed(0) || 'N/A'}ms`);
-    console.log(`  p95: ${np['p(95)']?.toFixed(0) || 'N/A'}ms`);
-    console.log(`  p99: ${np['p(99)']?.toFixed(0) || 'N/A'}ms`);
+    console.log(`  p50: ${np['p(50)'] ? np['p(50)'].toFixed(0) : 'N/A'}ms`);
+    console.log(`  p95: ${np['p(95)'] ? np['p(95)'].toFixed(0) : 'N/A'}ms`);
+    console.log(`  p99: ${np['p(99)'] ? np['p(99)'].toFixed(0) : 'N/A'}ms`);
   }
 
   if (metrics.spike_phase_latency) {
     const sp = metrics.spike_phase_latency.values;
     console.log(`\nSpike Phase (under load):`);
-    console.log(`  p50: ${sp['p(50)']?.toFixed(0) || 'N/A'}ms`);
-    console.log(`  p95: ${sp['p(95)']?.toFixed(0) || 'N/A'}ms`);
-    console.log(`  p99: ${sp['p(99)']?.toFixed(0) || 'N/A'}ms`);
+    console.log(`  p50: ${sp['p(50)'] ? sp['p(50)'].toFixed(0) : 'N/A'}ms`);
+    console.log(`  p95: ${sp['p(95)'] ? sp['p(95)'].toFixed(0) : 'N/A'}ms`);
+    console.log(`  p99: ${sp['p(99)'] ? sp['p(99)'].toFixed(0) : 'N/A'}ms`);
     if (metrics.spike_phase_errors) {
       console.log(`  Errors: ${metrics.spike_phase_errors.values.count}`);
     }
@@ -155,9 +156,9 @@ export function handleSummary(data) {
   if (metrics.recovery_phase_latency) {
     const rp = metrics.recovery_phase_latency.values;
     console.log(`\nRecovery Phase:`);
-    console.log(`  p50: ${rp['p(50)']?.toFixed(0) || 'N/A'}ms`);
-    console.log(`  p95: ${rp['p(95)']?.toFixed(0) || 'N/A'}ms`);
-    console.log(`  p99: ${rp['p(99)']?.toFixed(0) || 'N/A'}ms`);
+    console.log(`  p50: ${rp['p(50)'] ? rp['p(50)'].toFixed(0) : 'N/A'}ms`);
+    console.log(`  p95: ${rp['p(95)'] ? rp['p(95)'].toFixed(0) : 'N/A'}ms`);
+    console.log(`  p99: ${rp['p(99)'] ? rp['p(99)'].toFixed(0) : 'N/A'}ms`);
     if (metrics.recovery_phase_errors) {
       console.log(`  Errors: ${metrics.recovery_phase_errors.values.count}`);
     }

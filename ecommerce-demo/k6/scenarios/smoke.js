@@ -28,7 +28,10 @@ export default function () {
   group('Health Check', function () {
     const res = httpGet(endpoints.health, { tags: { name: 'health' } });
     check(res, {
-      'health status ok': (r) => parseJson(r)?.success === true
+      'health status ok': (r) => {
+        const body = parseJson(r);
+        return body && body.success === true;
+      }
     });
   });
 
@@ -40,7 +43,7 @@ export default function () {
     check(res, {
       'products returned': (r) => {
         const body = parseJson(r);
-        return body?.data?.length > 0;
+        return body && body.data && body.data.length > 0;
       }
     });
   });
@@ -53,7 +56,7 @@ export default function () {
     check(res, {
       'categories returned': (r) => {
         const body = parseJson(r);
-        return body?.data?.length > 0;
+        return body && body.data && body.data.length > 0;
       }
     });
   });

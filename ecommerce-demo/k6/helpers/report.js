@@ -7,18 +7,18 @@ export function generateHtmlReport(data, testName = 'Load Test') {
   const metrics = data.metrics;
   const timestamp = new Date().toISOString();
 
-  // Extract key metrics
-  const httpReqs = metrics.http_reqs?.values?.count || 0;
-  const httpReqDuration = metrics.http_req_duration?.values || {};
-  const httpReqFailed = metrics.http_req_failed?.values?.rate || 0;
-  const iterations = metrics.iterations?.values?.count || 0;
-  const dataReceived = metrics.data_received?.values?.count || 0;
-  const dataSent = metrics.data_sent?.values?.count || 0;
-  const vus = metrics.vus?.values?.max || 0;
-  const duration = (data.state?.testRunDurationMs || 0) / 1000;
+  // Extract key metrics (compatible with k6 v0.49.0 - no optional chaining)
+  const httpReqs = (metrics.http_reqs && metrics.http_reqs.values && metrics.http_reqs.values.count) || 0;
+  const httpReqDuration = (metrics.http_req_duration && metrics.http_req_duration.values) || {};
+  const httpReqFailed = (metrics.http_req_failed && metrics.http_req_failed.values && metrics.http_req_failed.values.rate) || 0;
+  const iterations = (metrics.iterations && metrics.iterations.values && metrics.iterations.values.count) || 0;
+  const dataReceived = (metrics.data_received && metrics.data_received.values && metrics.data_received.values.count) || 0;
+  const dataSent = (metrics.data_sent && metrics.data_sent.values && metrics.data_sent.values.count) || 0;
+  const vus = (metrics.vus && metrics.vus.values && metrics.vus.values.max) || 0;
+  const duration = ((data.state && data.state.testRunDurationMs) || 0) / 1000;
 
   // Check results
-  const checks = data.root_group?.checks || [];
+  const checks = (data.root_group && data.root_group.checks) || [];
   const checkResults = [];
 
   function extractChecks(group, prefix = '') {

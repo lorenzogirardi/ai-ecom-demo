@@ -57,7 +57,8 @@ function browsingUser() {
 
     // View specific product
     const productsRes = httpGet(endpoints.products, { check: false });
-    const products = parseJson(productsRes)?.data || [];
+    const parsed = parseJson(productsRes);
+    const products = (parsed && parsed.data) || [];
     if (products.length > 0) {
       const randomProduct = products[Math.floor(Math.random() * products.length)];
       httpGet(endpoints.product(randomProduct.slug), { tags: { name: 'view-product' } });
@@ -94,7 +95,8 @@ function purchasingUser() {
 
     // Simulate order creation (10% of purchasing users actually order)
     if (Math.random() < 0.1) {
-      const products = parseJson(productsRes)?.data || [];
+      const parsedProducts = parseJson(productsRes);
+      const products = (parsedProducts && parsedProducts.data) || [];
       if (products.length > 0) {
         const product = products[Math.floor(Math.random() * products.length)];
         orderAttempts.add(1);

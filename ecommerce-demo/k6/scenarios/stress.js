@@ -153,9 +153,9 @@ export function handleSummary(data) {
     const p95 = metrics.http_req_duration.values['p(95)'];
     const p99 = metrics.http_req_duration.values['p(99)'];
     console.log(`\nResponse Times:`);
-    console.log(`  p50: ${p50?.toFixed(0) || 'N/A'}ms`);
-    console.log(`  p95: ${p95?.toFixed(0) || 'N/A'}ms`);
-    console.log(`  p99: ${p99?.toFixed(0) || 'N/A'}ms`);
+    console.log(`  p50: ${p50 ? p50.toFixed(0) : 'N/A'}ms`);
+    console.log(`  p95: ${p95 ? p95.toFixed(0) : 'N/A'}ms`);
+    console.log(`  p99: ${p99 ? p99.toFixed(0) : 'N/A'}ms`);
   }
 
   // Error analysis
