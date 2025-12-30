@@ -89,6 +89,116 @@ jobs:
         run: npm run test
 
   # ============================================
+  # Lighthouse - Performance & Accessibility
+  # ============================================
+  lighthouse:
+    name: Lighthouse Audit
+    runs-on: ubuntu-latest
+    needs: lint-and-test
+    defaults:
+      run:
+        working-directory: ecommerce-demo/apps/frontend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: ecommerce-demo/package-lock.json
+
+      - name: Install root dependencies
+        working-directory: ecommerce-demo
+        run: npm ci
+        env:
+          HUSKY: "0"
+
+      - name: Build Next.js app
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:4000/api
+
+      - name: Install Lighthouse CI
+        run: npm install -g @lhci/cli@0.13.x
+
+      - name: Run Lighthouse CI
+        run: |
+          lhci autorun --config=lighthouserc.json || true
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Lighthouse reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-reports
+          path: ecommerce-demo/apps/frontend/.lighthouseci
+          retention-days: 30
+
+      - name: Generate Lighthouse summary
+        run: |
+          echo "## 🔦 Lighthouse Audit - Frontend" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ -d ".lighthouseci" ]; then
+            # Find the latest JSON report
+            REPORT=$(ls -t .lighthouseci/lhr-*.json 2>/dev/null | head -1)
+            if [ -f "$REPORT" ]; then
+              PERF=$(jq '.categories.performance.score * 100 | floor' "$REPORT" 2>/dev/null || echo "N/A")
+              A11Y=$(jq '.categories.accessibility.score * 100 | floor' "$REPORT" 2>/dev/null || echo "N/A")
+              BP=$(jq '.categories["best-practices"].score * 100 | floor' "$REPORT" 2>/dev/null || echo "N/A")
+              SEO=$(jq '.categories.seo.score * 100 | floor' "$REPORT" 2>/dev/null || echo "N/A")
+
+              echo "### Scores" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "| Category | Score |" >> $GITHUB_STEP_SUMMARY
+              echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+              echo "| 🚀 Performance | $PERF |" >> $GITHUB_STEP_SUMMARY
+              echo "| ♿ Accessibility | $A11Y |" >> $GITHUB_STEP_SUMMARY
+              echo "| ✅ Best Practices | $BP |" >> $GITHUB_STEP_SUMMARY
+              echo "| 🔍 SEO | $SEO |" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "⚠️ No Lighthouse report found" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "⚠️ Lighthouse CI directory not found" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # ============================================
+  # Google Checks - Privacy Compliance (Optional)
+  # ============================================
+  # NOTE: Google Checks is primarily for mobile apps (APK/IPA).
+  # For web apps, enable this when you have:
+  # 1. A Google Checks account (https://checks.google.com)
+  # 2. CHECKS_SERVICE_ACCOUNT_JSON secret configured
+  # 3. CHECKS_APP_ID and CHECKS_ACCOUNT_ID secrets
+  #
+  # google-checks:
+  #   name: Google Checks Privacy Scan
+  #   runs-on: ubuntu-latest
+  #   needs: lint-and-test
+  #   if: ${{ secrets.CHECKS_SERVICE_ACCOUNT_JSON != '' }}
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+  #
+  #     - name: Download Checks CLI
+  #       run: |
+  #         curl -Lo checks https://github.com/aspect-build/aspect-cli/releases/latest/download/checks-linux-amd64
+  #         chmod +x checks
+  #
+  #     - name: Run Google Checks
+  #       env:
+  #         CHECKS_CREDENTIALS: ${{ secrets.CHECKS_SERVICE_ACCOUNT_JSON }}
+  #       run: |
+  #         ./checks report generate \
+  #           --app-id=${{ secrets.CHECKS_APP_ID }} \
+  #           --account-id=${{ secrets.CHECKS_ACCOUNT_ID }} \
+  #           --no-input --json --wait-and-print-report
+
+  # ============================================
   # Build Docker Image
   # ============================================
   build:
