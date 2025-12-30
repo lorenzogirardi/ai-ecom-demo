@@ -84,17 +84,17 @@ variable "eks_capacity_type" {
 variable "eks_node_desired_size" {
   description = "Desired number of nodes"
   type        = number
-  default     = 2
+  default     = 3 # Increased from 2 for load testing capacity
 }
 
 variable "eks_node_min_size" {
   description = "Minimum number of nodes"
   type        = number
-  default     = 1
+  default     = 2 # Increased from 1 for HA
 }
 
 variable "eks_node_max_size" {
-  description = "Maximum number of nodes"
+  description = "Maximum number of nodes (Cluster Autoscaler limit)"
   type        = number
-  default     = 4
+  default     = 5 # Increased from 4 for autoscaling headroom
 }

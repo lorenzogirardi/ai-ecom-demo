@@ -63,6 +63,11 @@ output "lb_controller_role_arn" {
   value       = aws_iam_role.lb_controller.arn
 }
 
+output "cluster_autoscaler_role_arn" {
+  description = "ARN of the Cluster Autoscaler IAM role"
+  value       = aws_iam_role.cluster_autoscaler.arn
+}
+
 output "kubeconfig_command" {
   description = "Command to update kubeconfig"
   value       = "aws eks update-kubeconfig --name ${aws_eks_cluster.main.name} --region ${data.aws_region.current.name}"
