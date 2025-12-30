@@ -1,0 +1,100 @@
+# Load Testing Workflow
+# Manual trigger for running k6 load tests against production
+# Saves HTML reports as artifacts
+
+name: Load Test
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_type:
+        description: 'Test type to run'
+        required: true
+        default: 'quick'
+        type: choice
+        options:
+          - quick      # 3.5 min - Fast validation
+          - load       # 9 min - Standard load test
+          - stress     # 13 min - Stress test
+          - smoke      # 30s - Basic health check
+      vus:
+        description: 'Max virtual users'
+        required: false
+        default: '20'
+        type: string
+      base_url:
+        description: 'Target URL (default: CloudFront)'
+        required: false
+        default: 'https://dls03qes9fc77.cloudfront.net'
+        type: string
+
+env:
+  K6_VERSION: '0.49.0'
+
+jobs:
+  load-test:
+    name: Run ${{ github.event.inputs.test_type }} test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install k6
+        run: |
+          curl -fsSL https://github.com/grafana/k6/releases/download/v${{ env.K6_VERSION }}/k6-v${{ env.K6_VERSION }}-linux-amd64.tar.gz | tar xzf - --strip-components=1
+          sudo mv k6 /usr/local/bin/
+          k6 version
+
+      - name: Create reports directory
+        run: mkdir -p ecommerce-demo/k6/reports
+
+      - name: Run ${{ github.event.inputs.test_type }} test
+        working-directory: ecommerce-demo
+        env:
+          BASE_URL: ${{ github.event.inputs.base_url }}
+          API_URL: ${{ github.event.inputs.base_url }}/api
+          VUS: ${{ github.event.inputs.vus }}
+          MAX_VUS: ${{ github.event.inputs.vus }}
+        run: |
+          TEST_TYPE="${{ github.event.inputs.test_type }}"
+
+          case $TEST_TYPE in
+            quick)
+              echo "Running quick load test (3.5 min, $VUS VUs)..."
+              k6 run -e QUICK=1 -e VUS=$VUS k6/scenarios/load.js
+              ;;
+            load)
+              echo "Running standard load test (9 min, $VUS VUs)..."
+              k6 run -e VUS=$VUS k6/scenarios/load.js
+              ;;
+            stress)
+              echo "Running stress test (13 min, up to $MAX_VUS VUs)..."
+              k6 run -e MAX_VUS=$MAX_VUS k6/scenarios/stress.js
+              ;;
+            smoke)
+              echo "Running smoke test (30s)..."
+              k6 run k6/scenarios/smoke.js
+              ;;
+          esac
+
+      - name: Upload HTML reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: k6-reports-${{ github.event.inputs.test_type }}-${{ github.run_number }}
+          path: ecommerce-demo/k6/reports/*.html
+          retention-days: 30
+
+      - name: Test Summary
+        if: always()
+        run: |
+          echo "## Load Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Parameter | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Test Type | ${{ github.event.inputs.test_type }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Target URL | ${{ github.event.inputs.base_url }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Virtual Users | ${{ github.event.inputs.vus }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Timestamp | $(date -u '+%Y-%m-%d %H:%M:%S UTC') |" >> $GITHUB_STEP_SUMMARY

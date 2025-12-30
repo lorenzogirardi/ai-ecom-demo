@@ -13,6 +13,8 @@ import { Counter, Rate, Trend } from 'k6/metrics';
 import { config, endpoints } from '../config.js';
 import { httpGet, authGet, thinkTime, parseJson } from '../helpers/http.js';
 import { loginAsUser } from '../helpers/auth.js';
+import { generateHtmlReport } from '../helpers/report.js';
+import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
 
 // Custom metrics for stress analysis
 const requestsUnder500ms = new Rate('requests_under_500ms');
@@ -174,7 +176,11 @@ export function handleSummary(data) {
 
   console.log('\n========================================\n');
 
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+  const htmlReport = generateHtmlReport(data, 'Stress Test');
+
   return {
-    'stdout': JSON.stringify(data, null, 2)
+    [`k6/reports/stress-${timestamp}.html`]: htmlReport,
+    stdout: textSummary(data, { indent: ' ', enableColors: true }),
   };
 }
