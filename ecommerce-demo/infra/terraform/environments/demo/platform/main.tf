@@ -53,6 +53,7 @@ module "eks" {
   github_actions_cidrs   = var.eks_github_actions_cidrs
   node_instance_types    = var.eks_node_instance_types
   capacity_type          = var.eks_capacity_type
+  ami_type               = var.eks_ami_type
   node_desired_size      = var.eks_node_desired_size
   node_min_size          = var.eks_node_min_size
   node_max_size          = var.eks_node_max_size

@@ -81,6 +81,12 @@ variable "eks_capacity_type" {
   default     = "ON_DEMAND"
 }
 
+variable "eks_ami_type" {
+  description = "AMI type for EKS nodes (AL2023_x86_64_STANDARD, AL2_x86_64, etc.)"
+  type        = string
+  default     = "AL2023_x86_64_STANDARD"
+}
+
 variable "eks_node_desired_size" {
   description = "Desired number of nodes"
   type        = number
