@@ -66,12 +66,9 @@ async function buildServer() {
       max: config.rateLimit.max,
       timeWindow: config.rateLimit.timeWindow,
       // Bypass rate limit for load testing with valid token
-      skip: (request) => {
+      allowList: (request) => {
         const bypassHeader = request.headers["x-load-test-bypass"];
-        if (bypassHeader === config.rateLimit.bypassToken) {
-          return true; // Skip rate limiting
-        }
-        return false;
+        return bypassHeader === config.rateLimit.bypassToken;
       },
     });
   }

@@ -140,12 +140,9 @@ Request Rate vs Rate Limit
 
 **Backend** (`apps/backend/src/server.ts`):
 ```typescript
-skip: (request) => {
+allowList: (request) => {
   const bypassHeader = request.headers["x-load-test-bypass"];
-  if (bypassHeader === config.rateLimit.bypassToken) {
-    return true; // Skip rate limiting
-  }
-  return false;
+  return bypassHeader === config.rateLimit.bypassToken;
 }
 ```
 
