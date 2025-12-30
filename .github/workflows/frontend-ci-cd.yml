@@ -130,12 +130,22 @@ jobs:
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Debug Lighthouse output location
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Workspace: ${{ github.workspace }}"
+          echo "Looking for .lighthouseci..."
+          find ${{ github.workspace }} -name ".lighthouseci" -type d 2>/dev/null || echo "Not found via find"
+          ls -la .lighthouseci 2>/dev/null || echo "Not in working dir"
+          ls -la ${{ github.workspace }}/.lighthouseci 2>/dev/null || echo "Not in workspace root"
+
       - name: Upload Lighthouse reports
         uses: actions/upload-artifact@v4
         with:
           name: lighthouse-reports
-          path: ecommerce-demo/apps/frontend/.lighthouseci
+          path: ${{ github.workspace }}/ecommerce-demo/apps/frontend/.lighthouseci
           retention-days: 30
+          if-no-files-found: warn
 
       - name: Generate Lighthouse summary
         run: |
