@@ -110,7 +110,7 @@ function authStress() {
     check(ordersRes, { 'orders ok': (r) => r.status === 200 });
 
     // Fetch user profile
-    const meRes = authGet('/auth/me', token, {
+    const meRes = authGet(endpoints.me, token, {
       tags: { name: 'stress-me' },
       check: false
     });
