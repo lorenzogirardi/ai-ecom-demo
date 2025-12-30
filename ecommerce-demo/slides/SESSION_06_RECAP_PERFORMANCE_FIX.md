@@ -307,5 +307,68 @@ const meRes = authGet(endpoints.me, token, {...})  // = '/api/auth/me'
 
 ---
 
+## Test di Validazione Post-Fix (200 VUs)
+
+Dopo il fix dell'endpoint `/me`, è stato eseguito un nuovo stress test per validare le correzioni.
+
+### k6 Metrics - Test Finale
+
+| Metrica | Valore |
+|---------|--------|
+| **Total Requests** | 428,677 |
+| **Average RPS** | 549.6 |
+| **p95 Latency** | 222ms |
+| **Error Rate** | **0.00%** |
+| **Requests <500ms** | 99.68% |
+| **Requests <1s** | 99.96% |
+| **All Checks** | ✅ 100% (451,328 passed) |
+
+### Autoscaling Durante Test
+
+| Component | Prima | Durante | Note |
+|-----------|-------|---------|------|
+| **Backend Pods** | 2 | 7 | HPA max raggiunto |
+| **Nodi EKS** | 3 | 5 | Cluster Autoscaler attivo |
+| **Node CPU Peak** | 2% | 89% | Carico elevato gestito |
+
+### CloudWatch Metrics
+
+| Risorsa | Metrica | Peak | Note |
+|---------|---------|------|------|
+| **RDS PostgreSQL** | CPU | 37.5% | Stabile, headroom disponibile |
+| **RDS PostgreSQL** | Connections | 6 → 21 | 3 connessioni per pod |
+| **ElastiCache Redis** | CPU | 5.5% | Carico minimo |
+
+### Confronto Progressivo
+
+| Metrica | Day 6 (1 pod) | Day 7 (7 pods) | Post-Fix (7 pods) |
+|---------|---------------|----------------|-------------------|
+| Total Requests | 183,203 | 291,480 | **428,677** |
+| RPS | 234.8 | 373.4 | **549.6** |
+| p95 Latency | 380ms | 206ms | **222ms** |
+| Error Rate | 5.33% | 5.27% | **0.00%** |
+
+### Miglioramenti Totali vs Day 6
+
+| Metrica | Variazione |
+|---------|------------|
+| **Throughput** | +134% (234 → 549 RPS) |
+| **Latency p95** | -42% (380 → 222ms) |
+| **Error Rate** | -100% (5.33% → 0%) |
+| **Capacità Pod** | +250% (2 → 7 pods) |
+| **Capacità Nodi** | +67% (3 → 5 nodi) |
+
+### Validazione Bug Fix
+
+```
+Prima del fix:
+  ✗ me ok: 0% — ✓ 0 / ✗ 15,356
+
+Dopo il fix:
+  ✓ me ok: 100% — ✓ 22,651 / ✗ 0
+```
+
+---
+
 *Documento generato: 2025-12-30*
-*Test eseguito: Stress Test 100 VUs, 13 minuti*
+*Test eseguiti: Stress Test 100 VUs + Validation Test 200 VUs*

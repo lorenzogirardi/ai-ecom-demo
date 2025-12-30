@@ -307,5 +307,68 @@ const meRes = authGet(endpoints.me, token, {...})  // = '/api/auth/me'
 
 ---
 
+## Post-Fix Validation Test (200 VUs)
+
+After fixing the `/me` endpoint, a new stress test was executed to validate the corrections.
+
+### k6 Metrics - Final Test
+
+| Metric | Value |
+|--------|-------|
+| **Total Requests** | 428,677 |
+| **Average RPS** | 549.6 |
+| **p95 Latency** | 222ms |
+| **Error Rate** | **0.00%** |
+| **Requests <500ms** | 99.68% |
+| **Requests <1s** | 99.96% |
+| **All Checks** | ✅ 100% (451,328 passed) |
+
+### Autoscaling During Test
+
+| Component | Before | During | Note |
+|-----------|--------|--------|------|
+| **Backend Pods** | 2 | 7 | HPA max reached |
+| **EKS Nodes** | 3 | 5 | Cluster Autoscaler active |
+| **Node CPU Peak** | 2% | 89% | High load handled |
+
+### CloudWatch Metrics
+
+| Resource | Metric | Peak | Note |
+|----------|--------|------|------|
+| **RDS PostgreSQL** | CPU | 37.5% | Stable, headroom available |
+| **RDS PostgreSQL** | Connections | 6 → 21 | 3 connections per pod |
+| **ElastiCache Redis** | CPU | 5.5% | Minimal load |
+
+### Progressive Comparison
+
+| Metric | Day 6 (1 pod) | Day 7 (7 pods) | Post-Fix (7 pods) |
+|--------|---------------|----------------|-------------------|
+| Total Requests | 183,203 | 291,480 | **428,677** |
+| RPS | 234.8 | 373.4 | **549.6** |
+| p95 Latency | 380ms | 206ms | **222ms** |
+| Error Rate | 5.33% | 5.27% | **0.00%** |
+
+### Total Improvements vs Day 6
+
+| Metric | Change |
+|--------|--------|
+| **Throughput** | +134% (234 → 549 RPS) |
+| **Latency p95** | -42% (380 → 222ms) |
+| **Error Rate** | -100% (5.33% → 0%) |
+| **Pod Capacity** | +250% (2 → 7 pods) |
+| **Node Capacity** | +67% (3 → 5 nodes) |
+
+### Bug Fix Validation
+
+```
+Before fix:
+  ✗ me ok: 0% — ✓ 0 / ✗ 15,356
+
+After fix:
+  ✓ me ok: 100% — ✓ 22,651 / ✗ 0
+```
+
+---
+
 *Document generated: 2025-12-30*
-*Test executed: Stress Test 100 VUs, 13 minutes*
+*Tests executed: Stress Test 100 VUs + Validation Test 200 VUs*
