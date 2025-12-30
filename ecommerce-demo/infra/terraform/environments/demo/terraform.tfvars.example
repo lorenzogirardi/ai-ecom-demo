@@ -14,7 +14,7 @@ az_count           = 2
 single_nat_gateway = true  # Set to false for high availability
 
 # EKS Configuration
-eks_cluster_version        = "1.29"
+eks_cluster_version        = "1.32"
 eks_endpoint_public_access = true
 eks_node_instance_types    = ["t3.medium"]
 eks_capacity_type          = "ON_DEMAND"  # Use "SPOT" for cost savings
