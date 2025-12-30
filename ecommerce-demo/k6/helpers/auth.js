@@ -39,15 +39,14 @@ export function loginAsUser(userType = 'regular') {
   return login(user.email, user.password);
 }
 
-// Get current user info
+// Get current user info (no spread operator for k6 compatibility)
 export function getMe(token) {
-  const url = `${config.baseUrl}${endpoints.me}`;
+  const url = config.baseUrl + endpoints.me;
 
   const response = http.get(url, {
-    headers: {
-      ...defaultHeaders,
-      'Authorization': `Bearer ${token}`
-    },
+    headers: Object.assign({}, defaultHeaders, {
+      'Authorization': 'Bearer ' + token
+    }),
     tags: { name: 'get-me' }
   });
 

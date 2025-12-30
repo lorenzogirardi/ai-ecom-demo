@@ -9,12 +9,11 @@ export const defaultHeaders = {
   'X-Load-Test-Bypass': config.rateLimitBypassToken
 };
 
-// Add auth header
+// Add auth header (no spread operator for k6 compatibility)
 export function authHeaders(token) {
-  return {
-    ...defaultHeaders,
-    'Authorization': `Bearer ${token}`
-  };
+  return Object.assign({}, defaultHeaders, {
+    'Authorization': 'Bearer ' + token
+  });
 }
 
 // GET request with standard checks
@@ -54,19 +53,24 @@ export function httpPost(endpoint, body, params = {}) {
   return response;
 }
 
-// Authenticated GET request
-export function authGet(endpoint, token, params = {}) {
+// Authenticated GET request (no spread operator for k6 compatibility)
+export function authGet(endpoint, token, params) {
+  var opts = params || {};
   return httpGet(endpoint, {
-    ...params,
-    headers: authHeaders(token)
+    headers: authHeaders(token),
+    tags: opts.tags || {},
+    check: opts.check
   });
 }
 
-// Authenticated POST request
-export function authPost(endpoint, body, token, params = {}) {
+// Authenticated POST request (no spread operator for k6 compatibility)
+export function authPost(endpoint, body, token, params) {
+  var opts = params || {};
   return httpPost(endpoint, body, {
-    ...params,
-    headers: authHeaders(token)
+    headers: authHeaders(token),
+    tags: opts.tags || {},
+    check: opts.check,
+    expectedStatus: opts.expectedStatus
   });
 }
 
