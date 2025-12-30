@@ -80,7 +80,10 @@ export const config = {
     enabled: getEnvBoolean("ENABLE_RATE_LIMITING", true),
     max: getEnvNumber("RATE_LIMIT_MAX", 100),
     timeWindow: getEnvNumber("RATE_LIMIT_TIME_WINDOW", 60000),
-    bypassToken: getEnv("RATE_LIMIT_BYPASS_TOKEN", "k6-load-test-bypass-token-2025"),
+    bypassToken: getEnv(
+      "RATE_LIMIT_BYPASS_TOKEN",
+      "k6-load-test-bypass-token-2025",
+    ),
   },
 
   // Swagger
