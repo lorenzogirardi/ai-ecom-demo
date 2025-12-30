@@ -220,14 +220,95 @@ RUNTIME:  containerd://2.1.5
 
 ---
 
+## Validazione Post-Upgrade: Smoke Test
+
+Dopo l'upgrade, è stato eseguito uno smoke test k6 per validare il corretto funzionamento dell'applicazione.
+
+### Comando Eseguito
+
+```bash
+k6 run k6/scenarios/smoke.js
+```
+
+### Risultati Smoke Test
+
+| Metrica | Valore |
+|---------|--------|
+| **Checks Passati** | 100% (525/525) |
+| **HTTP Errors** | 0% |
+| **Requests Totali** | 175 |
+| **p95 Latency** | 250ms |
+| **p90 Latency** | 221ms |
+| **Media Latency** | 150ms |
+
+### Endpoint Testati
+
+| Endpoint | Stato |
+|----------|-------|
+| Health Check (`/api/health`) | ✅ OK |
+| Browse Products (`/api/products`) | ✅ OK |
+| Browse Categories (`/api/categories`) | ✅ OK |
+| Search Products (`/api/search`) | ✅ OK |
+| Authentication (`/api/auth/login`) | ✅ OK |
+
+### Output Test
+
+```
+     █ Health Check
+       ✓ status is 200
+       ✓ response time < 500ms
+       ✓ health status ok
+
+     █ Browse Products
+       ✓ status is 200
+       ✓ response time < 500ms
+       ✓ products returned
+
+     █ Browse Categories
+       ✓ status is 200
+       ✓ response time < 500ms
+       ✓ categories returned
+
+     █ Search Products
+       ✓ status is 200
+       ✓ response time < 500ms
+       ✓ search results
+
+     █ Authentication
+       ✓ login successful
+       ✓ has token
+
+     checks.........................: 100.00% ✓ 525 ✗ 0
+     http_req_failed................: 0.00%   ✓ 0   ✗ 175
+```
+
+**Conclusione:** Applicazione completamente operativa su EKS 1.32 + Amazon Linux 2023.
+
+---
+
+## Riepilogo Tempi Upgrade
+
+| Fase | Durata | Note |
+|------|--------|------|
+| Control Plane 1.29→1.30 | ~7.5 min | Automatico |
+| Control Plane 1.30→1.31 | ~7.4 min | Automatico |
+| Control Plane 1.31→1.32 | ~7.7 min | Automatico |
+| Node Group Replace | ~8 min | Downtime |
+| Smoke Test Validation | ~34 sec | Automatico |
+| **Totale** | **~31 min** | |
+
+---
+
 ## Lezioni Apprese
 
 1. **Sempre considerare il contesto** - La soluzione "migliore" dipende dall'ambiente
 2. **Downtime accettabile in dev/demo** - Non over-engineering per ambienti non critici
 3. **Blue-green obbligatorio in prod** - Zero tolerance per downtime in produzione
 4. **Documentare le decisioni** - Spiegare il "perché" oltre al "come"
+5. **Validare sempre post-upgrade** - Smoke test immediato per confermare funzionalità
 
 ---
 
 *Documento generato: 2025-12-30*
 *Upgrade eseguito: EKS 1.29 → 1.32 + AL2 → AL2023*
+*Validazione: Smoke test 100% passed*
