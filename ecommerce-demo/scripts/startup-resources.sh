@@ -36,16 +36,17 @@ if [ "$NODEGROUP" == "None" ] || [ -z "$NODEGROUP" ]; then
 fi
 echo "   Found node group: $NODEGROUP"
 
-# Scale EKS nodes back up
+# Scale EKS nodes back up (matches Cluster Autoscaler config)
 echo ""
 echo "3. Scaling EKS node group to 2 nodes..."
 aws eks update-nodegroup-config \
     --cluster-name $CLUSTER_NAME \
     --nodegroup-name $NODEGROUP \
-    --scaling-config minSize=1,maxSize=3,desiredSize=2 \
+    --scaling-config minSize=2,maxSize=5,desiredSize=2 \
     --region $REGION
 
 echo "   Node group scaling initiated (takes ~3-5 minutes)"
+echo "   Config: minSize=2 (HA), maxSize=5, desiredSize=2"
 
 # Wait for nodes to be ready
 echo ""
@@ -71,16 +72,28 @@ echo ""
 echo "6. Checking pod status..."
 kubectl get pods -n ecommerce 2>/dev/null || echo "   (Pods may take a few minutes to start)"
 
+# Re-deploy Cluster Autoscaler
+echo ""
+echo "7. Deploying Cluster Autoscaler..."
+if [ -f "k8s/cluster-autoscaler/cluster-autoscaler.yaml" ]; then
+    kubectl apply -f k8s/cluster-autoscaler/cluster-autoscaler.yaml 2>/dev/null || echo "   (Cluster Autoscaler deployment pending)"
+    echo "   Cluster Autoscaler deployed"
+else
+    echo "   WARNING: Cluster Autoscaler manifest not found"
+    echo "   Deploy manually: kubectl apply -f k8s/cluster-autoscaler/cluster-autoscaler.yaml"
+fi
+
 # ArgoCD sync reminder
 echo ""
 echo "=== Startup Complete ==="
 echo ""
 echo "Next steps:"
 echo "1. Wait for all pods to be Running: kubectl get pods -n ecommerce -w"
-echo "2. If pods don't start, sync via ArgoCD:"
+echo "2. Verify Cluster Autoscaler: kubectl -n kube-system logs -f deployment/cluster-autoscaler"
+echo "3. If pods don't start, sync via ArgoCD:"
 echo "   kubectl port-forward svc/argocd-server -n argocd 8080:80"
 echo "   Open: https://localhost:8080"
-echo "3. Get ArgoCD admin password:"
+echo "4. Get ArgoCD admin password:"
 echo "   kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d"
 echo ""
 echo "Application URLs:"

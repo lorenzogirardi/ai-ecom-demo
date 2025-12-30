@@ -215,12 +215,51 @@ npm run lint                      # Lint all
 - E-commerce: https://dls03qes9fc77.cloudfront.net
 - API Health: https://dls03qes9fc77.cloudfront.net/api/health
 
-### NOT Completed ❌ (Future Sessions)
+### Completed ✅ (Day 6)
 
-**Day 6 - Load Testing:**
-- [ ] k6 setup and test scripts
-- [ ] Smoke, load, stress, spike tests
-- [ ] Performance baseline and optimization
+**Load Testing Framework (k6):**
+- [x] k6 configuration and helpers (config.js, http.js, auth.js, report.js)
+- [x] Smoke test scenario (30s health check)
+- [x] Load test scenario (3.5-9min standard load)
+- [x] Stress test scenario (13min, up to 200 VUs)
+- [x] Spike test scenario (traffic spike analysis)
+- [x] HTML report generation for all scenarios
+- [x] k6 v0.49.0 compatibility fixes (no optional chaining/spread)
+
+**Rate Limit Bypass:**
+- [x] Backend allowList configuration for load testing
+- [x] X-Load-Test-Bypass header implementation
+- [x] Secure token-based bypass mechanism
+
+**GitHub Actions Pipeline:**
+- [x] `load-test.yml` - Manual trigger load test workflow
+- [x] Configurable test types (quick, load, stress, smoke)
+- [x] HTML reports saved as artifacts (30 days)
+- [x] VUs and target URL parameters
+
+**Cluster Autoscaler:**
+- [x] Deployment with IRSA (IAM Roles for Service Accounts)
+- [x] Node group discovery tags configured
+- [x] Scale range: 2-5 nodes (t3.medium)
+- [x] Scale down threshold: 50% utilization, 10min idle
+- [x] Documentation in slides/ (IT + EN)
+
+**CloudWatch Metrics Analysis:**
+- [x] Correlation k6 results with CloudWatch metrics
+- [x] Bottleneck identification (backend pod at 97% CPU)
+- [x] RDS analysis (18% CPU, 6 stable connections)
+- [x] ElastiCache analysis (99.9% cache hit rate)
+- [x] ALB analysis (328 RPS peak, 0 5xx errors)
+- [x] Documentation in slides/ (IT + EN)
+
+**Stress Test Results:**
+- Total Requests: 183,203
+- Average RPS: 234.8
+- p95 Latency: 380ms
+- Error Rate: 5.33% (auth endpoint, not server errors)
+- All thresholds PASSED
+
+### NOT Completed ❌ (Future Sessions)
 
 **Day 7 - Datadog Monitoring:**
 - [ ] Datadog Agent deployment
@@ -398,11 +437,13 @@ Per ogni CVE:
     - External Secrets Operator + ArgoCD
     - CloudFront HTTPS access
     - Shutdown/startup scripts
-12. **Day 6: Load Testing** (Next)
-    - k6 test scripts for API endpoints
-    - Performance baseline
-    - Bottleneck identification
-13. **Day 7: Datadog Monitoring**
+12. ~~**Day 6: Load Testing**~~ ✅
+    - k6 test scripts (smoke, load, stress, spike)
+    - Cluster Autoscaler deployment
+    - CloudWatch metrics correlation
+    - Bottleneck identified: single backend pod at 97% CPU
+    - GitHub Actions load test pipeline
+13. **Day 7: Datadog Monitoring** (Next)
     - Datadog Agent + APM
     - Custom dashboards
     - Alerts configuration
