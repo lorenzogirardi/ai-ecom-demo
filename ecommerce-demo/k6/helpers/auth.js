@@ -5,7 +5,7 @@ import { defaultHeaders, parseJson } from './http.js';
 
 // Login and return token
 export function login(email, password) {
-  const url = `${config.apiUrl}${endpoints.login}`;
+  const url = `${config.baseUrl}${endpoints.login}`;
 
   const response = http.post(url, JSON.stringify({ email, password }), {
     headers: defaultHeaders,
@@ -41,7 +41,7 @@ export function loginAsUser(userType = 'regular') {
 
 // Get current user info
 export function getMe(token) {
-  const url = `${config.apiUrl}${endpoints.me}`;
+  const url = `${config.baseUrl}${endpoints.me}`;
 
   const response = http.get(url, {
     headers: {

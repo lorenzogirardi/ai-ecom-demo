@@ -77,27 +77,27 @@ export const config = {
   }
 };
 
-// API Endpoints
+// API Endpoints (full paths from baseUrl)
 export const endpoints = {
-  // Health
-  health: '/health',
+  // Health - use products endpoint as health check (actual /health not exposed via CloudFront)
+  health: '/api/catalog/products?limit=1',
 
   // Auth
-  login: '/auth/login',
-  register: '/auth/register',
-  me: '/auth/me',
+  login: '/api/auth/login',
+  register: '/api/auth/register',
+  me: '/api/auth/me',
 
   // Catalog
-  products: '/products',
-  product: (slug) => `/products/${slug}`,
-  categories: '/categories',
-  category: (slug) => `/categories/${slug}`,
+  products: '/api/catalog/products',
+  product: (slug) => `/api/catalog/products/${slug}`,
+  categories: '/api/catalog/categories',
+  category: (slug) => `/api/catalog/categories/${slug}`,
 
   // Search
-  search: '/search',
+  search: '/api/search',
 
   // Orders (authenticated)
-  orders: '/orders',
-  order: (id) => `/orders/${id}`,
-  cancelOrder: (id) => `/orders/${id}/cancel`
+  orders: '/api/orders',
+  order: (id) => `/api/orders/${id}`,
+  cancelOrder: (id) => `/api/orders/${id}/cancel`
 };

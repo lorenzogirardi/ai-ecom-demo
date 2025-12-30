@@ -5,29 +5,30 @@
  * Run this first to verify the system is healthy before heavier tests.
  *
  * Usage: k6 run k6/scenarios/smoke.js
+ * Output: k6/reports/smoke-YYYYMMDD-HHMMSS.html
  */
 
 import { check, group, sleep } from 'k6';
 import { config, endpoints } from '../config.js';
 import { httpGet, httpPost, thinkTime, parseJson } from '../helpers/http.js';
 import { loginAsUser } from '../helpers/auth.js';
+import { generateHtmlReport } from '../helpers/report.js';
 
 export const options = {
   vus: 5,
   duration: '30s',
   thresholds: {
     http_req_failed: ['rate<0.01'],         // < 1% errors
-    http_req_duration: ['p(95)<500'],        // 95% < 500ms
-    'http_req_duration{name:health}': ['p(99)<200'],  // Health check fast
+    http_req_duration: ['p(95)<500'],       // 95% < 500ms
   }
 };
 
 export default function () {
-  // Health check
+  // Health check (using products endpoint as proxy since /health not exposed via CloudFront)
   group('Health Check', function () {
     const res = httpGet(endpoints.health, { tags: { name: 'health' } });
     check(res, {
-      'health status ok': (r) => parseJson(r)?.status === 'ok'
+      'health status ok': (r) => parseJson(r)?.success === true
     });
   });
 
@@ -79,3 +80,17 @@ export default function () {
 
   sleep(1);
 }
+
+// Generate HTML report
+export function handleSummary(data) {
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+  const htmlReport = generateHtmlReport(data, 'Smoke Test');
+
+  return {
+    [`k6/reports/smoke-${timestamp}.html`]: htmlReport,
+    stdout: textSummary(data, { indent: ' ', enableColors: true }),
+  };
+}
+
+// Text summary for console output
+import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';

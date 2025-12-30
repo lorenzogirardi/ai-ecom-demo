@@ -18,7 +18,7 @@ export function authHeaders(token) {
 
 // GET request with standard checks
 export function httpGet(endpoint, params = {}) {
-  const url = `${config.apiUrl}${endpoint}`;
+  const url = `${config.baseUrl}${endpoint}`;
   const response = http.get(url, {
     headers: params.headers || defaultHeaders,
     tags: params.tags || {}
@@ -36,7 +36,7 @@ export function httpGet(endpoint, params = {}) {
 
 // POST request with standard checks
 export function httpPost(endpoint, body, params = {}) {
-  const url = `${config.apiUrl}${endpoint}`;
+  const url = `${config.baseUrl}${endpoint}`;
   const response = http.post(url, JSON.stringify(body), {
     headers: params.headers || defaultHeaders,
     tags: params.tags || {}
