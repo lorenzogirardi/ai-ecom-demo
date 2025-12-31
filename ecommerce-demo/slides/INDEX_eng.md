@@ -8,6 +8,8 @@ Complete index of all project documentation.
 
 [▶️ Watch stress test with autoscaling](https://res.cloudinary.com/ethzero/video/upload/v1767120353/ai/ai-ecom-demo/stress-test-final-3x.mp4)
 
+[▶️ Session 5 full recording - AWS Deploy (YouTube)](https://youtu.be/g88_qU_Bolw)
+
 ---
 
 ## Quick Navigation

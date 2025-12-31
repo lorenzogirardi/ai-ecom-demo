@@ -579,4 +579,11 @@ kubectl port-forward svc/argocd-server -n argocd 8080:80
 
 ---
 
+## Video
+
+### Full Session Recording
+[▶️ Watch the full session on YouTube](https://youtu.be/g88_qU_Bolw)
+
+---
+
 *Generated with Claude Code - Session of December 29, 2024*
