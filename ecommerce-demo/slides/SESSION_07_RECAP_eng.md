@@ -370,5 +370,15 @@ After fix:
 
 ---
 
+## Screenshots
+
+### Issue: Pods on Same Node
+![Issue Pods Same Node](https://res.cloudinary.com/ethzero/image/upload/v1767107555/ai/ai-ecom-demo/issue-pods-same-node-001.png)
+
+### Video: Stress Test with Autoscaling (3x speed)
+[▶️ Watch stress test video](https://res.cloudinary.com/ethzero/video/upload/v1767120353/ai/ai-ecom-demo/stress-test-final-3x.mp4)
+
+---
+
 *Document generated: 2025-12-30*
 *Tests executed: Stress Test 100 VUs + Validation Test 200 VUs*

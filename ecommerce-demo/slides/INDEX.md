@@ -2,6 +2,12 @@
 
 Indice completo di tutta la documentazione del progetto.
 
+## Video Demo
+
+[▶️ Guarda il video demo del sito](https://res.cloudinary.com/ethzero/video/upload/v1767108038/ai/ai-ecom-demo/ai-ecom-demo_wesite_usage.mp4)
+
+[▶️ Guarda lo stress test con autoscaling](https://res.cloudinary.com/ethzero/video/upload/v1767120353/ai/ai-ecom-demo/stress-test-final-3x.mp4)
+
 ---
 
 ## Navigazione Rapida

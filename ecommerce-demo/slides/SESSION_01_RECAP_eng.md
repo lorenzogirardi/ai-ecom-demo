@@ -274,4 +274,23 @@ cd ai-ecom-demo/ecommerce-demo
 
 ---
 
+## Screenshots
+
+### Claude Code Interface
+![Claude Code Interface](https://res.cloudinary.com/ethzero/image/upload/v1766849569/ai/ai-ecom-demo/claude-code-001.png)
+
+### Application Creation
+![Create App 001](https://res.cloudinary.com/ethzero/image/upload/v1766849570/ai/ai-ecom-demo/create-app-001.png)
+
+![Create App 002](https://res.cloudinary.com/ethzero/image/upload/v1766849570/ai/ai-ecom-demo/create-app-002.png)
+
+![Create App 003](https://res.cloudinary.com/ethzero/image/upload/v1766849571/ai/ai-ecom-demo/create-app-003.png)
+
+### Docker Setup
+![Create Docker](https://res.cloudinary.com/ethzero/image/upload/v1766849572/ai/ai-ecom-demo/create-docker-001.png)
+
+![Docker Compose Running](https://res.cloudinary.com/ethzero/image/upload/v1766849580/ai/ai-ecom-demo/docker-compose-001.png)
+
+---
+
 *Generated with Claude Code - Session of December 24, 2024*

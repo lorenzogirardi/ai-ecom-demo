@@ -527,4 +527,14 @@ npm run test:all         # All tests
 
 ---
 
+## Screenshots
+
+### Design UI/Components
+![Create Design](https://res.cloudinary.com/ethzero/image/upload/v1766849571/ai/ai-ecom-demo/create-design-001.png)
+
+### Video Demo
+[▶️ Watch site demo video](https://res.cloudinary.com/ethzero/video/upload/v1767108038/ai/ai-ecom-demo/ai-ecom-demo_wesite_usage.mp4)
+
+---
+
 *Generated with Claude Code - Session of December 25, 2024*

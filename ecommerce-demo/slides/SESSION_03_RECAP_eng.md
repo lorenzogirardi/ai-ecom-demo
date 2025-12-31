@@ -777,4 +777,19 @@ npm run dev  # Frontend :3000 + Backend :4000
 
 ---
 
+## Screenshots
+
+### Test Suite Creation
+![Create Tests 001](https://res.cloudinary.com/ethzero/image/upload/v1766849571/ai/ai-ecom-demo/create-tests-001.png)
+
+![Create Tests 002](https://res.cloudinary.com/ethzero/image/upload/v1766849572/ai/ai-ecom-demo/create-tests-002.png)
+
+### Test Execution
+![Run Tests](https://res.cloudinary.com/ethzero/image/upload/v1766849572/ai/ai-ecom-demo/run-tests-001.png)
+
+### Terraform Infrastructure
+![Create Terraform](https://res.cloudinary.com/ethzero/image/upload/v1766849573/ai/ai-ecom-demo/create-terraform-001.png)
+
+---
+
 *Generated with Claude Code - Session of December 26, 2024*

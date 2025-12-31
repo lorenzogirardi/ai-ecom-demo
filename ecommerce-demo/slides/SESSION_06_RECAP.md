@@ -316,3 +316,35 @@ gh workflow run load-test.yml --field test_type=quick --field vus=20
 # Watch pipeline
 gh run watch $(gh run list --workflow=load-test.yml --limit=1 --json databaseId -q '.[0].databaseId')
 ```
+
+---
+
+## Screenshots
+
+### GitHub Actions Load Test Pipeline
+![GitHub Pipeline Load Test](https://res.cloudinary.com/ethzero/image/upload/v1767097163/ai/ai-ecom-demo/github-pipeline-loadtest-001.png)
+
+### Load Test Results
+![Load Test Pipeline Result](https://res.cloudinary.com/ethzero/image/upload/v1767097164/ai/ai-ecom-demo/loadtest-pipeline-result-001.png)
+
+### Cluster Autoscaler Setup
+![Terraform Cluster Autoscaler 001](https://res.cloudinary.com/ethzero/image/upload/v1767094809/ai/ai-ecom-demo/terraform-cluster-autoscaler-001.png)
+
+![Terraform Cluster Autoscaler 002](https://res.cloudinary.com/ethzero/image/upload/v1767094810/ai/ai-ecom-demo/terraform-cluster-autoscaler-002.png)
+
+![Terraform Cluster Autoscaler 003](https://res.cloudinary.com/ethzero/image/upload/v1767094810/ai/ai-ecom-demo/terraform-cluster-autoscaler-003.png)
+
+### AWS Autoscaler
+![AWS Autoscaler Cluster](https://res.cloudinary.com/ethzero/image/upload/v1767094810/ai/ai-ecom-demo/aws-autoscaler-cluster-001.png)
+
+### Kubernetes Pods
+![kubectl get pods](https://res.cloudinary.com/ethzero/image/upload/v1767094810/ai/ai-ecom-demo/kubectl-get-pods-001.png)
+
+### Lighthouse QA
+![Pipeline QA Lighthouse 001](https://res.cloudinary.com/ethzero/image/upload/v1767094895/ai/ai-ecom-demo/pipeline-qa-lighthouse-001.png)
+
+![Pipeline QA Lighthouse 002](https://res.cloudinary.com/ethzero/image/upload/v1767094895/ai/ai-ecom-demo/pipeline-qa-lighthouse-002.png)
+
+---
+
+*Generato con Claude Code - Sessione del 30 Dicembre 2024*

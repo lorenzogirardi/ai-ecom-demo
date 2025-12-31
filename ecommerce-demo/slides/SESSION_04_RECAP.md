@@ -664,4 +664,26 @@ kubectl apply --dry-run=client -f ecommerce-demo/argocd/
 
 ---
 
+## Screenshots
+
+### Security Scanning
+![Security Check 001](https://res.cloudinary.com/ethzero/image/upload/v1766849573/ai/ai-ecom-demo/check-security-001.png)
+
+![Security Check 002](https://res.cloudinary.com/ethzero/image/upload/v1766849574/ai/ai-ecom-demo/check-security-002.png)
+
+![Security Check 002bis](https://res.cloudinary.com/ethzero/image/upload/v1766849587/ai/ai-ecom-demo/check-security-002bis.png)
+
+### Code Error Detection
+![Code Error 001](https://res.cloudinary.com/ethzero/image/upload/v1766849573/ai/ai-ecom-demo/check-code-error-001.png)
+
+![Code Error 002](https://res.cloudinary.com/ethzero/image/upload/v1766849576/ai/ai-ecom-demo/check-code-error-002.png)
+
+### Security Configuration
+![Create Security App](https://res.cloudinary.com/ethzero/image/upload/v1766849572/ai/ai-ecom-demo/create-security-app-001.png)
+
+### GitHub Actions Workflow
+![Add GitHub Action Workflow](https://res.cloudinary.com/ethzero/image/upload/v1767094810/ai/ai-ecom-demo/add-github-action-workflow-001.png)
+
+---
+
 *Generato con Claude Code - Sessione del 27 Dicembre 2024*
