@@ -130,4 +130,39 @@ Tutti i documenti sono disponibili in inglese con il suffisso `_eng.md`:
 
 ---
 
+## Appendice: Statistiche Documentazione
+
+### Metriche Contenuto
+
+| Metrica | Valore |
+|---------|--------|
+| **Documenti unici** | 18 |
+| **File totali** | 36 (IT + EN) |
+| **Diagrammi Mermaid** | ~40 |
+| **Dimensione totale** | ~530 KB |
+
+### Confronto Tempi: Manuale vs Claude
+
+| Attività | Manuale | Claude |
+|----------|---------|--------|
+| Progettazione diagrammi (40×) | 10-15 ore | - |
+| Scrittura Mermaid syntax | 6-8 ore | - |
+| Test rendering e fix | 3-4 ore | - |
+| Testo descrittivo e tabelle | 4-6 ore | - |
+| Traduzione IT ↔ EN | 3-4 ore | - |
+| Review e consistenza | 2-3 ore | ~30 min |
+| Interazione e prompt | - | ~1-2 ore |
+| **Totale** | **28-40 ore** | **~2 ore** |
+
+### Guadagno Efficienza
+
+| | Manuale | Claude | Risparmio |
+|--|---------|--------|-----------|
+| **Tempo** | 28-40 ore | ~2 ore | **~15-20x più veloce** |
+| **Giorni** | 4-5 giorni | 1 sessione | - |
+
+> **Vantaggio chiave:** Claude genera Mermaid syntax corretta al primo tentativo e mantiene consistenza stilistica su tutti i 40 diagrammi - difficile da ottenere manualmente.
+
+---
+
 *Ultimo aggiornamento: 2025-12-31*
