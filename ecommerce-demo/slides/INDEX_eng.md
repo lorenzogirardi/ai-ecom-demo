@@ -8,7 +8,7 @@ Complete index of all project documentation.
 
 [▶️ Watch stress test with autoscaling](https://res.cloudinary.com/ethzero/video/upload/v1767120353/ai/ai-ecom-demo/stress-test-final-3x.mp4)
 
-[▶️ Session 5 full recording - AWS Deploy (YouTube)](https://youtu.be/g88_qU_Bolw)
+[▶️ Session 5 full recording - AWS Deploy (YouTube)](https://youtu.be/tNtAPNx70bc)
 
 ---
 
@@ -89,7 +89,7 @@ docs/EXECUTION_PLAN.md
 |----------|-----------|
 | [Session Recaps](#session-recaps) | 7 development sessions |
 | [Architecture](#architecture) | 4 documents with diagrams |
-| [Technical Documentation](#technical-documentation) | 6 specific documents |
+| [Technical Documentation](#technical-documentation) | 7 specific documents |
 
 ---
 
@@ -138,6 +138,7 @@ Specific technical documents.
 | [CLUSTER_AUTOSCALER_eng.md](./CLUSTER_AUTOSCALER_eng.md) | **Autoscaling** - Cluster Autoscaler setup with IRSA, configuration, scale policies |
 | [CLOUDWATCH_STRESS_ANALYSIS_eng.md](./CLOUDWATCH_STRESS_ANALYSIS_eng.md) | **Metrics Analysis** - k6 metrics correlation with CloudWatch, bottleneck identification (CPU 97%) |
 | [LOAD_TEST_ANALYSIS_RATE_ON_eng.md](./LOAD_TEST_ANALYSIS_RATE_ON_eng.md) | **Rate Limit Testing** - Testing with rate limiting enabled, bypass header configuration |
+| [MULTI_TEAM_GUARDRAILS_eng.md](./MULTI_TEAM_GUARDRAILS_eng.md) | **Enterprise Guardrails** - Multi-repo setup with Claude Code, per-team CLAUDE.md, CODEOWNERS, IAM isolation, CI/CD gates |
 
 > **Italian versions:** Each document has an Italian version without the `_eng` suffix
 
@@ -149,16 +150,16 @@ Specific technical documents.
 📁 slides/
 ├── 📄 Session Recaps     7 documents × 2 languages = 14 files
 ├── 📄 Architecture       4 documents × 2 languages =  8 files
-├── 📄 Technical Docs     6 documents × 2 languages = 12 files
+├── 📄 Technical Docs     7 documents × 2 languages = 14 files
 ├── 📄 Index              1 document  × 2 languages =  2 files
 └── ────────────────────────────────────────────────────────
-    TOTAL                18 documents × 2 languages = 36 files
+    TOTAL                19 documents × 2 languages = 38 files
 ```
 
 | Metric | Value |
 |--------|-------|
-| **Unique documents** | 18 |
-| **Total files** | 36 |
+| **Unique documents** | 19 |
+| **Total files** | 38 |
 | **Languages** | IT, EN |
 | **Mermaid diagrams** | ~40 |
 | **Total size** | ~530 KB |
