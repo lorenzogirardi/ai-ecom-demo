@@ -6,109 +6,73 @@ Complete guide for implementing guardrails in an enterprise multi-repo context w
 
 ## Organizational Context
 
+### Teams and Responsibilities
+
+| Team | Size | Manages | Responsibility |
+|------|------|---------|----------------|
+| **Platform Team** | 3-5 engineers | VPC, EKS, RDS, Security | Uptime, Compliance |
+| **DevOps Team** | 2-4 engineers | CI/CD, Helm, Monitoring | Support all teams |
+| **Team Catalog** | 4 developers | catalog-service | Product catalog |
+| **Team Orders** | 4 developers | orders-service | Order management |
+| **Team Payments** | 3 developers | payments-service | Payments |
+
+### Responsibility Hierarchy
+
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                    ORGANIZATION STRUCTURE                        │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  ┌─────────────────┐                                            │
-│  │ Platform Team   │  Manages: VPC, EKS, RDS, Security         │
-│  │ (3-5 engineers) │  Responsibility: Uptime, Compliance       │
-│  └────────┬────────┘                                            │
-│           │                                                      │
-│           ▼                                                      │
-│  ┌─────────────────┐                                            │
-│  │ DevOps Team     │  Manages: CI/CD, Helm, Monitoring         │
-│  │ (2-4 engineers) │  Supports: All application teams          │
-│  └────────┬────────┘                                            │
-│           │                                                      │
-│           ▼                                                      │
-│  ┌─────────────────────────────────────────────────────┐        │
-│  │              Application Teams                       │        │
-│  ├─────────────────┬─────────────────┬─────────────────┤        │
-│  │ Team Catalog    │ Team Orders     │ Team Payments   │        │
-│  │ (4 devs)        │ (4 devs)        │ (3 devs)        │        │
-│  └─────────────────┴─────────────────┴─────────────────┘        │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
+Platform Team (core infrastructure)
+       ↓
+DevOps Team (pipelines and deploy)
+       ↓
+Application Teams (application code)
 ```
 
 ---
 
 ## Multi-Repo Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    GITHUB ORGANIZATION                           │
-│                    github.com/acme-corp/                         │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  PLATFORM REPOS (Private - Platform Team Only)                  │
-│  ┌─────────────────────────────────────────────────────┐        │
-│  │ platform-infrastructure          🔒 RESTRICTED      │        │
-│  │ ├── terraform/                                      │        │
-│  │ │   ├── bootstrap/     (S3, DynamoDB, OIDC)        │        │
-│  │ │   ├── network/       (VPC, Subnets, NAT)         │        │
-│  │ │   ├── eks/           (Cluster, Node Groups)      │        │
-│  │ │   ├── security/      (IAM, Security Groups)      │        │
-│  │ │   └── shared/        (RDS, ElastiCache, ECR)     │        │
-│  │ ├── CLAUDE.md                                       │        │
-│  │ └── CODEOWNERS                                      │        │
-│  └─────────────────────────────────────────────────────┘        │
-│                                                                  │
-│  ┌─────────────────────────────────────────────────────┐        │
-│  │ platform-modules                 🔒 RESTRICTED      │        │
-│  │ ├── modules/                                        │        │
-│  │ │   ├── eks-namespace/   (namespace + RBAC)        │        │
-│  │ │   ├── app-database/    (RDS schema + user)       │        │
-│  │ │   ├── app-cache/       (Redis namespace)         │        │
-│  │ │   └── app-secrets/     (Secrets Manager path)    │        │
-│  │ └── CLAUDE.md                                       │        │
-│  └─────────────────────────────────────────────────────┘        │
-│                                                                  │
-│  DEVOPS REPOS (Internal - DevOps + Platform Read)               │
-│  ┌─────────────────────────────────────────────────────┐        │
-│  │ shared-helm-charts              📦 INTERNAL         │        │
-│  │ ├── charts/                                         │        │
-│  │ │   ├── base-app/        (application template)    │        │
-│  │ │   ├── base-worker/     (worker template)         │        │
-│  │ │   └── base-cronjob/    (cronjob template)        │        │
-│  │ └── CLAUDE.md                                       │        │
-│  └─────────────────────────────────────────────────────┘        │
-│                                                                  │
-│  ┌─────────────────────────────────────────────────────┐        │
-│  │ shared-pipelines                📦 INTERNAL         │        │
-│  │ ├── .github/workflows/                              │        │
-│  │ │   ├── build-push.yml   (reusable build)          │        │
-│  │ │   ├── deploy-app.yml   (reusable deploy)         │        │
-│  │ │   └── security-scan.yml                          │        │
-│  │ └── CLAUDE.md                                       │        │
-│  └─────────────────────────────────────────────────────┘        │
-│                                                                  │
-│  APPLICATION REPOS (Per Team - Full Access own repo)            │
-│  ┌─────────────────────────────────────────────────────┐        │
-│  │ catalog-service                 ✅ Team Catalog     │        │
-│  │ ├── src/                        (app code)          │        │
-│  │ ├── helm/                       (values only)       │        │
-│  │ ├── infra/                      (app-scoped only)   │        │
-│  │ ├── CLAUDE.md                                       │        │
-│  │ └── .github/workflows/          (uses shared)       │        │
-│  └─────────────────────────────────────────────────────┘        │
-│                                                                  │
-│  ┌─────────────────────────────────────────────────────┐        │
-│  │ orders-service                  ✅ Team Orders      │        │
-│  │ payments-service                ✅ Team Payments    │        │
-│  │ ...                                                 │        │
-│  └─────────────────────────────────────────────────────┘        │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
-```
+### Repositories by Category
+
+| Category | Repository | Access | Description |
+|----------|------------|--------|-------------|
+| **Platform** | `platform-infrastructure` | Platform Team only | Terraform for VPC, EKS, RDS, IAM |
+| **Platform** | `platform-modules` | Platform Team only | Reusable Terraform modules |
+| **DevOps** | `shared-helm-charts` | DevOps + Platform read | Helm chart templates |
+| **DevOps** | `shared-pipelines` | DevOps + Platform read | Reusable GitHub Actions |
+| **App** | `catalog-service` | Team Catalog | Catalog microservice |
+| **App** | `orders-service` | Team Orders | Orders microservice |
+| **App** | `payments-service` | Team Payments | Payments microservice |
+
+### Platform Repository Content
+
+**platform-infrastructure:**
+
+| Directory | Content |
+|-----------|---------|
+| `terraform/bootstrap/` | S3, DynamoDB, OIDC |
+| `terraform/network/` | VPC, Subnets, NAT |
+| `terraform/eks/` | Cluster, Node Groups |
+| `terraform/security/` | IAM, Security Groups |
+| `terraform/shared/` | RDS, ElastiCache, ECR |
+| `CLAUDE.md` | Context for Claude Code |
+| `CODEOWNERS` | Approval rules |
+
+### Application Repository Content
+
+**catalog-service:**
+
+| Directory | Content |
+|-----------|---------|
+| `src/` | Application code |
+| `helm/` | Deploy values (values-dev, values-prod) |
+| `infra/terraform/` | Platform modules only |
+| `.github/workflows/` | CI/CD (uses shared-pipelines) |
+| `CLAUDE.md` | Context for Claude Code |
 
 ---
 
 ## 1. CLAUDE.md for Each Repo
 
-### platform-infrastructure/CLAUDE.md
+### Example: platform-infrastructure/CLAUDE.md
 
 ```markdown
 # Platform Infrastructure - CLAUDE.md
@@ -121,8 +85,6 @@ This repository contains core AWS infrastructure managed by the Platform Team.
 **Criticality:** HIGH - Downtime impacts all services
 **Change Frequency:** Low (weekly/monthly)
 
----
-
 ## Who Can Modify
 
 | Role | Permissions |
@@ -131,96 +93,37 @@ This repository contains core AWS infrastructure managed by the Platform Team.
 | DevOps Team | Read-only |
 | Developers | No access |
 
----
-
 ## Repository Structure
 
 | Directory | Layer | Description |
 |-----------|-------|-------------|
 | `terraform/bootstrap/` | Layer 0 | State backend, OIDC - Modify ONLY for initial setup |
 | `terraform/network/` | Layer 1 | VPC, Subnets - Changes require maintenance window |
-| `terraform/eks/` | Layer 1 | Kubernetes Cluster - ⚠️ UPGRADE = POSSIBLE DOWNTIME |
+| `terraform/eks/` | Layer 1 | Kubernetes Cluster - UPGRADE = POSSIBLE DOWNTIME |
 | `terraform/security/` | Layer 1 | IAM, Security Groups - Requires Security Review |
 | `terraform/shared/` | Layer 2 | RDS, ElastiCache, ECR - Impacts all application teams |
 
----
-
 ## Critical Rules for Claude Code
 
-### ❌ NEVER DO
+### NEVER DO
 
 1. **EKS Upgrade** without approved runbook
-   - Upgrade requires maintenance window
-   - Follow docs/RUNBOOKS/eks-upgrade.md
-
 2. **Modify Security Groups** without security review
-   - Every SG change requires Security Team approval
-
 3. **Change VPC CIDR or Subnet allocation**
-   - Impacts networking of all services
-   - Requires complete re-provisioning
-
 4. **Modify IAM Policies** production without audit
-   - Principle of least privilege
-   - Every change logged in CloudTrail
-
 5. **Terraform destroy** on production resources
-   - Never use `destroy` without explicit approval
-   - Use `terraform state rm` if removal needed
 
-### ⚠️ CAUTION
+### CAUTION
 
 1. **RDS/ElastiCache changes** can cause restart
-   - Verify `apply_immediately` = false
-   - Schedule in maintenance window
-
 2. **Node Group updates** cause rolling restart
-   - Verify team PodDisruptionBudgets
-   - Communicate to all teams before
 
-### ✅ SAFE OPERATIONS
+### SAFE OPERATIONS
 
 1. Adding new tags
 2. Increasing capacity (scale up)
 3. Adding new ECR repositories
 4. Creating new Secrets Manager paths
-
----
-
-## Workflow for Changes
-
-```
-1. Create branch: platform/TICKET-123-description
-2. Make changes with Claude Code
-3. terraform plan > plan.txt
-4. Create PR with plan.txt attached
-5. Review from 2 Platform Engineers
-6. If impacts other teams → notify in #platform-changes
-7. Merge only in maintenance window (if critical)
-8. Apply with active monitoring
-```
-
----
-
-## Terraform Commands
-
-```bash
-# Init (first setup)
-cd terraform/network
-terraform init -backend-config=backend.hcl
-
-# Plan (ALWAYS before apply)
-terraform plan -out=plan.tfplan
-
-# Apply (only after review)
-terraform apply plan.tfplan
-
-# NEVER DO THIS:
-# terraform destroy  ← BLOCKED by policy
-# terraform apply -auto-approve  ← BLOCKED
-```
-
----
 
 ## Managed Resources
 
@@ -233,8 +136,6 @@ terraform apply plan.tfplan
 | ElastiCache | shared/redis.tf | MEDIUM |
 | ECR Repos | shared/ecr.tf | LOW |
 
----
-
 ## Emergency Contacts
 
 - Platform On-Call: #platform-oncall
@@ -243,7 +144,7 @@ terraform apply plan.tfplan
 
 ---
 
-### catalog-service/CLAUDE.md (Application Repo)
+### Example: catalog-service/CLAUDE.md
 
 ```markdown
 # Catalog Service - CLAUDE.md
@@ -256,8 +157,6 @@ Microservice for product catalog management.
 **Criticality:** MEDIUM
 **Dependencies:** RDS (read), Redis (cache), S3 (images)
 
----
-
 ## Who Can Modify
 
 | Role | Permissions |
@@ -266,153 +165,33 @@ Microservice for product catalog management.
 | DevOps Team | CI/CD, Helm review |
 | Platform Team | Read-only |
 
----
-
 ## Repository Structure
 
-| Directory | Content | Notes |
-|-----------|---------|-------|
-| `src/` | controllers/, services/, repositories/, tests/ | ✅ Application code - Full access |
-| `helm/` | values.yaml, values-dev.yaml, values-staging.yaml, values-prod.yaml | ✅ Deploy values (prod requires review) |
-| `infra/terraform/` | main.tf, variables.tf | ⚠️ LIMITED - Platform modules only |
+| Directory | Content | Note |
+|-----------|---------|------|
+| `src/` | controllers/, services/, tests/ | Full access |
+| `helm/` | values.yaml, values-prod.yaml | prod requires review |
+| `infra/terraform/` | main.tf, variables.tf | Platform modules only |
 | `.github/workflows/` | ci-cd.yml | Uses shared-pipelines |
-| `CLAUDE.md` | This file | Context for Claude Code |
-
----
 
 ## Rules for Claude Code
 
-### ✅ YOU CAN DO
+### YOU CAN DO
 
-1. **Modify src/**
-   - All application code
-   - Tests
-   - App configurations
+1. Modify everything in `src/`
+2. Modify `helm/values*.yaml`
+3. Use modules from `platform-modules`
 
-2. **Modify helm/values*.yaml**
-   - Replica count
-   - Resource requests/limits
-   - Environment variables
-   - ConfigMaps
+### YOU CANNOT DO
 
-3. **Modify infra/terraform/** using ONLY approved modules
-   ```hcl
-   # ✅ ALLOWED - Uses platform module
-   module "catalog_namespace" {
-     source = "git::https://github.com/acme-corp/platform-modules//eks-namespace"
-     name   = "catalog"
-     team   = "catalog"
-   }
+1. Create AWS resources directly (no `resource "aws_*"`)
+2. Modify other teams' namespaces
+3. Bypass platform modules
 
-   module "catalog_database" {
-     source = "git::https://github.com/acme-corp/platform-modules//app-database"
-     name   = "catalog"
-     # Only parameters exposed by module
-   }
-   ```
+### REQUIRES REVIEW
 
-### ❌ YOU CANNOT DO
-
-1. **Create AWS resources directly**
-   ```hcl
-   # ❌ BLOCKED - Don't use aws provider directly
-   resource "aws_rds_cluster" "catalog" { }
-   resource "aws_security_group" "catalog" { }
-   resource "aws_iam_role" "catalog" { }
-   ```
-
-2. **Modify other teams' resources**
-   ```hcl
-   # ❌ BLOCKED - Not your namespace
-   resource "kubernetes_config_map" "orders_config" {
-     metadata {
-       namespace = "orders"  # NOT YOURS
-     }
-   }
-   ```
-
-3. **Bypass platform modules**
-   - All infra setup must use platform-modules
-   - If something not covered → ticket to Platform Team
-
-### ⚠️ REQUIRES REVIEW
-
-1. **Changes to values-prod.yaml**
-   - Requires DevOps approval
-   - Label PR with `production`
-
-2. **New infra dependencies**
-   - New database? → ticket Platform
-   - New cache? → ticket Platform
-   - New secret? → use app-secrets module
-
----
-
-## How to Request Infra Resources
-
-If you need something not covered by modules:
-
-1. Open issue in `platform-infrastructure`
-2. Template: `.github/ISSUE_TEMPLATE/infra-request.md`
-3. SLA: 3-5 business days
-4. Platform Team will create module or resource
-
----
-
-## CI/CD Workflow
-
-```yaml
-# .github/workflows/ci-cd.yml
-name: CI/CD
-
-on:
-  push:
-    branches: [main, develop]
-  pull_request:
-
-jobs:
-  build:
-    uses: acme-corp/shared-pipelines/.github/workflows/build-push.yml@v1
-    with:
-      app_name: catalog-service
-
-  deploy-dev:
-    needs: build
-    if: github.ref == 'refs/heads/develop'
-    uses: acme-corp/shared-pipelines/.github/workflows/deploy-app.yml@v1
-    with:
-      environment: dev
-      app_name: catalog-service
-
-  deploy-prod:
-    needs: build
-    if: github.ref == 'refs/heads/main'
-    uses: acme-corp/shared-pipelines/.github/workflows/deploy-app.yml@v1
-    with:
-      environment: prod
-      app_name: catalog-service
-    # Requires manual approval for prod
-```
-
----
-
-## Local Commands
-
-```bash
-# Development
-npm install
-npm run dev
-npm run test
-
-# Docker
-docker build -t catalog-service .
-docker run -p 3000:3000 catalog-service
-
-# Helm (preview only, deploy via CI)
-helm template catalog ./helm -f ./helm/values-dev.yaml
-```
-
----
+1. Changes to `values-prod.yaml` → DevOps approval
+2. New infra dependencies → Platform Team ticket
 
 ## External Dependencies
 
@@ -427,6 +206,8 @@ helm template catalog ./helm -f ./helm/values-dev.yaml
 ---
 
 ## 2. CODEOWNERS per Repo
+
+CODEOWNERS is a GitHub file that defines who must approve PRs for specific paths.
 
 ### platform-infrastructure/.github/CODEOWNERS
 
@@ -446,6 +227,11 @@ helm template catalog ./helm -f ./helm/values-dev.yaml
 /terraform/bootstrap/       @acme-corp/platform-leads
 ```
 
+**Explanation:**
+- Any change requires approval from `@platform-team`
+- Critical paths (EKS, security, network) require `@platform-leads`
+- Security changes also require `@security-team`
+
 ### catalog-service/.github/CODEOWNERS
 
 ```
@@ -464,64 +250,43 @@ helm template catalog ./helm -f ./helm/values-dev.yaml
 /.github/workflows/         @acme-corp/devops-team
 ```
 
+**Explanation:**
+- Application team approves their own code
+- Infra and production changes require DevOps
+
 ---
 
 ## 3. IAM Isolation
 
+Each GitHub repository has a dedicated IAM Role with limited permissions.
+
 ### IAM Roles Structure
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    AWS IAM STRUCTURE                             │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  GitHub OIDC Provider                                           │
-│  └── arn:aws:iam::ACCOUNT:oidc-provider/token.actions...       │
-│                                                                  │
-│  ┌─────────────────────────────────────────────────────┐        │
-│  │ PlatformDeployRole                                   │        │
-│  │ Trust: repo:acme-corp/platform-infrastructure:*     │        │
-│  │ Permissions:                                         │        │
-│  │   ✅ Full AWS access (AdministratorAccess)          │        │
-│  │   ✅ Terraform state: platform/*                    │        │
-│  └─────────────────────────────────────────────────────┘        │
-│                                                                  │
-│  ┌─────────────────────────────────────────────────────┐        │
-│  │ DevOpsDeployRole                                     │        │
-│  │ Trust: repo:acme-corp/shared-*:*                    │        │
-│  │ Permissions:                                         │        │
-│  │   ✅ ECR push/pull                                  │        │
-│  │   ✅ EKS deploy                                     │        │
-│  │   ✅ Secrets Manager read                           │        │
-│  │   ❌ VPC, RDS, EKS cluster modify                   │        │
-│  └─────────────────────────────────────────────────────┘        │
-│                                                                  │
-│  ┌─────────────────────────────────────────────────────┐        │
-│  │ AppDeployRole-Catalog                                │        │
-│  │ Trust: repo:acme-corp/catalog-service:*             │        │
-│  │ Permissions:                                         │        │
-│  │   ✅ ECR push: catalog-service repo only            │        │
-│  │   ✅ EKS deploy: namespace catalog only             │        │
-│  │   ✅ Secrets read: /catalog/* only                  │        │
-│  │   ❌ Other namespaces                               │        │
-│  │   ❌ Platform resources                             │        │
-│  └─────────────────────────────────────────────────────┘        │
-│                                                                  │
-│  ┌─────────────────────────────────────────────────────┐        │
-│  │ AppDeployRole-Orders                                 │        │
-│  │ Trust: repo:acme-corp/orders-service:*              │        │
-│  │ Permissions: (same pattern, orders namespace)       │        │
-│  └─────────────────────────────────────────────────────┘        │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
-```
+| Role | Trust (GitHub Repo) | Permissions |
+|------|---------------------|-------------|
+| `PlatformDeployRole` | `platform-infrastructure:*` | AdministratorAccess |
+| `DevOpsDeployRole` | `shared-*:*` | ECR, EKS deploy, Secrets read |
+| `AppDeployRole-Catalog` | `catalog-service:*` | Only namespace `catalog` |
+| `AppDeployRole-Orders` | `orders-service:*` | Only namespace `orders` |
+| `AppDeployRole-Payments` | `payments-service:*` | Only namespace `payments` |
 
-### Terraform for IAM Roles (in platform-infrastructure)
+### AppDeployRole Permissions (per team)
+
+| Action | Permission | Scope |
+|--------|------------|-------|
+| ECR push/pull | ✅ | Own repository only |
+| EKS deploy | ✅ | Own namespace only |
+| Secrets Manager read | ✅ | Own path only (`/{team}/*`) |
+| VPC modify | ❌ | Blocked |
+| RDS modify | ❌ | Blocked |
+| EKS cluster modify | ❌ | Blocked |
+
+### Terraform for IAM Roles
 
 ```hcl
 # terraform/security/github-oidc.tf
 
-# OIDC Provider (already exists)
+# OIDC Provider for GitHub Actions
 data "aws_iam_openid_connect_provider" "github" {
   url = "https://token.actions.githubusercontent.com"
 }
@@ -539,9 +304,6 @@ resource "aws_iam_role" "platform_deploy" {
       }
       Action = "sts:AssumeRoleWithWebIdentity"
       Condition = {
-        StringEquals = {
-          "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
-        }
         StringLike = {
           "token.actions.githubusercontent.com:sub" = "repo:acme-corp/platform-infrastructure:*"
         }
@@ -570,9 +332,6 @@ resource "aws_iam_role" "app_deploy" {
       }
       Action = "sts:AssumeRoleWithWebIdentity"
       Condition = {
-        StringEquals = {
-          "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
-        }
         StringLike = {
           "token.actions.githubusercontent.com:sub" = "repo:acme-corp/${each.key}-service:*"
         }
@@ -593,32 +352,19 @@ resource "aws_iam_role_policy" "app_deploy_policy" {
       # ECR - Own repository only
       {
         Effect = "Allow"
-        Action = [
-          "ecr:GetAuthorizationToken",
-          "ecr:BatchCheckLayerAvailability",
-          "ecr:GetDownloadUrlForLayer",
-          "ecr:BatchGetImage",
-          "ecr:PutImage",
-          "ecr:InitiateLayerUpload",
-          "ecr:UploadLayerPart",
-          "ecr:CompleteLayerUpload"
-        ]
+        Action = ["ecr:*"]
         Resource = "arn:aws:ecr:*:*:repository/${each.key}-service"
       },
-      # EKS - Cluster access
+      # EKS - Cluster access (deploy only)
       {
         Effect = "Allow"
-        Action = [
-          "eks:DescribeCluster"
-        ]
+        Action = ["eks:DescribeCluster"]
         Resource = "*"
       },
       # Secrets Manager - Own path only
       {
         Effect = "Allow"
-        Action = [
-          "secretsmanager:GetSecretValue"
-        ]
+        Action = ["secretsmanager:GetSecretValue"]
         Resource = "arn:aws:secretsmanager:*:*:secret:/${each.key}/*"
       },
       # Explicit DENY on platform resources
@@ -629,8 +375,7 @@ resource "aws_iam_role_policy" "app_deploy_policy" {
           "arn:aws:rds:*:*:cluster:*",
           "arn:aws:elasticache:*:*:*",
           "arn:aws:ec2:*:*:vpc/*",
-          "arn:aws:ec2:*:*:subnet/*",
-          "arn:aws:eks:*:*:cluster/*"  # No modify cluster
+          "arn:aws:eks:*:*:cluster/*"
         ]
       }
     ]
@@ -638,11 +383,10 @@ resource "aws_iam_role_policy" "app_deploy_policy" {
 }
 ```
 
-### Kubernetes RBAC (in platform-infrastructure)
+### Kubernetes RBAC
 
 ```yaml
 # terraform/eks/rbac/app-team-rbac.yaml.tpl
----
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -650,13 +394,7 @@ metadata:
   namespace: ${team}
 rules:
   - apiGroups: ["", "apps", "batch"]
-    resources: ["deployments", "services", "configmaps", "secrets", "pods", "jobs", "cronjobs"]
-    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
-  - apiGroups: ["networking.k8s.io"]
-    resources: ["ingresses"]
-    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
-  - apiGroups: ["autoscaling"]
-    resources: ["horizontalpodautoscalers"]
+    resources: ["deployments", "services", "configmaps", "secrets", "pods"]
     verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -666,21 +404,22 @@ metadata:
   namespace: ${team}
 subjects:
   - kind: User
-    name: github-${team}-deploy  # Mapped from IAM Role
-    apiGroup: rbac.authorization.k8s.io
+    name: github-${team}-deploy
 roleRef:
   kind: Role
   name: ${team}-deployer
-  apiGroup: rbac.authorization.k8s.io
 ```
 
 ---
 
 ## 4. CI/CD Gates
 
-### shared-pipelines/.github/workflows/deploy-app.yml
+### Deploy Workflow with Validation
+
+The workflow verifies that each repo can only deploy to its own namespace.
 
 ```yaml
+# shared-pipelines/.github/workflows/deploy-app.yml
 name: Deploy Application
 
 on:
@@ -692,10 +431,6 @@ on:
       app_name:
         required: true
         type: string
-      helm_values_file:
-        required: false
-        type: string
-        default: ''
 
 jobs:
   validate:
@@ -707,9 +442,7 @@ jobs:
       - name: Validate app ownership
         id: validate
         run: |
-          # Extract team from repo name
           REPO="${{ github.repository }}"
-          APP_NAME="${{ inputs.app_name }}"
 
           # Map repo → allowed namespace
           case "$REPO" in
@@ -721,35 +454,27 @@ jobs:
               ALLOWED_NS="orders"
               ROLE_ARN="arn:aws:iam::ACCOUNT:role/github-orders-deploy"
               ;;
-            "acme-corp/payments-service")
-              ALLOWED_NS="payments"
-              ROLE_ARN="arn:aws:iam::ACCOUNT:role/github-payments-deploy"
-              ;;
             *)
-              echo "❌ Repository not authorized for deploy"
+              echo "Repository not authorized for deploy"
               exit 1
               ;;
           esac
 
           echo "namespace=$ALLOWED_NS" >> $GITHUB_OUTPUT
           echo "role_arn=$ROLE_ARN" >> $GITHUB_OUTPUT
-          echo "✅ Authorized deploy to namespace: $ALLOWED_NS"
 
   security-gate:
-    runs-on: ubuntu-latest
     needs: validate
     if: inputs.environment == 'prod'
     environment: production  # Requires manual approval
+    runs-on: ubuntu-latest
     steps:
       - run: echo "Production deployment approved"
 
   deploy:
-    runs-on: ubuntu-latest
     needs: [validate, security-gate]
-    if: always() && needs.validate.result == 'success' && (needs.security-gate.result == 'success' || inputs.environment != 'prod')
-    permissions:
-      id-token: write
-      contents: read
+    if: always() && needs.validate.result == 'success'
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
@@ -759,159 +484,70 @@ jobs:
           role-to-assume: ${{ needs.validate.outputs.role_arn }}
           aws-region: us-east-1
 
-      - name: Update kubeconfig
-        run: |
-          aws eks update-kubeconfig --name ecommerce-cluster
-
       - name: Validate namespace access
         run: |
           NAMESPACE="${{ needs.validate.outputs.namespace }}"
 
-          # Test we can access only our namespace
+          # Verify access to own namespace
           if kubectl auth can-i create deployments -n $NAMESPACE; then
-            echo "✅ Access to $NAMESPACE confirmed"
+            echo "Access to $NAMESPACE confirmed"
           else
-            echo "❌ No access to $NAMESPACE"
             exit 1
           fi
 
-          # Verify we CANNOT access other namespaces
+          # Verify NO access to other namespaces
           if kubectl auth can-i create deployments -n kube-system 2>/dev/null; then
-            echo "❌ ERROR: Access to kube-system should not be allowed"
+            echo "ERROR: Access to kube-system should not be allowed"
             exit 1
           fi
 
       - name: Deploy with Helm
         run: |
-          NAMESPACE="${{ needs.validate.outputs.namespace }}"
-          VALUES_FILE="${{ inputs.helm_values_file || format('values-{0}.yaml', inputs.environment) }}"
-
           helm upgrade --install ${{ inputs.app_name }} ./helm \
-            --namespace $NAMESPACE \
-            --values ./helm/$VALUES_FILE \
-            --wait \
-            --timeout 5m
-
-      - name: Verify deployment
-        run: |
-          NAMESPACE="${{ needs.validate.outputs.namespace }}"
-          kubectl rollout status deployment/${{ inputs.app_name }} -n $NAMESPACE
-```
-
-### Terraform State Isolation (S3 Policies)
-
-```hcl
-# In platform-infrastructure/terraform/bootstrap/s3-policies.tf
-
-resource "aws_s3_bucket_policy" "terraform_state" {
-  bucket = aws_s3_bucket.terraform_state.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      # Platform team - full access
-      {
-        Sid    = "PlatformFullAccess"
-        Effect = "Allow"
-        Principal = {
-          AWS = aws_iam_role.platform_deploy.arn
-        }
-        Action   = "s3:*"
-        Resource = [
-          "${aws_s3_bucket.terraform_state.arn}",
-          "${aws_s3_bucket.terraform_state.arn}/*"
-        ]
-      },
-      # App teams - DENY on platform state
-      {
-        Sid    = "DenyAppAccessToPlatformState"
-        Effect = "Deny"
-        Principal = {
-          AWS = [for role in aws_iam_role.app_deploy : role.arn]
-        }
-        Action = "s3:*"
-        Resource = [
-          "${aws_s3_bucket.terraform_state.arn}/platform/*",
-          "${aws_s3_bucket.terraform_state.arn}/shared/*"
-        ]
-      },
-      # App teams - access only own state
-      {
-        Sid    = "AppAccessOwnState"
-        Effect = "Allow"
-        Principal = {
-          AWS = aws_iam_role.app_deploy["catalog"].arn
-        }
-        Action = ["s3:GetObject", "s3:PutObject"]
-        Resource = "${aws_s3_bucket.terraform_state.arn}/apps/catalog/*"
-      }
-      # ... repeat for each team
-    ]
-  })
-}
+            --namespace ${{ needs.validate.outputs.namespace }} \
+            --values ./helm/values-${{ inputs.environment }}.yaml
 ```
 
 ---
 
-## 5. Complete Flow
+## 5. Complete Flow - Scenarios
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    REQUEST FLOW EXAMPLES                         │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  SCENARIO 1: Developer modifies app code                        │
-│  ─────────────────────────────────────────                      │
-│  1. Dev opens catalog-service in Claude Code                    │
-│  2. Claude reads CLAUDE.md → knows limits                       │
-│  3. Dev: "add new endpoint /products/featured"                  │
-│  4. Claude modifies src/ → ✅ ALLOWED                           │
-│  5. PR → CI → Deploy dev → ✅ SUCCESS                           │
-│                                                                  │
-│                                                                  │
-│  SCENARIO 2: Developer tries to modify platform infra           │
-│  ─────────────────────────────────────────────────────          │
-│  1. Dev opens catalog-service in Claude Code                    │
-│  2. Dev: "increase RDS database CPU"                            │
-│  3. Claude reads CLAUDE.md → sees limit                         │
-│  4. Claude responds:                                            │
-│     "❌ I cannot modify RDS directly.                           │
-│      RDS is managed by Platform Team.                           │
-│      Open ticket: github.com/acme-corp/platform-infrastructure  │
-│      Template: infra-request.md"                                │
-│                                                                  │
-│                                                                  │
-│  SCENARIO 3: Developer tries bypass via terraform               │
-│  ─────────────────────────────────────────────────              │
-│  1. Dev creates infra/terraform/rds.tf                          │
-│  2. Writes: resource "aws_rds_cluster" "bigger" { }             │
-│  3. Push → CI → terraform plan                                  │
-│  4. ❌ DENIED by IAM Policy                                     │
-│     "AccessDenied: User github-catalog-deploy                   │
-│      is not authorized to perform rds:CreateDBCluster"          │
-│                                                                  │
-│                                                                  │
-│  SCENARIO 4: Platform Team modifies EKS                         │
-│  ───────────────────────────────────────                        │
-│  1. Platform eng opens platform-infrastructure                  │
-│  2. Claude reads CLAUDE.md → sees critical rules                │
-│  3. Eng: "upgrade EKS to 1.32"                                  │
-│  4. Claude:                                                     │
-│     "⚠️ EKS upgrade requires:                                   │
-│      1. Scheduled maintenance window                            │
-│      2. Runbook: docs/RUNBOOKS/eks-upgrade.md                   │
-│      3. Approval from 2 platform leads                          │
-│      4. Communication to all teams                              │
-│      Should I proceed with runbook preparation?"                │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
-```
+### Scenario 1: Developer modifies app code
+
+| Step | Action | Result |
+|------|--------|--------|
+| 1 | Dev opens `catalog-service` in Claude Code | Claude reads CLAUDE.md |
+| 2 | Dev: "add endpoint /products/featured" | Claude modifies `src/` |
+| 3 | Push → PR | CODEOWNERS: Team Catalog approves |
+| 4 | CI → Deploy dev | ✅ SUCCESS |
+
+### Scenario 2: Developer tries to modify platform infra
+
+| Step | Action | Result |
+|------|--------|--------|
+| 1 | Dev opens `catalog-service` in Claude Code | Claude reads CLAUDE.md |
+| 2 | Dev: "increase RDS database CPU" | Claude sees limit in CLAUDE.md |
+| 3 | Claude responds | "Cannot modify RDS. Open ticket to Platform Team." |
+
+### Scenario 3: Developer tries bypass via Terraform
+
+| Step | Action | Result |
+|------|--------|--------|
+| 1 | Dev creates `infra/terraform/rds.tf` | `resource "aws_rds_cluster" {}` |
+| 2 | Push → CI → terraform plan | ❌ DENIED by IAM Policy |
+| 3 | Error | "AccessDenied: User github-catalog-deploy is not authorized" |
+
+### Scenario 4: Platform Team modifies EKS
+
+| Step | Action | Result |
+|------|--------|--------|
+| 1 | Platform eng opens `platform-infrastructure` | Claude reads CLAUDE.md |
+| 2 | Eng: "upgrade EKS to 1.32" | Claude sees critical rules |
+| 3 | Claude responds | "EKS upgrade requires: maintenance window, runbook, 2 approvals" |
 
 ---
 
 ## 6. Onboarding New Team
-
-When a new application team needs to be added:
 
 ### Platform Team Checklist
 
@@ -928,18 +564,15 @@ terraform apply
 
 # 3. Create ECR repository
 cd ../shared
-# Add repo to ecr.tf
 terraform apply
 
 # 4. Create Secrets Manager path
-# Add path to secrets.tf
 terraform apply
 ```
 
-### Application Repo Template
+### Create Repo from Template
 
 ```bash
-# Platform team creates repo from template
 gh repo create acme-corp/newteam-service \
   --template acme-corp/app-template \
   --private
@@ -956,48 +589,19 @@ gh repo create acme-corp/newteam-service \
 
 ## 7. Platform Documentation (Read-Only for App Teams)
 
-The problem: `platform-infrastructure` repositories are restricted, but application teams need to understand the architecture to optimize their choices.
+**Problem:** The `platform-infrastructure` repositories are restricted, but application teams need to understand the architecture to optimize their choices.
 
 **Solution:** Public documentation repository managed by the Platform Team.
 
 ### platform-docs Repository Structure
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│  platform-docs                    📖 INTERNAL (Read All)        │
-│  Architectural documentation repository                         │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  docs/                                                          │
-│  ├── architecture/                                              │
-│  │   ├── cluster-overview.md      # EKS version, node types    │
-│  │   ├── networking.md            # VPC, subnets, ingress      │
-│  │   ├── storage-classes.md       # EBS, EFS options           │
-│  │   └── diagrams/                # Mermaid/draw.io            │
-│  │                                                              │
-│  ├── capabilities/                                              │
-│  │   ├── compute.md               # Node sizes, limits         │
-│  │   ├── databases.md             # RDS options, connection    │
-│  │   ├── caching.md               # Redis clusters, patterns   │
-│  │   ├── secrets.md               # Secrets Manager usage      │
-│  │   └── observability.md         # Metrics, logs, traces      │
-│  │                                                              │
-│  ├── best-practices/                                            │
-│  │   ├── resource-requests.md     # CPU/Memory sizing          │
-│  │   ├── hpa-configuration.md     # Autoscaling patterns       │
-│  │   ├── health-checks.md         # Liveness/Readiness         │
-│  │   ├── pod-disruption.md        # PDB configuration          │
-│  │   └── cost-optimization.md     # Spot instances, rightsizing│
-│  │                                                              │
-│  ├── examples/                                                  │
-│  │   ├── helm-values/             # Optimized values examples  │
-│  │   ├── hpa-configs/             # HPA templates              │
-│  │   └── resource-configs/        # Resource request examples  │
-│  │                                                              │
-│  └── CLAUDE.md                    # Context for Claude Code    │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
-```
+| Directory | Content |
+|-----------|---------|
+| `docs/architecture/` | cluster-overview.md, networking.md, storage-classes.md |
+| `docs/capabilities/` | compute.md, databases.md, caching.md, secrets.md |
+| `docs/best-practices/` | resource-requests.md, hpa-configuration.md, health-checks.md |
+| `docs/examples/` | helm-values/, hpa-configs/, resource-configs/ |
+| `CLAUDE.md` | Context for Claude Code |
 
 ### Example: docs/architecture/cluster-overview.md
 
@@ -1023,181 +627,36 @@ The problem: `platform-infrastructure` repositories are restricted, but applicat
 | CPU (intensive worker) | 500m - 1000m | 2000m |
 | Memory (intensive worker) | 512Mi - 1Gi | 2Gi |
 
-## Storage Classes
+## Best Practices
 
-| Name | Type | Use Case |
-|------|------|----------|
-| gp3 (default) | EBS gp3 | Database, persistent data |
-| efs-sc | EFS | Shared storage across pods |
-
-## Ingress
-
-| Aspect | Value |
-|--------|-------|
-| Controller | AWS ALB Ingress Controller |
-| SSL Termination | ALB (ACM certificates) |
-| WAF | Enabled on ALB |
-
----
-
-## Best Practices for this Cluster
-
-### CPU Throttling
-- The cluster uses **CPU limits**. If your app exceeds the limit, it gets throttled
-- Recommendation: request = 50-70% of limit for headroom
-
-### Memory OOMKill
-- If you exceed memory limit, the pod gets killed
-- Recommendation: monitor RSS in staging before prod
-
-### Node Scheduling
-- Use **Pod Anti-Affinity** if you need HA
-- Nodes can be terminated with 10min notice (spot reclaim)
-```
-
-### Example: docs/best-practices/resource-requests.md
-
-```markdown
-# Resource Requests - Guide
-
-## How to Choose Values
-
-### Step 1: Profile in Dev/Staging
-
-```bash
-# Observe real usage for 24h
-kubectl top pods -n catalog --containers
-
-# Or Prometheus query
-avg(container_cpu_usage_seconds_total{namespace="catalog"}) by (pod)
-```
-
-### Step 2: Apply Formula
-
-| Metric | Request Formula | Limit Formula |
-|--------|-----------------|---------------|
-| CPU | P95 usage × 1.2 | Request × 2 |
-| Memory | Max RSS × 1.3 | Request × 1.5 |
-
-### Step 3: Configure HPA
-
-```yaml
-# For CPU-bound apps (API servers)
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-spec:
-  minReplicas: 2
-  maxReplicas: 10
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 50  # Scale before throttling
-```
-
-### Real Examples
-
-| App Type | CPU Request | CPU Limit | Mem Request | Mem Limit |
-|----------|-------------|-----------|-------------|-----------|
-| API Light | 100m | 200m | 128Mi | 256Mi |
-| API Standard | 250m | 500m | 256Mi | 512Mi |
-| Worker | 500m | 1000m | 512Mi | 1Gi |
-| Heavy Processing | 1000m | 2000m | 1Gi | 2Gi |
-```
-
-### platform-docs/CLAUDE.md
-
-```markdown
-# Platform Documentation - CLAUDE.md
-
-## Repository Purpose
-
-This repository contains architectural documentation
-for application teams. It's READ-ONLY and maintained by the Platform Team.
-
-## How to Use with Claude Code
-
-When a developer asks Claude Code to optimize their app:
-
-1. Claude reads files in this repo to understand:
-   - Cluster limits (CPU, memory, storage)
-   - Recommended best practices
-   - Configuration examples
-
-2. Claude applies this information to the application code
-
-## Example Prompt for Developer
-
-"Optimize my Helm deployment for the current cluster.
-Read best practices from platform-docs and apply the correct values."
-
-## Updates
-
-- This repo is updated by Platform Team after every infra change
-- Changelog in CHANGELOG.md
-- Slack channel: #platform-announcements
+- **CPU Throttling:** request = 50-70% of limit for headroom
+- **Memory OOMKill:** monitor RSS in staging before prod
+- **Pod Anti-Affinity:** use for HA
 ```
 
 ### Workflow: Developer Optimizes with Claude Code
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│           DEVELOPER OPTIMIZATION FLOW                            │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  1. Developer opens catalog-service in Claude Code              │
-│                                                                  │
-│  2. Asks: "Optimize resources and HPA for our cluster"          │
-│                                                                  │
-│  3. Claude:                                                     │
-│     a) Reads catalog-service/CLAUDE.md → app limits             │
-│     b) Clones/reads platform-docs → cluster architecture        │
-│     c) Analyzes current helm/values.yaml                        │
-│     d) Proposes changes based on best practices                 │
-│                                                                  │
-│  4. Claude Output:                                              │
-│     "Based on platform-docs documentation:                      │
-│      - Cluster has t3.medium nodes (2 vCPU, 4GB)                │
-│      - Recommended CPU request 250m for standard API            │
-│      - HPA threshold 50% to avoid throttling                    │
-│                                                                  │
-│      Proposed changes to helm/values.yaml:                      │
-│      - resources.requests.cpu: 100m → 250m                      │
-│      - resources.limits.cpu: 200m → 500m                        │
-│      - hpa.targetCPU: 70 → 50"                                  │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
-```
+| Step | Action |
+|------|--------|
+| 1 | Developer opens `catalog-service` in Claude Code |
+| 2 | Asks: "Optimize resources and HPA for our cluster" |
+| 3 | Claude reads `catalog-service/CLAUDE.md` → sees reference to platform-docs |
+| 4 | Claude reads `platform-docs/docs/architecture/cluster-overview.md` |
+| 5 | Claude proposes: CPU request 250m, limit 500m, HPA target 50% |
 
 ### Reference in Application CLAUDE.md
-
-In each application repo CLAUDE.md, add:
 
 ```markdown
 ## Cluster Architecture
 
-For information about cluster architecture and best practices:
+For information about architecture and best practices:
 - Repository: github.com/acme-corp/platform-docs
 - Main docs:
   - docs/architecture/cluster-overview.md
   - docs/best-practices/resource-requests.md
-  - docs/best-practices/hpa-configuration.md
 
-Claude Code: when optimizing resources, first read platform-docs
-to understand cluster limits and best practices.
+Claude Code: when optimizing resources, first read platform-docs.
 ```
-
-### Benefits of this Approach
-
-| Aspect | Benefit |
-|--------|---------|
-| **Separation** | Infra code remains private, docs are public |
-| **Context for Claude** | Claude has all info to optimize |
-| **Self-Service** | Developers don't need to ask Platform Team |
-| **Updates** | Platform Team updates docs after every change |
-| **Audit** | Versioned docs, visibility on who changed what |
 
 ---
 
@@ -1207,36 +666,15 @@ If the organization prefers **full transparency**, all repositories can be reada
 
 ### GitHub Configuration
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│              GITHUB VISIBILITY SETTINGS                          │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  platform-infrastructure     📖 INTERNAL (Read All, Write Few)  │
-│  ├── Visibility: Internal                                       │
-│  ├── Branch Protection: main → require 2 platform-leads         │
-│  └── CODEOWNERS: @platform-team                                 │
-│                                                                  │
-│  catalog-service            📖 INTERNAL (Read All, Write Team)  │
-│  ├── Visibility: Internal                                       │
-│  ├── Branch Protection: main → require 1 team-catalog           │
-│  └── CODEOWNERS: @team-catalog                                  │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
-```
+| Repository | Visibility | Write Access | Branch Protection |
+|------------|------------|--------------|-------------------|
+| `platform-infrastructure` | Internal | Platform Team only | 2 platform-leads |
+| `catalog-service` | Internal | Team Catalog only | 1 team member |
 
 ### Application CLAUDE.md with Read-Only Guardrails
 
 ```markdown
 # Catalog Service - CLAUDE.md
-
-## Repository Overview
-
-Microservice for product catalog management.
-
-**Team Owner:** Team Catalog
-
----
 
 ## Cluster Architecture (Read-Only Reference)
 
@@ -1248,131 +686,45 @@ you can READ (but not modify) the platform repository:
 | platform-infrastructure | terraform/eks/cluster.tf | K8s version, node types |
 | platform-infrastructure | terraform/eks/nodes.tf | Node groups, scaling limits |
 | platform-infrastructure | terraform/shared/rds.tf | RDS configuration |
-| platform-infrastructure | terraform/shared/redis.tf | Redis cluster settings |
-
-### How to Use
-
-```
-# ✅ ALLOWED - Read to understand architecture
-git clone git@github.com:acme-corp/platform-infrastructure.git /tmp/platform-ref
-cat /tmp/platform-ref/terraform/eks/nodes.tf
-
-# ❌ BLOCKED - DO NOT create branches or PRs
-# Claude must NEVER modify platform-infrastructure
-```
-
----
 
 ## Guardrails for Claude Code
 
-### ✅ YOU CAN DO
+### YOU CAN DO
+- Read platform-infrastructure to understand architecture
+- Use the info to optimize this repo
 
-1. **Read platform-infrastructure** to understand:
-   - Node types (t3.medium, t3.large, etc.)
-   - HPA limits configured at cluster level
-   - Kubernetes version
-   - RDS/Redis configuration
-
-2. **Use the info to optimize** this repo:
-   - Adjust resource requests/limits
-   - Configure appropriate HPA
-   - Choose connection pool size based on RDS
-
-### ❌ YOU CANNOT DO
-
-1. **Modify platform-infrastructure**
-   - Don't create files, branches or PRs in that repo
-   - If a change is needed → suggest ticket to Platform Team
-
-2. **Copy platform configurations to this repo**
-   - Don't duplicate Terraform from platform
-   - Use only modules exposed in platform-modules
-
----
-
-## Example Workflow
-
-Developer: "Optimize my deployment for the current cluster"
-
-Claude:
-1. Clone platform-infrastructure to /tmp (read-only)
-2. Read terraform/eks/nodes.tf → t3.medium nodes (2 vCPU, 4GB)
-3. Read terraform/eks/cluster.tf → EKS 1.32
-4. Analyze current helm/values.yaml
-5. Propose changes to helm/values.yaml (NOT to platform!)
-
-Output:
-"I read the cluster configuration from platform-infrastructure:
-- Nodes: t3.medium (2 vCPU, 4GB RAM)
-- Max pods per node: 17
-- Cluster-wide HPA: no limit
-
-For your catalog service, I recommend:
-- CPU request: 250m (current 100m)
-- CPU limit: 500m (current 200m)
-- HPA target: 50% (current 70%)
-
-Should I modify helm/values.yaml?"
+### YOU CANNOT DO
+- Modify platform-infrastructure (no branch, no PR)
+- Copy platform configurations to this repo
 ```
 
-### Complete Workflow: Read Platform → Optimize App
+### Workflow: Read Platform → Optimize App
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│     CLAUDE CODE: READ PLATFORM → OPTIMIZE APP                    │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  Developer in catalog-service/                                  │
-│  └── "Optimize resources for our cluster"                       │
-│                                                                  │
-│  Claude reads CLAUDE.md                                         │
-│  └── Sees: "You can READ platform-infrastructure"               │
-│                                                                  │
-│  Claude clones platform-infrastructure (temp, read-only)        │
-│  ├── Reads terraform/eks/nodes.tf                               │
-│  │   └── instance_type = "t3.medium"                            │
-│  ├── Reads terraform/eks/cluster.tf                             │
-│  │   └── version = "1.32"                                       │
-│  └── Reads terraform/shared/rds.tf                              │
-│      └── max_connections = 100                                  │
-│                                                                  │
-│  Claude analyzes catalog-service/helm/values.yaml               │
-│  └── Finds: requests.cpu = 100m, limits.cpu = 200m              │
-│                                                                  │
-│  Claude proposes changes to catalog-service ONLY:               │
-│  ├── helm/values.yaml → resources optimized                     │
-│  └── src/config/database.ts → pool size = 10 (100/10 services)  │
-│                                                                  │
-│  ❌ Claude does NOT touch platform-infrastructure                │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
-```
+| Step | Action |
+|------|--------|
+| 1 | Developer: "Optimize resources for our cluster" |
+| 2 | Claude reads CLAUDE.md → "You can READ platform-infrastructure" |
+| 3 | Claude clones platform-infrastructure (temp, read-only) |
+| 4 | Reads `terraform/eks/nodes.tf` → `t3.medium` |
+| 5 | Proposes changes to `catalog-service/helm/values.yaml` ONLY |
 
 ### Benefits vs Separate platform-docs
 
 | Aspect | platform-docs | Read-Only Platform |
 |--------|---------------|-------------------|
-| **Source of Truth** | Docs can diverge | Always up-to-date (it's the code) |
-| **Maintenance** | Requires docs↔code sync | Zero overhead |
-| **Detail** | Only selected docs | Everything visible |
-| **Risk** | No access to secrets | Secrets in tfvars (gitignored) |
+| Source of Truth | Docs can diverge | Always up-to-date |
+| Maintenance | Requires docs↔code sync | Zero overhead |
+| Detail | Only selected docs | Everything visible |
 
-### Security Considerations
-
-To use this approach safely:
-
-1. **Secrets in AWS Secrets Manager**, not in repo
-2. **tfvars in .gitignore** (never committed)
-3. **Strict branch protection** on platform repos
-4. **Audit logging** on all clone/pull operations
+### Security
 
 ```hcl
-# ✅ SAFE - In terraform code (readable)
+# SAFE - In terraform code (readable)
 data "aws_secretsmanager_secret_version" "db_password" {
   secret_id = "ecommerce/rds/password"
 }
 
-# ❌ NEVER - Never in repo
+# NEVER - Never in repo
 # variable "db_password" { default = "actual-password" }
 ```
 
@@ -1383,7 +735,6 @@ data "aws_secretsmanager_secret_version" "db_password" {
 ### CloudTrail for Audit
 
 ```hcl
-# In platform-infrastructure
 resource "aws_cloudtrail" "audit" {
   name           = "platform-audit"
   s3_bucket_name = aws_s3_bucket.audit_logs.id
@@ -1394,25 +745,12 @@ resource "aws_cloudtrail" "audit" {
   }
 }
 
-# Alert on suspicious actions
 resource "aws_cloudwatch_metric_alarm" "unauthorized_api_calls" {
   alarm_name          = "UnauthorizedAPICalls"
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 1
-  metric_name         = "UnauthorizedAttemptCount"
-  namespace           = "CloudTrailMetrics"
-  period              = 300
-  statistic           = "Sum"
   threshold           = 0
   alarm_actions       = [aws_sns_topic.security_alerts.arn]
 }
-```
-
-### GitHub Audit Log
-
-```yaml
-# Webhook for audit GitHub → CloudWatch
-# Every PR/push to platform repos is logged
 ```
 
 ---
