@@ -954,7 +954,431 @@ gh repo create acme-corp/newteam-service \
 
 ---
 
-## 7. Monitoring e Audit
+## 7. Platform Documentation (Read-Only per App Teams)
+
+Il problema: i repository `platform-infrastructure` sono restricted, ma i team applicativi hanno bisogno di conoscere l'architettura per ottimizzare le loro scelte.
+
+**Soluzione:** Repository di documentazione pubblica gestito dal Platform Team.
+
+### Struttura platform-docs Repository
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  platform-docs                    📖 INTERNAL (Read All)        │
+│  Repository di documentazione architetturale                    │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  docs/                                                          │
+│  ├── architecture/                                              │
+│  │   ├── cluster-overview.md      # EKS version, node types    │
+│  │   ├── networking.md            # VPC, subnets, ingress      │
+│  │   ├── storage-classes.md       # EBS, EFS options           │
+│  │   └── diagrams/                # Mermaid/draw.io            │
+│  │                                                              │
+│  ├── capabilities/                                              │
+│  │   ├── compute.md               # Node sizes, limits         │
+│  │   ├── databases.md             # RDS options, connection    │
+│  │   ├── caching.md               # Redis clusters, patterns   │
+│  │   ├── secrets.md               # Secrets Manager usage      │
+│  │   └── observability.md         # Metrics, logs, traces      │
+│  │                                                              │
+│  ├── best-practices/                                            │
+│  │   ├── resource-requests.md     # CPU/Memory sizing          │
+│  │   ├── hpa-configuration.md     # Autoscaling patterns       │
+│  │   ├── health-checks.md         # Liveness/Readiness         │
+│  │   ├── pod-disruption.md        # PDB configuration          │
+│  │   └── cost-optimization.md     # Spot instances, rightsizing│
+│  │                                                              │
+│  ├── examples/                                                  │
+│  │   ├── helm-values/             # Optimized values examples  │
+│  │   ├── hpa-configs/             # HPA templates              │
+│  │   └── resource-configs/        # Resource request examples  │
+│  │                                                              │
+│  └── CLAUDE.md                    # Context per Claude Code    │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Esempio: docs/architecture/cluster-overview.md
+
+```markdown
+# Cluster EKS - Overview
+
+## Specifiche Cluster
+
+| Aspetto | Valore | Note |
+|---------|--------|------|
+| Kubernetes Version | 1.32 | Upgrade schedulati trimestralmente |
+| Region | eu-west-1 | Multi-AZ (3 availability zones) |
+| Node Type | t3.medium | 2 vCPU, 4GB RAM per nodo |
+| Node Range | 2-10 nodi | Cluster Autoscaler attivo |
+| Max Pods/Node | 17 | Limite ENI t3.medium |
+
+## Risorse Disponibili per Pod
+
+| Categoria | Request Consigliato | Limit Massimo |
+|-----------|---------------------|---------------|
+| CPU (app standard) | 100m - 250m | 500m |
+| Memory (app standard) | 128Mi - 256Mi | 512Mi |
+| CPU (worker intensive) | 500m - 1000m | 2000m |
+| Memory (worker intensive) | 512Mi - 1Gi | 2Gi |
+
+## Storage Classes
+
+| Nome | Tipo | Use Case |
+|------|------|----------|
+| gp3 (default) | EBS gp3 | Database, persistent data |
+| efs-sc | EFS | Shared storage across pods |
+
+## Ingress
+
+| Aspetto | Valore |
+|---------|--------|
+| Controller | AWS ALB Ingress Controller |
+| SSL Termination | ALB (ACM certificates) |
+| WAF | Abilitato su ALB |
+
+---
+
+## Best Practices per questo Cluster
+
+### CPU Throttling
+- Il cluster usa **CPU limits**. Se la tua app supera il limit, viene throttled
+- Consiglio: request = 50-70% del limit per headroom
+
+### Memory OOMKill
+- Se superi il memory limit, il pod viene killed
+- Consiglio: monitora RSS in staging prima di prod
+
+### Node Scheduling
+- Usa **Pod Anti-Affinity** se hai bisogno di HA
+- I nodi possono essere terminati con 10min notice (spot reclaim)
+```
+
+### Esempio: docs/best-practices/resource-requests.md
+
+```markdown
+# Resource Requests - Guida
+
+## Come Scegliere i Valori
+
+### Step 1: Profila in Dev/Staging
+
+```bash
+# Osserva utilizzo reale per 24h
+kubectl top pods -n catalog --containers
+
+# Oppure query Prometheus
+avg(container_cpu_usage_seconds_total{namespace="catalog"}) by (pod)
+```
+
+### Step 2: Applica Formula
+
+| Metrica | Formula Request | Formula Limit |
+|---------|-----------------|---------------|
+| CPU | P95 usage × 1.2 | Request × 2 |
+| Memory | Max RSS × 1.3 | Request × 1.5 |
+
+### Step 3: Configura HPA
+
+```yaml
+# Per app CPU-bound (API servers)
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+spec:
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50  # Scale prima del throttling
+```
+
+### Esempi Reali
+
+| App Type | CPU Request | CPU Limit | Mem Request | Mem Limit |
+|----------|-------------|-----------|-------------|-----------|
+| API Light | 100m | 200m | 128Mi | 256Mi |
+| API Standard | 250m | 500m | 256Mi | 512Mi |
+| Worker | 500m | 1000m | 512Mi | 1Gi |
+| Heavy Processing | 1000m | 2000m | 1Gi | 2Gi |
+```
+
+### platform-docs/CLAUDE.md
+
+```markdown
+# Platform Documentation - CLAUDE.md
+
+## Scopo Repository
+
+Questo repository contiene la documentazione dell'architettura
+per i team applicativi. È READ-ONLY e mantenuto dal Platform Team.
+
+## Come Usare con Claude Code
+
+Quando un developer chiede a Claude Code di ottimizzare la loro app:
+
+1. Claude legge i file in questo repo per capire:
+   - Limiti del cluster (CPU, memory, storage)
+   - Best practices consigliate
+   - Esempi di configurazione
+
+2. Claude applica queste informazioni al codice applicativo
+
+## Esempio Prompt per Developer
+
+"Ottimizza il mio deployment Helm per il cluster attuale.
+Leggi le best practices da platform-docs e applica i valori corretti."
+
+## Aggiornamenti
+
+- Questo repo è aggiornato dal Platform Team dopo ogni modifica infra
+- Changelog in CHANGELOG.md
+- Canale Slack: #platform-announcements
+```
+
+### Workflow: Developer Ottimizza con Claude Code
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│           DEVELOPER OPTIMIZATION FLOW                            │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  1. Developer apre catalog-service in Claude Code               │
+│                                                                  │
+│  2. Chiede: "Ottimizza resources e HPA per il nostro cluster"   │
+│                                                                  │
+│  3. Claude:                                                     │
+│     a) Legge catalog-service/CLAUDE.md → limiti app             │
+│     b) Clona/legge platform-docs → architettura cluster         │
+│     c) Analizza helm/values.yaml corrente                       │
+│     d) Propone modifiche basate su best practices               │
+│                                                                  │
+│  4. Output Claude:                                              │
+│     "Basandomi sulla documentazione platform-docs:              │
+│      - Cluster ha nodi t3.medium (2 vCPU, 4GB)                  │
+│      - Consigliato CPU request 250m per API standard            │
+│      - HPA threshold 50% per evitare throttling                 │
+│                                                                  │
+│      Modifiche proposte a helm/values.yaml:                     │
+│      - resources.requests.cpu: 100m → 250m                      │
+│      - resources.limits.cpu: 200m → 500m                        │
+│      - hpa.targetCPU: 70 → 50"                                  │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Referenza in CLAUDE.md Applicativo
+
+Nel CLAUDE.md di ogni repo applicativo, aggiungi:
+
+```markdown
+## Architettura Cluster
+
+Per informazioni sull'architettura del cluster e best practices:
+- Repository: github.com/acme-corp/platform-docs
+- Docs principali:
+  - docs/architecture/cluster-overview.md
+  - docs/best-practices/resource-requests.md
+  - docs/best-practices/hpa-configuration.md
+
+Claude Code: quando ottimizzi risorse, leggi prima platform-docs
+per capire i limiti e le best practices del cluster.
+```
+
+### Vantaggi di questo Approccio
+
+| Aspetto | Beneficio |
+|---------|-----------|
+| **Separazione** | Infra codice rimane privato, docs sono pubbliche |
+| **Context per Claude** | Claude ha tutte le info per ottimizzare |
+| **Self-Service** | Developer non devono chiedere a Platform Team |
+| **Aggiornamento** | Platform Team aggiorna docs dopo ogni cambio |
+| **Audit** | Docs versionati, si vede chi ha modificato cosa |
+
+---
+
+## 7b. Alternativa: Repo Platform Read-Only per Tutti
+
+Se l'organizzazione preferisce **trasparenza totale**, tutti i repository possono essere leggibili (internal visibility) con guardrails nel CLAUDE.md applicativo.
+
+### Configurazione GitHub
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│              GITHUB VISIBILITY SETTINGS                          │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  platform-infrastructure     📖 INTERNAL (Read All, Write Few)  │
+│  ├── Visibility: Internal                                       │
+│  ├── Branch Protection: main → require 2 platform-leads         │
+│  └── CODEOWNERS: @platform-team                                 │
+│                                                                  │
+│  catalog-service            📖 INTERNAL (Read All, Write Team)  │
+│  ├── Visibility: Internal                                       │
+│  ├── Branch Protection: main → require 1 team-catalog           │
+│  └── CODEOWNERS: @team-catalog                                  │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### CLAUDE.md Applicativo con Guardrails Read-Only
+
+```markdown
+# Catalog Service - CLAUDE.md
+
+## Repository Overview
+
+Microservizio per la gestione del catalogo prodotti.
+
+**Team Owner:** Team Catalog
+
+---
+
+## Architettura Cluster (Read-Only Reference)
+
+Per capire l'architettura del cluster e ottimizzare le scelte,
+puoi LEGGERE (ma non modificare) il repository platform:
+
+| Repository | Path | Cosa Cercare |
+|------------|------|--------------|
+| platform-infrastructure | terraform/eks/cluster.tf | Versione K8s, node types |
+| platform-infrastructure | terraform/eks/nodes.tf | Node groups, scaling limits |
+| platform-infrastructure | terraform/shared/rds.tf | RDS configuration |
+| platform-infrastructure | terraform/shared/redis.tf | Redis cluster settings |
+
+### Come Usare
+
+```
+# ✅ ALLOWED - Leggere per capire architettura
+git clone git@github.com:acme-corp/platform-infrastructure.git /tmp/platform-ref
+cat /tmp/platform-ref/terraform/eks/nodes.tf
+
+# ❌ BLOCKED - NON creare branch o PR
+# Claude NON deve MAI modificare platform-infrastructure
+```
+
+---
+
+## Guardrails per Claude Code
+
+### ✅ PUOI FARE
+
+1. **Leggere platform-infrastructure** per capire:
+   - Tipo di nodi (t3.medium, t3.large, etc.)
+   - Limiti HPA configurati a livello cluster
+   - Versione Kubernetes
+   - Configurazione RDS/Redis
+
+2. **Usare le info per ottimizzare** questo repo:
+   - Adeguare resource requests/limits
+   - Configurare HPA appropriato
+   - Scegliere connection pool size basato su RDS
+
+### ❌ NON PUOI FARE
+
+1. **Modificare platform-infrastructure**
+   - Non creare file, branch o PR in quel repo
+   - Se serve una modifica → suggerisci ticket a Platform Team
+
+2. **Copiare configurazioni platform in questo repo**
+   - Non duplicare Terraform da platform
+   - Usa solo i moduli esposti in platform-modules
+
+---
+
+## Esempio Workflow
+
+Developer: "Ottimizza il mio deployment per il cluster attuale"
+
+Claude:
+1. Clona platform-infrastructure in /tmp (read-only)
+2. Legge terraform/eks/nodes.tf → nodi t3.medium (2 vCPU, 4GB)
+3. Legge terraform/eks/cluster.tf → EKS 1.32
+4. Analizza helm/values.yaml corrente
+5. Propone modifiche a helm/values.yaml (NON a platform!)
+
+Output:
+"Ho letto la configurazione cluster da platform-infrastructure:
+- Nodi: t3.medium (2 vCPU, 4GB RAM)
+- Max pods per nodo: 17
+- HPA cluster-wide: nessun limite
+
+Per il tuo servizio catalog, consiglio:
+- CPU request: 250m (attuale 100m)
+- CPU limit: 500m (attuale 200m)
+- HPA target: 50% (attuale 70%)
+
+Modifico helm/values.yaml?"
+```
+
+### Workflow Completo: Read Platform → Optimize App
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│     CLAUDE CODE: READ PLATFORM → OPTIMIZE APP                    │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  Developer in catalog-service/                                  │
+│  └── "Ottimizza resources per il nostro cluster"                │
+│                                                                  │
+│  Claude legge CLAUDE.md                                         │
+│  └── Vede: "Puoi LEGGERE platform-infrastructure"               │
+│                                                                  │
+│  Claude clona platform-infrastructure (temp, read-only)         │
+│  ├── Legge terraform/eks/nodes.tf                               │
+│  │   └── instance_type = "t3.medium"                            │
+│  ├── Legge terraform/eks/cluster.tf                             │
+│  │   └── version = "1.32"                                       │
+│  └── Legge terraform/shared/rds.tf                              │
+│      └── max_connections = 100                                  │
+│                                                                  │
+│  Claude analizza catalog-service/helm/values.yaml               │
+│  └── Trova: requests.cpu = 100m, limits.cpu = 200m              │
+│                                                                  │
+│  Claude propone modifiche a catalog-service SOLO:               │
+│  ├── helm/values.yaml → resources optimized                     │
+│  └── src/config/database.ts → pool size = 10 (100/10 services)  │
+│                                                                  │
+│  ❌ Claude NON tocca platform-infrastructure                     │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Vantaggi Rispetto a platform-docs Separato
+
+| Aspetto | platform-docs | Read-Only Platform |
+|---------|---------------|-------------------|
+| **Source of Truth** | Docs possono divergere | Sempre aggiornato (è il codice) |
+| **Manutenzione** | Richiede sync docs↔code | Zero overhead |
+| **Dettaglio** | Solo docs selezionate | Tutto visibile |
+| **Rischio** | Nessun accesso a secrets | Secrets in tfvars (gitignore) |
+
+### Considerazioni di Sicurezza
+
+Per usare questo approccio in modo sicuro:
+
+1. **Secrets in AWS Secrets Manager**, non in repo
+2. **tfvars in .gitignore** (mai committati)
+3. **Branch protection** rigorosa su platform repos
+4. **Audit log** su tutti i clone/pull
+
+```hcl
+# ✅ SAFE - In terraform code (leggibile)
+data "aws_secretsmanager_secret_version" "db_password" {
+  secret_id = "ecommerce/rds/password"
+}
+
+# ❌ NEVER - Mai in repo
+# variable "db_password" { default = "actual-password" }
+```
+
+---
+
+## 8. Monitoring e Audit
 
 ### CloudTrail per Audit
 
