@@ -16,7 +16,9 @@ sequenceDiagram
 
     U->>FE: Inserisce email e password
     FE->>FE: Validazione form client-side
-    FE->>BE: POST /api/auth/login<br/>{email, password}
+    FE->>FE: Axios POST /api/auth/login
+    Note over FE: Next.js Proxy<br/>(server-side)
+    FE->>BE: Proxy → POST /api/auth/login<br/>{email, password}
     BE->>BE: Validazione Zod schema
     BE->>DB: SELECT * FROM User<br/>WHERE email = ?
     DB-->>BE: User record (con password hash)
@@ -47,6 +49,8 @@ sequenceDiagram
 
     U->>FE: Compila form registrazione
     FE->>FE: Validazione client-side
+    FE->>FE: Axios POST /api/auth/register
+    Note over FE: Next.js Proxy<br/>(server-side)
     FE->>BE: POST /api/auth/register<br/>{email, password, firstName, lastName}
     BE->>BE: Validazione Zod schema
     BE->>DB: SELECT * FROM User<br/>WHERE email = ?
@@ -86,7 +90,9 @@ sequenceDiagram
         RQ-->>FE: Cached products
         FE-->>U: Render product grid
     else Cache MISS
-        RQ->>BE: GET /api/catalog/products?page=1&limit=20
+        RQ->>FE: Axios GET /api/catalog/products
+        Note over FE: Next.js Proxy<br/>(server-side)
+        FE->>BE: GET /api/catalog/products?page=1&limit=20
         BE->>BE: Validazione query params
         BE->>DB: SELECT * FROM Product<br/>WHERE status = 'ACTIVE'<br/>LIMIT 20 OFFSET 0
         DB-->>BE: Products[]
@@ -100,7 +106,9 @@ sequenceDiagram
 
     U->>FE: Click su prodotto
     FE->>RQ: useProduct(slug)
-    RQ->>BE: GET /api/catalog/products/:slug
+    RQ->>FE: Axios GET /api/catalog/products/:slug
+    Note over FE: Next.js Proxy
+    FE->>BE: GET /api/catalog/products/:slug
     BE->>DB: SELECT * FROM Product<br/>WHERE slug = ?<br/>INCLUDE Category
     DB-->>BE: Product with Category
     BE-->>RQ: Product details
@@ -122,6 +130,8 @@ sequenceDiagram
     participant DB as PostgreSQL
 
     U->>FE: Naviga a /categories
+    FE->>FE: Axios GET /api/catalog/categories
+    Note over FE: Next.js Proxy<br/>(server-side)
     FE->>BE: GET /api/catalog/categories
     BE->>Redis: GET categories:all
     alt Redis Cache HIT
@@ -203,6 +213,8 @@ sequenceDiagram
     FE-->>U: Mostra riepilogo + form indirizzo
 
     U->>FE: Compila indirizzo e conferma
+    FE->>FE: Axios POST /api/orders
+    Note over FE: Next.js Proxy<br/>(server-side)
     FE->>BE: POST /api/orders<br/>{items, shippingAddress, billingAddress}
 
     Note over BE,DB: Transaction Start
@@ -248,6 +260,8 @@ sequenceDiagram
 
     U->>FE: Naviga a /account/orders
     FE->>FE: Verifica auth token
+    FE->>FE: Axios GET /api/orders
+    Note over FE: Next.js Proxy<br/>(server-side)
     FE->>BE: GET /api/orders<br/>Authorization: Bearer {token}
     BE->>BE: Verify JWT
     BE->>BE: Extract userId from token
@@ -257,6 +271,8 @@ sequenceDiagram
     FE-->>U: Render order history table
 
     U->>FE: Click su ordine specifico
+    FE->>FE: Axios GET /api/orders/:id
+    Note over FE: Next.js Proxy
     FE->>BE: GET /api/orders/:id<br/>Authorization: Bearer {token}
     BE->>BE: Verify user owns order OR is admin
     BE->>DB: SELECT * FROM Order<br/>WHERE id = ?<br/>INCLUDE OrderItem, Product
@@ -280,6 +296,8 @@ sequenceDiagram
 
     U->>FE: Digita "laptop" nella search bar
     FE->>FE: Debounce input (300ms)
+    FE->>FE: Axios GET /api/search
+    Note over FE: Next.js Proxy<br/>(server-side)
     FE->>BE: GET /api/search?q=laptop&type=all
     BE->>BE: Validazione query params
     BE->>Redis: GET search:laptop:all:1:20
@@ -320,6 +338,8 @@ sequenceDiagram
 
     U->>FE: Inizia a digitare "lap"
     FE->>FE: Debounce (150ms)
+    FE->>FE: Axios GET /api/search/suggest
+    Note over FE: Next.js Proxy<br/>(server-side)
     FE->>BE: GET /api/search/suggest?q=lap&limit=5
     BE->>Redis: GET suggest:lap:5
 
@@ -356,6 +376,7 @@ flowchart TB
         RQ[React Query<br/>Cache]
         Zustand[Zustand<br/>Cart Store]
         Axios[Axios Client]
+        Proxy[Next.js Proxy<br/>/api/* → Backend]
     end
 
     subgraph Backend["Backend (Fastify)"]
@@ -375,13 +396,17 @@ flowchart TB
     Pages <--> Zustand
     Zustand <--> LS
     RQ <--> Axios
-    Axios <--> Routes
+    Axios --> Proxy
+    Proxy --> Routes
     Routes --> Auth
     Auth --> Valid
     Valid --> Handlers
     Handlers <--> Redis
     Handlers <--> PG
 ```
+
+> **Nota:** Tutte le chiamate API dal browser passano attraverso Next.js che fa da proxy verso il backend.
+> Questo permette di evitare problemi CORS e di mantenere un singolo dominio per l'utente.
 
 ---
 
