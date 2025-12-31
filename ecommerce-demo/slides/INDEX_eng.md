@@ -12,6 +12,77 @@ Complete index of all project documentation.
 
 ---
 
+## Essential Files for Claude Code
+
+Two files are **essential** for working effectively with Claude Code on complex projects:
+
+### CLAUDE.md - The Project Context
+
+```
+ecommerce-demo/CLAUDE.md
+```
+
+| Aspect | Description |
+|--------|-------------|
+| **Purpose** | Provides Claude Code with complete project context |
+| **Content** | Directory structure, commands, patterns, conventions, current state |
+| **Benefit** | Claude "remembers" everything between sessions without re-explaining |
+
+**Why it's fundamental:**
+- Claude Code automatically reads `CLAUDE.md` at the start of each session
+- Maintains consistency across different sessions (even days/weeks later)
+- Avoids errors from lack of context (e.g., "which framework are we using?")
+- Documents architectural decisions already made
+- Tracks completion status (what's done, what's missing)
+
+### EXECUTION_PLAN.md - The Design Reference
+
+```
+docs/EXECUTION_PLAN.md
+```
+
+| Aspect | Description |
+|--------|-------------|
+| **Purpose** | Defines the execution plan and target architecture |
+| **Content** | Daily objectives, technology stack, final structure |
+| **Benefit** | Claude has a "north star" to follow for every decision |
+
+**Why it's fundamental:**
+- Provides clear direction for implementation decisions
+- Prevents scope creep (Claude knows what's in scope and what's not)
+- Allows validation if output aligns with design
+- Facilitates work division across sessions
+- Serves as a contract between user and Claude
+
+### How They Work Together
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    EXECUTION_PLAN.md                         │
+│                    (Design & Vision)                         │
+│                          │                                   │
+│                          ▼                                   │
+│    ┌─────────────────────────────────────────────┐          │
+│    │              CLAUDE.md                       │          │
+│    │         (Context & State)                    │          │
+│    │                   │                          │          │
+│    │                   ▼                          │          │
+│    │    ┌─────────────────────────────┐          │          │
+│    │    │      Claude Code Session     │          │          │
+│    │    │   (Guided Implementation)    │          │          │
+│    │    └─────────────────────────────┘          │          │
+│    │                   │                          │          │
+│    │                   ▼                          │          │
+│    │          Update CLAUDE.md                   │          │
+│    │        (new project state)                  │          │
+│    └─────────────────────────────────────────────┘          │
+└─────────────────────────────────────────────────────────────┘
+```
+
+> **Best Practice:** Update `CLAUDE.md` at the end of each session with the current project state.
+
+---
+
 ## Quick Navigation
 
 | Category | Documents |

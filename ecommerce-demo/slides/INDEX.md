@@ -12,6 +12,77 @@ Indice completo di tutta la documentazione del progetto.
 
 ---
 
+## File Fondamentali per Claude Code
+
+Due file sono **essenziali** per lavorare efficacemente con Claude Code su progetti complessi:
+
+### CLAUDE.md - Il Contesto del Progetto
+
+```
+ecommerce-demo/CLAUDE.md
+```
+
+| Aspetto | Descrizione |
+|---------|-------------|
+| **Scopo** | Fornisce a Claude Code il contesto completo del progetto |
+| **Contenuto** | Struttura directory, comandi, pattern, convenzioni, stato attuale |
+| **Beneficio** | Claude "ricorda" tutto tra le sessioni senza dover rispiegare |
+
+**Perché è fondamentale:**
+- Claude Code legge automaticamente `CLAUDE.md` all'inizio di ogni sessione
+- Mantiene consistenza tra sessioni diverse (anche giorni/settimane dopo)
+- Evita errori da mancanza di contesto (es. "quale framework usiamo?")
+- Documenta decisioni architetturali già prese
+- Traccia lo stato di completamento (cosa è fatto, cosa manca)
+
+### EXECUTION_PLAN.md - Il Design di Riferimento
+
+```
+docs/EXECUTION_PLAN.md
+```
+
+| Aspetto | Descrizione |
+|---------|-------------|
+| **Scopo** | Definisce il piano di esecuzione e l'architettura target |
+| **Contenuto** | Obiettivi per giorno, stack tecnologico, struttura finale |
+| **Beneficio** | Claude ha un "north star" da seguire per ogni decisione |
+
+**Perché è fondamentale:**
+- Fornisce direzione chiara per decisioni implementative
+- Evita scope creep (Claude sa cosa è in scope e cosa no)
+- Permette di validare se l'output è allineato al design
+- Facilita la suddivisione del lavoro in sessioni
+- Serve come contratto tra utente e Claude
+
+### Come Funzionano Insieme
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    EXECUTION_PLAN.md                         │
+│                    (Design & Vision)                         │
+│                          │                                   │
+│                          ▼                                   │
+│    ┌─────────────────────────────────────────────┐          │
+│    │              CLAUDE.md                       │          │
+│    │         (Context & State)                    │          │
+│    │                   │                          │          │
+│    │                   ▼                          │          │
+│    │    ┌─────────────────────────────┐          │          │
+│    │    │      Claude Code Session     │          │          │
+│    │    │   (Implementazione guidata)  │          │          │
+│    │    └─────────────────────────────┘          │          │
+│    │                   │                          │          │
+│    │                   ▼                          │          │
+│    │         Aggiorna CLAUDE.md                  │          │
+│    │        (nuovo stato progetto)               │          │
+│    └─────────────────────────────────────────────┘          │
+└─────────────────────────────────────────────────────────────┘
+```
+
+> **Best Practice:** Aggiorna `CLAUDE.md` alla fine di ogni sessione con lo stato attuale del progetto.
+
+---
+
 ## Navigazione Rapida
 
 | Categoria | Documenti |
