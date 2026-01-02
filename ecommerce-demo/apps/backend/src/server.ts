@@ -1,5 +1,10 @@
 // Initialize X-Ray FIRST (before any HTTP imports)
-import { initXRay, isXRayEnabled, startRequestTrace } from "./utils/xray.js";
+import {
+  initXRay,
+  isXRayEnabled,
+  openSegment,
+  closeSegment,
+} from "./utils/xray.js";
 initXRay();
 
 import Fastify from "fastify";
@@ -125,21 +130,21 @@ async function buildServer() {
 
   // X-Ray request tracing
   if (isXRayEnabled()) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    type XRayRequest = { xraySegment?: any };
+
     app.addHook("onRequest", async (request) => {
-      const closeTrace = startRequestTrace(
-        "ecommerce-backend",
-        request.method,
-        request.url,
-      );
-      // Store close function for later
-      (request as unknown as { xrayClose?: () => void }).xrayClose =
-        closeTrace ?? undefined;
+      const segment = openSegment("ecommerce-backend");
+      if (segment) {
+        segment.addAnnotation("http_method", request.method);
+        segment.addAnnotation("http_url", request.url);
+        (request as unknown as XRayRequest).xraySegment = segment;
+      }
     });
 
-    app.addHook("onResponse", async (request) => {
-      const closeTrace = (request as unknown as { xrayClose?: () => void })
-        .xrayClose;
-      if (closeTrace) closeTrace();
+    app.addHook("onResponse", async (request, reply) => {
+      const segment = (request as unknown as XRayRequest).xraySegment;
+      closeSegment(segment, reply.statusCode);
     });
   }
 

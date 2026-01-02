@@ -7,6 +7,7 @@
  * Enable with XRAY_ENABLED=true environment variable.
  */
 
+import crypto from "crypto";
 import { config } from "../config/index.js";
 import { logger } from "./logger.js";
 
@@ -95,36 +96,74 @@ export async function traceAsync<T>(
 }
 
 /**
- * Create a segment for an HTTP request
- * Returns a function to close the segment
+ * Create a root segment for an HTTP request
+ * Uses express-style segment creation for proper daemon communication
  */
-export function startRequestTrace(
-  name: string,
-  method: string,
-  url: string,
-): (() => void) | null {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function openSegment(name: string): any {
   if (!isXRayEnabled()) {
     return null;
   }
 
   try {
+    // Create a proper root segment with trace ID
     const segment = new AWSXRay.Segment(name);
-    segment.addAnnotation("http_method", method);
-    segment.addAnnotation("http_url", url);
 
+    // Add required fields for root segment
+    const traceId = `1-${Math.floor(Date.now() / 1000).toString(16)}-${crypto.randomBytes(12).toString("hex")}`;
+    segment.trace_id = traceId;
+    segment.id = crypto.randomBytes(8).toString("hex");
+    segment.name = name;
+    segment.start_time = Date.now() / 1000;
+
+    // Set as current segment
     AWSXRay.setSegment(segment);
 
-    return () => {
-      try {
-        segment.close();
-      } catch {
-        // Ignore close errors
-      }
-    };
+    return segment;
   } catch (error) {
-    logger.debug({ error }, "Failed to start X-Ray trace");
+    logger.debug({ error }, "Failed to open X-Ray segment");
     return null;
   }
+}
+
+/**
+ * Close a segment and send to daemon
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function closeSegment(segment: any, statusCode?: number): void {
+  if (!segment) return;
+
+  try {
+    segment.end_time = Date.now() / 1000;
+    if (statusCode) {
+      segment.http = {
+        response: { status: statusCode },
+      };
+      if (statusCode >= 400 && statusCode < 500) {
+        segment.error = true;
+      }
+      if (statusCode >= 500) {
+        segment.fault = true;
+      }
+    }
+    segment.close();
+  } catch {
+    // Ignore close errors
+  }
+}
+
+/**
+ * Legacy function for compatibility
+ */
+export function startRequestTrace(
+  name: string,
+  _method: string,
+  _url: string,
+): (() => void) | null {
+  const segment = openSegment(name);
+  if (!segment) return null;
+
+  return () => closeSegment(segment);
 }
 
 /**
