@@ -49,7 +49,7 @@ env:
   REDIS_TLS_ENABLED: "true"
   # X-Ray APM configuration
   XRAY_ENABLED: "true"
-  XRAY_DAEMON_ADDRESS: "127.0.0.1:2000"
+  XRAY_DAEMON_ADDRESS: "cloudwatch-agent.amazon-cloudwatch:2000"
   XRAY_SERVICE_NAME: "ecommerce-backend"
   AWS_REGION: "us-east-1"
 
