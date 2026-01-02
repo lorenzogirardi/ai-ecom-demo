@@ -1,13 +1,35 @@
-# Session 8 Recap - Deep Observability
+# Sessione 8 - Claude Code Demo
 
-## Obiettivo
-Implementare observability avanzata per analisi post-load-test:
-- **Container Insights**: Metriche a livello pod (CPU, memoria, network)
-- **AWS X-Ray**: Distributed tracing per breakdown latenza
+## E-commerce Monorepo per AWS EKS
+
+**Data**: 2 Gennaio 2026
+**Durata sessione**: ~2 ore
+**Modello**: Claude Opus 4.5 (claude-opus-4-5-20251101)
 
 ---
 
-## Risultati Raggiunti
+## Obiettivi della Sessione
+
+```
+┌─────────────────────────────────────────────────┐
+│         GIORNO 8 - DEEP OBSERVABILITY           │
+├─────────────────────────────────────────────────┤
+│                                                  │
+│  ✅ Container Insights (EKS Add-on)             │
+│  ✅ AWS X-Ray Distributed Tracing               │
+│  ✅ Backend Instrumentation                     │
+│  ✅ Frontend Instrumentation                    │
+│  ✅ X-Ray DaemonSet Deployment                  │
+│  ✅ IRSA Configuration                          │
+│  ✅ Terraform Codification                      │
+│  ✅ Docker Networking Fix                       │
+│                                                  │
+└─────────────────────────────────────────────────┘
+```
+
+---
+
+## Highlights della Giornata
 
 ### 1. Container Insights (EKS Add-on)
 
@@ -166,7 +188,7 @@ Browser → CloudFront → Frontend (SSR) → Backend → RDS/Redis
 
 ---
 
-## File Modificati/Creati
+## File Creati/Modificati
 
 | File | Azione | Scopo |
 |------|--------|-------|
@@ -184,7 +206,83 @@ Browser → CloudFront → Frontend (SSR) → Backend → RDS/Redis
 
 ---
 
-## Costi Stimati
+## Statistiche Sessione 8
+
+| Metrica | Valore |
+|---------|--------|
+| File creati/modificati | 11 |
+| Commit | 5 |
+| Traces X-Ray catturati | 1700+ |
+| Problemi risolti | 3 |
+| Linee di codice | ~400 |
+
+---
+
+## Analisi Costi: Claude vs Team Tradizionale
+
+### Sessione 8 - Deep Observability
+
+```
+┌─────────────────────────────────────────────────────────┐
+│              CONFRONTO COSTI SESSIONE 8                  │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  TASK                        │ CLAUDE  │ TEAM TRAD.     │
+│  ─────────────────────────────────────────────────────  │
+│  Container Insights setup    │   -     │  1-2 ore       │
+│  X-Ray SDK integration       │   -     │  3-4 ore       │
+│  DaemonSet + IRSA config     │   -     │  2-3 ore       │
+│  Debug CLS/IRSA issues       │   -     │  2-4 ore       │
+│  Terraform codification      │   -     │  1-2 ore       │
+│  Documentation               │   -     │  1-2 ore       │
+│  ─────────────────────────────────────────────────────  │
+│  TOTALE                      │  2 ore  │ 10-17 ore      │
+│                                                          │
+│  Costo Claude: ~$2                                      │
+│  Costo Team: €800 - €1,700 (€80-100/hr Senior DevOps)  │
+│  ─────────────────────────────────────────────────────  │
+│  RISPARMIO: €798 - €1,698                               │
+│  ROI: ~500x                                              │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+```
+
+### ROI Cumulativo (Sessioni 1-8)
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                  COSTO TOTALE PROGETTO                   │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  Claude Code (8 sessioni)                               │
+│  ────────────────────────                               │
+│  Sessione 1: ~$3                                        │
+│  Sessione 2: ~$2                                        │
+│  Sessione 3: ~$3                                        │
+│  Sessione 4: ~$2                                        │
+│  Sessione 5: ~$3                                        │
+│  Sessione 6: ~$2                                        │
+│  Sessione 7: ~$2                                        │
+│  Sessione 8: ~$2                                        │
+│  Totale: ~$19                                           │
+│                                                          │
+│  Team Tradizionale                                      │
+│  ────────────────────────                               │
+│  Sessioni 1-6: €14,074 - €17,214                       │
+│  Sessione 7: €800 - €1,600                             │
+│  Sessione 8: €800 - €1,700                             │
+│  Totale: €15,674 - €20,514                             │
+│                                                          │
+│  ═══════════════════════════════════════════════════    │
+│  RISPARMIO TOTALE: €15,655 - €20,495                   │
+│  ROI MEDIO: ~1,000x                                     │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Costi AWS Stimati
 
 | Servizio | Costo Stimato |
 |----------|---------------|
@@ -194,7 +292,56 @@ Browser → CloudFront → Frontend (SSR) → Backend → RDS/Redis
 
 ---
 
-## Screenshot
+## Comandi Utili
+
+```bash
+# Verifica X-Ray daemon status
+kubectl get pods -n xray-daemon
+kubectl logs -n xray-daemon -l app=xray-daemon
+
+# Verifica traces in AWS Console
+aws xray get-trace-summaries \
+  --start-time $(date -d '1 hour ago' +%s) \
+  --end-time $(date +%s) \
+  --region us-east-1
+
+# Container Insights metrics
+aws cloudwatch get-metric-data \
+  --metric-data-queries '[{"Id":"cpu","MetricStat":{"Metric":{"Namespace":"ContainerInsights","MetricName":"pod_cpu_utilization"},"Period":300,"Stat":"Average"}}]' \
+  --start-time $(date -d '1 hour ago' --iso-8601=seconds) \
+  --end-time $(date --iso-8601=seconds)
+
+# Verifica add-on status
+aws eks describe-addon \
+  --cluster-name ecommerce-demo-demo-eks \
+  --addon-name amazon-cloudwatch-observability
+
+# Restart frontend/backend per applicare env vars
+kubectl rollout restart deployment/frontend -n ecommerce
+kubectl rollout restart deployment/backend -n ecommerce
+```
+
+---
+
+## Prossimi Passi (Day 9)
+
+```
+┌─────────────────────────────────────────────────┐
+│         GIORNO 9 - SECURITY HARDENING           │
+├─────────────────────────────────────────────────┤
+│                                                  │
+│  [ ] OWASP Top 10 Review                        │
+│  [ ] Network Policies (namespace isolation)     │
+│  [ ] Container Hardening (securityContext)      │
+│  [ ] Pod Security Standards                     │
+│  [ ] Secrets Rotation Strategy                  │
+│                                                  │
+└─────────────────────────────────────────────────┘
+```
+
+---
+
+## Screenshots
 
 ### X-Ray Traces in CloudWatch
 
@@ -208,23 +355,4 @@ Browser → CloudFront → Frontend (SSR) → Backend → RDS/Redis
 
 ---
 
-## Prossimi Passi (Day 9)
-
-1. **OWASP Top 10 Review**
-   - SQL Injection (Prisma già protegge)
-   - XSS (React già protegge)
-   - CSRF, Auth issues
-
-2. **Network Policies**
-   - Isolamento namespace
-   - Ingress/egress rules
-   - Default deny
-
-3. **Container Hardening**
-   - securityContext
-   - readOnlyRootFilesystem
-   - runAsNonRoot
-
-4. **Pod Security Standards**
-   - Baseline/Restricted profiles
-   - Namespace labels
+*Generato con Claude Code - Sessione del 2 Gennaio 2026*

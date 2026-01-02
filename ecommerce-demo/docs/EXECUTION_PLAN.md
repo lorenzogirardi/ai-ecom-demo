@@ -1201,20 +1201,21 @@ terraform apply
 
 ## Statistiche Progetto
 
-| Metrica | Sessione 1 | Sessione 2 | Sessione 3 | Sessione 4 | Sessione 5 | Sessione 6 | Totale |
-|---------|------------|------------|------------|------------|------------|------------|--------|
-| File creati | 82 | 21 | 24 | 15 | 12 | 12 | 166 |
-| Linee di codice | ~8,900 | ~3,200 | ~2,500 | ~1,500 | ~3,400 | ~1,800 | ~21,300 |
-| Backend Tests | 0 | 177 | 177 | 177 | 177 | 177 | 177 |
-| Frontend Tests | 0 | 0 | 29 | 29 | 29 | 29 | 29 |
-| Tempo Claude | ~2 ore | ~1.5 ore | ~1.5 ore | ~2 ore | ~5 ore | ~2 ore | ~14 ore |
-| Tempo equiv. dev | ~50 ore | ~50 ore | ~26.5 ore | ~40 ore | ~20 ore | ~18 ore | ~204.5 ore |
-| Bug fixes | 0 | 0 | 5 | 10+ | 8 | 3 | 26+ |
-| CVE analyzed | 0 | 0 | 0 | 36 | 0 | 0 | 36 |
-| AWS Resources | 0 | 0 | 0 | 4 | 85 | 89 | 89 |
-| Load Tests | 0 | 0 | 0 | 0 | 0 | 183K req | 183K req |
+| Metrica | Sess. 1 | Sess. 2 | Sess. 3 | Sess. 4 | Sess. 5 | Sess. 6 | Sess. 7 | Sess. 8 | Totale |
+|---------|---------|---------|---------|---------|---------|---------|---------|---------|--------|
+| File creati | 82 | 21 | 24 | 15 | 12 | 12 | 6 | 11 | 183 |
+| Linee di codice | ~8,900 | ~3,200 | ~2,500 | ~1,500 | ~3,400 | ~1,800 | ~300 | ~400 | ~22,000 |
+| Backend Tests | 0 | 177 | 177 | 177 | 177 | 177 | 177 | 177 | 177 |
+| Frontend Tests | 0 | 0 | 29 | 29 | 29 | 29 | 29 | 29 | 29 |
+| Tempo Claude | ~2h | ~1.5h | ~1.5h | ~2h | ~5h | ~2h | ~2h | ~2h | ~18h |
+| Tempo equiv. dev | ~50h | ~50h | ~26.5h | ~40h | ~20h | ~18h | ~12h | ~14h | ~230.5h |
+| Bug fixes | 0 | 0 | 5 | 10+ | 8 | 3 | 1 | 3 | 30+ |
+| CVE analyzed | 0 | 0 | 0 | 36 | 0 | 0 | 0 | 0 | 36 |
+| AWS Resources | 0 | 0 | 0 | 4 | 85 | 89 | 89 | 91 | 91 |
+| Load Tests | 0 | 0 | 0 | 0 | 0 | 183K | 291K | 291K | 291K |
+| X-Ray Traces | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1700+ | 1700+ |
 
-### Distribuzione Codice (~19.500 linee)
+### Distribuzione Codice (~22.000 linee)
 
 | Categoria | Linee | % |
 |-----------|-------|---|
