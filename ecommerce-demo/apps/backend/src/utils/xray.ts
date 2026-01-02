@@ -105,6 +105,8 @@ export async function traceAsync<T>(
 /**
  * Create a root segment for an HTTP request
  * Let the SDK handle trace ID and segment ID generation
+ * NOTE: We don't use setSegment() as it requires CLS context.
+ * Instead, we store segment on request object and manage lifecycle manually.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function openSegment(name: string): any {
@@ -121,8 +123,8 @@ export function openSegment(name: string): any {
       "X-Ray segment opened",
     );
 
-    // Set as current segment for context propagation
-    AWSXRay.setSegment(segment);
+    // Don't use setSegment() - it requires CLS context which isn't set up
+    // We'll manage the segment manually via the request object
 
     return segment;
   } catch (error) {
