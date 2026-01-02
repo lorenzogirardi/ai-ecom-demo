@@ -23,12 +23,33 @@ type XRaySubsegment = XRaySegment & {
   close: (error?: Error) => void;
 };
 
+// Extended X-Ray segment type for Fastify integration
+type XRayFullSegment = XRaySegment & {
+  http?: {
+    request?: {
+      method?: string;
+      url?: string;
+      user_agent?: string;
+      client_ip?: string;
+    };
+    response?: {
+      status?: number;
+    };
+  };
+};
+
 // Lazy-loaded X-Ray SDK reference
 let AWSXRay: {
   setDaemonAddress: (address: string) => void;
   getSegment: () => XRaySegment | undefined;
+  setSegment: (segment: XRaySegment) => void;
   captureHTTPsGlobal: (http: unknown) => void;
   capturePromise: () => void;
+  getNamespace: () => {
+    run: <T>(fn: () => T) => T;
+    runAndReturn: <T>(fn: () => T) => T;
+  };
+  Segment: new (name: string, rootId?: string, parentId?: string) => XRayFullSegment;
   middleware: {
     setDefaultName: (name: string) => void;
   };
@@ -210,4 +231,90 @@ export async function traceAsync<T>(
  */
 export function isXRayEnabled(): boolean {
   return Boolean(config.xray?.enabled) && xrayInitialized;
+}
+
+/**
+ * Create a new X-Ray segment for a Fastify request
+ * Returns the segment that should be closed when request completes
+ */
+export function createRequestSegment(
+  method: string,
+  url: string,
+  headers: Record<string, string | string[] | undefined>,
+): XRayFullSegment | null {
+  if (!config.xray?.enabled || !AWSXRay) {
+    return null;
+  }
+
+  try {
+    const segment = new AWSXRay.Segment(config.xray.serviceName);
+
+    // Add HTTP request info
+    segment.http = {
+      request: {
+        method,
+        url,
+        user_agent:
+          typeof headers["user-agent"] === "string"
+            ? headers["user-agent"]
+            : undefined,
+        client_ip:
+          typeof headers["x-forwarded-for"] === "string"
+            ? headers["x-forwarded-for"].split(",")[0]
+            : undefined,
+      },
+    };
+
+    // Set as current segment in context
+    AWSXRay.setSegment(segment);
+
+    return segment;
+  } catch (error) {
+    logger.error({ error }, "Failed to create X-Ray segment");
+    return null;
+  }
+}
+
+/**
+ * Close a request segment with response info
+ */
+export function closeRequestSegment(
+  segment: XRayFullSegment | null,
+  statusCode: number,
+  error?: Error,
+): void {
+  if (!segment) return;
+
+  try {
+    // Add response info
+    if (segment.http) {
+      segment.http.response = { status: statusCode };
+    }
+
+    if (error) {
+      segment.addError(error);
+      segment.close(error);
+    } else {
+      segment.close();
+    }
+  } catch (err) {
+    logger.error({ err }, "Failed to close X-Ray segment");
+  }
+}
+
+/**
+ * Run a function within an X-Ray namespace context
+ * This ensures segment context is available for subsegments
+ */
+export function runInXRayContext<T>(fn: () => T): T {
+  if (!config.xray?.enabled || !AWSXRay) {
+    return fn();
+  }
+
+  try {
+    const ns = AWSXRay.getNamespace();
+    return ns.runAndReturn(fn);
+  } catch {
+    return fn();
+  }
 }

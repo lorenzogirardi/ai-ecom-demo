@@ -1,5 +1,10 @@
 // Initialize X-Ray FIRST (before any HTTP imports)
-import { initXRay, addAnnotation, isXRayEnabled } from "./utils/xray.js";
+import {
+  initXRay,
+  isXRayEnabled,
+  createRequestSegment,
+  closeRequestSegment,
+} from "./utils/xray.js";
 initXRay();
 
 import Fastify from "fastify";
@@ -123,16 +128,31 @@ async function buildServer() {
   // Error handler
   app.setErrorHandler(errorHandler as any);
 
-  // X-Ray request annotations
+  // X-Ray request tracing - create segment per request
   if (isXRayEnabled()) {
+    // Create segment on request start
     app.addHook("onRequest", async (request) => {
-      addAnnotation("http.method", request.method);
-      addAnnotation("http.url", request.url);
-      addAnnotation("http.user_agent", request.headers["user-agent"] || "");
+      const segment = createRequestSegment(
+        request.method,
+        request.url,
+        request.headers as Record<string, string | string[] | undefined>,
+      );
+      // Store segment in request context for later closing
+      (request as unknown as { xraySegment?: unknown }).xraySegment = segment;
     });
 
+    // Close segment on response
     app.addHook("onResponse", async (request, reply) => {
-      addAnnotation("http.status_code", reply.statusCode);
+      const segment = (request as unknown as { xraySegment?: ReturnType<typeof createRequestSegment> }).xraySegment;
+      closeRequestSegment(segment, reply.statusCode);
+    });
+
+    // Handle errors
+    app.addHook("onError", async (request, _reply, error) => {
+      const segment = (request as unknown as { xraySegment?: ReturnType<typeof createRequestSegment> }).xraySegment;
+      if (segment) {
+        segment.addError(error);
+      }
     });
   }
 
