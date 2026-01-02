@@ -289,15 +289,54 @@ npm run lint                      # Lint all
 - [x] SESSION_07_RECAP.md (IT)
 - [x] SESSION_07_RECAP_eng.md (EN)
 
+### Completed ✅ (Day 8 - Deep Observability)
+
+**Container Insights (EKS Add-on):**
+- [x] CloudWatch Observability add-on enabled via Terraform
+- [x] IRSA role for CloudWatch Agent + X-Ray Daemon
+- [x] Pod-level CPU, memory, network metrics in CloudWatch
+
+**AWS X-Ray Distributed Tracing:**
+- [x] X-Ray DaemonSet deployed (`k8s/xray-daemon/`)
+- [x] Backend instrumentation (`aws-xray-sdk-core`)
+- [x] Frontend instrumentation (Next.js `instrumentation.ts`)
+- [x] Manual segment management (avoided CLS context issues)
+- [x] 1700+ traces captured with annotations
+
+**Backend X-Ray Integration:**
+- [x] `apps/backend/src/utils/xray.ts` - X-Ray utility
+- [x] Fastify hooks for request tracing
+- [x] Annotations: http_method, http_url, http_status
+- [x] Error/fault flags for 4xx/5xx responses
+
+**Frontend X-Ray Integration:**
+- [x] `apps/frontend/src/lib/xray.ts` - X-Ray utility
+- [x] `apps/frontend/src/instrumentation.ts` - Server-side init
+- [x] `captureHTTPsGlobal` for SSR→Backend tracing
+- [x] Health endpoint with X-Ray status
+
+**Terraform Updates:**
+- [x] IAM trust policy updated for xray-daemon service account
+- [x] StringLike condition for multiple service accounts
+- [x] All CLI changes codified in Terraform
+
+**Local Development:**
+- [x] Docker networking fix (INTERNAL_API_URL)
+- [x] Frontend Dockerfile build arg for container-to-container comm
+- [x] docker-compose.full.yml updated
+
+**Documentation:**
+- [x] SESSION_08_RECAP.md (IT)
+- [x] SESSION_08_RECAP_eng.md (EN)
+
 ### NOT Completed ❌ (Future Sessions)
 
-**Day 8 - Advanced Load Testing & Security:**
-- [ ] Post-optimization testing
-- [ ] HPA validation
-- [ ] Cost per request analysis
+**Day 9 - Security Hardening:**
 - [ ] OWASP Top 10 review
-- [ ] Network policies
-- [ ] Container hardening
+- [ ] Network policies (namespace isolation)
+- [ ] Container hardening (securityContext)
+- [ ] Pod Security Standards
+- [ ] Secrets rotation strategy
 
 ## Technical Notes
 
@@ -472,11 +511,17 @@ Per ogni CVE:
     - Metrics Server installation for EKS
     - k6 /me endpoint bug fix
     - +134% throughput, -42% p95 latency, 0% errors
-14. **Day 8: Advanced Load Testing & Security** (Next)
-    - Post-optimization tests
-    - HPA validation
+14. ~~**Day 8: Deep Observability**~~ ✅
+    - Container Insights (EKS add-on)
+    - X-Ray distributed tracing (backend + frontend)
+    - X-Ray DaemonSet deployment
+    - Terraform codification of CLI changes
+    - Docker networking fixes for local dev
+15. **Day 9: Security Hardening** (Next)
     - OWASP Top 10 review
-    - Network policies
+    - Network policies (namespace isolation)
+    - Container hardening (securityContext)
+    - Pod Security Standards
 
 ## Completed Refactors
 
