@@ -45,7 +45,7 @@ let xrayInitialized = false;
  * Must be called early in application startup, before HTTP modules are imported
  */
 export function initXRay(): void {
-  if (!config.xray.enabled) {
+  if (!config.xray?.enabled) {
     logger.info("X-Ray tracing disabled");
     return;
   }
@@ -89,7 +89,7 @@ export function initXRay(): void {
  * Get current X-Ray segment
  */
 export function getSegment(): XRaySegment | undefined {
-  if (!config.xray.enabled || !AWSXRay) {
+  if (!config.xray?.enabled || !AWSXRay) {
     return undefined;
   }
   return AWSXRay.getSegment();
@@ -102,7 +102,7 @@ export function getSegment(): XRaySegment | undefined {
  * @returns Subsegment or null if X-Ray is disabled
  */
 export function createSubsegment(name: string): XRaySubsegment | null {
-  if (!config.xray.enabled || !AWSXRay) {
+  if (!config.xray?.enabled || !AWSXRay) {
     return null;
   }
 
@@ -129,7 +129,7 @@ export function addAnnotation(
   key: string,
   value: string | number | boolean,
 ): void {
-  if (!config.xray.enabled) return;
+  if (!config.xray?.enabled) return;
 
   try {
     const segment = getSegment();
@@ -152,7 +152,7 @@ export function addMetadata(
   value: unknown,
   namespace?: string,
 ): void {
-  if (!config.xray.enabled) return;
+  if (!config.xray?.enabled) return;
 
   try {
     const segment = getSegment();
@@ -168,7 +168,7 @@ export function addMetadata(
  * @param error - Error to record
  */
 export function addError(error: Error): void {
-  if (!config.xray.enabled) return;
+  if (!config.xray?.enabled) return;
 
   try {
     const segment = getSegment();
@@ -189,7 +189,7 @@ export async function traceAsync<T>(
   name: string,
   fn: () => Promise<T>,
 ): Promise<T> {
-  if (!config.xray.enabled) {
+  if (!config.xray?.enabled) {
     return fn();
   }
 
@@ -209,5 +209,5 @@ export async function traceAsync<T>(
  * Check if X-Ray is enabled and initialized
  */
 export function isXRayEnabled(): boolean {
-  return config.xray.enabled && xrayInitialized;
+  return Boolean(config.xray?.enabled) && xrayInitialized;
 }
