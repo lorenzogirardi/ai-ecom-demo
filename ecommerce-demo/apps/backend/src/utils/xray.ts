@@ -45,16 +45,8 @@ export function initXRay(): void {
     AWSXRay.captureHTTPsGlobal(require("https"));
 
     xrayInitialized = true;
-
-    // Log available SDK properties for debugging
-    const sdkKeys = Object.keys(AWSXRay).filter(
-      (k) => typeof AWSXRay[k] !== "function",
-    );
     logger.info(
-      {
-        daemonAddress: config.xray.daemonAddress,
-        sdkProperties: sdkKeys.slice(0, 10),
-      },
+      { daemonAddress: config.xray.daemonAddress },
       "X-Ray tracing initialized",
     );
   } catch (error) {
@@ -118,7 +110,7 @@ export function openSegment(name: string): any {
     // Create segment - SDK auto-generates trace_id and id
     const segment = new AWSXRay.Segment(name);
 
-    logger.info(
+    logger.debug(
       { traceId: segment.trace_id, segmentId: segment.id },
       "X-Ray segment opened",
     );
@@ -157,7 +149,7 @@ export function closeSegment(segment: any, statusCode?: number): void {
       }
     }
 
-    logger.info(
+    logger.debug(
       { traceId: segment.trace_id, segmentId: segment.id, statusCode },
       "Closing X-Ray segment",
     );
