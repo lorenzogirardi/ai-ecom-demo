@@ -1,0 +1,72 @@
+# X-Ray Daemon DaemonSet
+# Runs on each node to collect traces from application pods
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: xray-daemon
+  labels:
+    name: xray-daemon
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: xray-daemon
+  namespace: xray-daemon
+  annotations:
+    # Uses the same IRSA role as CloudWatch Observability (has XRay write permissions)
+    eks.amazonaws.com/role-arn: arn:aws:iam::170674040462:role/ecommerce-demo-demo-eks-cloudwatch-observability-role
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: xray-daemon
+  namespace: xray-daemon
+  labels:
+    app: xray-daemon
+spec:
+  selector:
+    matchLabels:
+      app: xray-daemon
+  template:
+    metadata:
+      labels:
+        app: xray-daemon
+    spec:
+      serviceAccountName: xray-daemon
+      containers:
+        - name: xray-daemon
+          image: amazon/aws-xray-daemon:3.3.12
+          ports:
+            - containerPort: 2000
+              protocol: UDP
+              hostPort: 2000
+          env:
+            - name: AWS_REGION
+              value: us-east-1
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          effect: NoSchedule
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: xray-daemon
+  namespace: xray-daemon
+  labels:
+    app: xray-daemon
+spec:
+  type: ClusterIP
+  ports:
+    - port: 2000
+      protocol: UDP
+      targetPort: 2000
+  selector:
+    app: xray-daemon
