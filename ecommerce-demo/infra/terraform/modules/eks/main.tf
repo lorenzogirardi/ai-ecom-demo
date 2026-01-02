@@ -421,8 +421,14 @@ resource "aws_iam_role" "cloudwatch_observability" {
       }
       Condition = {
         StringEquals = {
-          "${replace(aws_eks_cluster.main.identity[0].oidc[0].issuer, "https://", "")}:sub" = "system:serviceaccount:amazon-cloudwatch:cloudwatch-agent"
           "${replace(aws_eks_cluster.main.identity[0].oidc[0].issuer, "https://", "")}:aud" = "sts.amazonaws.com"
+        }
+        # Allow both CloudWatch Agent and X-Ray Daemon service accounts
+        StringLike = {
+          "${replace(aws_eks_cluster.main.identity[0].oidc[0].issuer, "https://", "")}:sub" = [
+            "system:serviceaccount:amazon-cloudwatch:cloudwatch-agent",
+            "system:serviceaccount:xray-daemon:xray-daemon"
+          ]
         }
       }
     }]
