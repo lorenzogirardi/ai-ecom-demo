@@ -92,8 +92,7 @@ const nextConfig = {
 
   // Experimental features
   experimental: {
-    // Enable if using server actions
-    // serverActions: true,
+    // instrumentation.ts is automatically enabled in Next.js 16+
   },
 };
 

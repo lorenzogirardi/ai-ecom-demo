@@ -41,6 +41,11 @@ env:
   # This works when frontend and backend are behind the same domain (CloudFront/ALB)
   NEXT_PUBLIC_API_URL: ""
   NEXT_PUBLIC_APP_NAME: "E-commerce Demo"
+  # X-Ray tracing configuration
+  XRAY_ENABLED: "true"
+  XRAY_DAEMON_ADDRESS: "xray-daemon.xray-daemon:2000"
+  XRAY_SERVICE_NAME: "ecommerce-frontend"
+  AWS_REGION: "us-east-1"
 
 # Pod Anti-Affinity: distribute pods across different nodes for HA
 affinity:
