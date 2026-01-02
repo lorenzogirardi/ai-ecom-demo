@@ -57,7 +57,7 @@ export function initXRay(): void {
 
   try {
     // Dynamic import to avoid loading X-Ray when disabled
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     AWSXRay = require("aws-xray-sdk");
 
     // Configure daemon address
@@ -67,9 +67,9 @@ export function initXRay(): void {
     AWSXRay.middleware.setDefaultName(config.xray.serviceName);
 
     // Capture all HTTP/HTTPS requests
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     AWSXRay.captureHTTPsGlobal(require("http"));
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     AWSXRay.captureHTTPsGlobal(require("https"));
 
     // Capture Promise rejections
