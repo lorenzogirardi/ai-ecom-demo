@@ -48,7 +48,10 @@ env:
   REDIS_PORT: "6379"
   REDIS_TLS_ENABLED: "true"
   # X-Ray APM configuration
-  XRAY_ENABLED: "true"
+  # NOTE: CloudWatch Observability add-on uses Application Signals (OTLP)
+  # instead of traditional X-Ray daemon. Disabled until separate X-Ray
+  # DaemonSet is deployed or we switch to OpenTelemetry SDK.
+  XRAY_ENABLED: "false"
   XRAY_DAEMON_ADDRESS: "cloudwatch-agent.amazon-cloudwatch:2000"
   XRAY_SERVICE_NAME: "ecommerce-backend"
   AWS_REGION: "us-east-1"
