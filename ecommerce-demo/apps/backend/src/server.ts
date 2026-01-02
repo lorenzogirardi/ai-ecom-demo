@@ -143,13 +143,21 @@ async function buildServer() {
 
     // Close segment on response
     app.addHook("onResponse", async (request, reply) => {
-      const segment = (request as unknown as { xraySegment?: ReturnType<typeof createRequestSegment> }).xraySegment;
+      const segment = (
+        request as unknown as {
+          xraySegment?: ReturnType<typeof createRequestSegment>;
+        }
+      ).xraySegment;
       closeRequestSegment(segment, reply.statusCode);
     });
 
     // Handle errors
     app.addHook("onError", async (request, _reply, error) => {
-      const segment = (request as unknown as { xraySegment?: ReturnType<typeof createRequestSegment> }).xraySegment;
+      const segment = (
+        request as unknown as {
+          xraySegment?: ReturnType<typeof createRequestSegment>;
+        }
+      ).xraySegment;
       if (segment) {
         segment.addError(error);
       }

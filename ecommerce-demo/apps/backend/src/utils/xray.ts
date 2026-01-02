@@ -49,7 +49,11 @@ let AWSXRay: {
     run: <T>(fn: () => T) => T;
     runAndReturn: <T>(fn: () => T) => T;
   };
-  Segment: new (name: string, rootId?: string, parentId?: string) => XRayFullSegment;
+  Segment: new (
+    name: string,
+    rootId?: string,
+    parentId?: string,
+  ) => XRayFullSegment;
   middleware: {
     setDefaultName: (name: string) => void;
   };
