@@ -99,6 +99,13 @@ export const config = {
     s3Bucket: getEnv("AWS_S3_BUCKET", ""),
   },
 
+  // X-Ray (APM)
+  xray: {
+    enabled: getEnvBoolean("XRAY_ENABLED", false),
+    daemonAddress: getEnv("XRAY_DAEMON_ADDRESS", "127.0.0.1:2000"),
+    serviceName: getEnv("XRAY_SERVICE_NAME", "ecommerce-backend"),
+  },
+
   // Stripe
   stripe: {
     secretKey: getEnv("STRIPE_SECRET_KEY", ""),

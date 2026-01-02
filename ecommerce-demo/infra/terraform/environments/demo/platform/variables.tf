@@ -104,3 +104,10 @@ variable "eks_node_max_size" {
   type        = number
   default     = 5 # Increased from 4 for autoscaling headroom
 }
+
+# Observability
+variable "enable_cloudwatch_observability" {
+  description = "Enable CloudWatch Observability add-on (Container Insights + X-Ray)"
+  type        = bool
+  default     = true # Enable by default for monitoring
+}

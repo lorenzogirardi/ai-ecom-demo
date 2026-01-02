@@ -58,6 +58,9 @@ module "eks" {
   node_min_size          = var.eks_node_min_size
   node_max_size          = var.eks_node_max_size
 
+  # Observability (Container Insights + X-Ray)
+  enable_cloudwatch_observability = var.enable_cloudwatch_observability
+
   tags = local.common_tags
 }
 

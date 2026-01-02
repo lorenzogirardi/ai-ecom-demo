@@ -403,3 +403,66 @@ resource "aws_iam_role_policy" "cluster_autoscaler" {
     ]
   })
 }
+
+# ============================================
+# CloudWatch Observability IAM Role (IRSA)
+# For Container Insights + X-Ray
+# ============================================
+resource "aws_iam_role" "cloudwatch_observability" {
+  name = "${var.cluster_name}-cloudwatch-observability-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action = "sts:AssumeRoleWithWebIdentity"
+      Effect = "Allow"
+      Principal = {
+        Federated = aws_iam_openid_connect_provider.cluster.arn
+      }
+      Condition = {
+        StringEquals = {
+          "${replace(aws_eks_cluster.main.identity[0].oidc[0].issuer, "https://", "")}:sub" = "system:serviceaccount:amazon-cloudwatch:cloudwatch-agent"
+          "${replace(aws_eks_cluster.main.identity[0].oidc[0].issuer, "https://", "")}:aud" = "sts.amazonaws.com"
+        }
+      }
+    }]
+  })
+
+  tags = var.tags
+}
+
+# CloudWatch Agent permissions (Container Insights)
+resource "aws_iam_role_policy_attachment" "cloudwatch_agent_server" {
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+  role       = aws_iam_role.cloudwatch_observability.name
+}
+
+# X-Ray Daemon permissions (distributed tracing)
+resource "aws_iam_role_policy_attachment" "cloudwatch_xray" {
+  policy_arn = "arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess"
+  role       = aws_iam_role.cloudwatch_observability.name
+}
+
+# ============================================
+# EKS Add-on: CloudWatch Observability
+# Includes: Container Insights, Fluent Bit, X-Ray
+# ============================================
+resource "aws_eks_addon" "cloudwatch_observability" {
+  count = var.enable_cloudwatch_observability ? 1 : 0
+
+  cluster_name             = aws_eks_cluster.main.name
+  addon_name               = "amazon-cloudwatch-observability"
+  service_account_role_arn = aws_iam_role.cloudwatch_observability.arn
+
+  # Resolve conflicts by overwriting existing config
+  resolve_conflicts_on_create = "OVERWRITE"
+  resolve_conflicts_on_update = "OVERWRITE"
+
+  tags = var.tags
+
+  depends_on = [
+    aws_eks_node_group.main,
+    aws_iam_role_policy_attachment.cloudwatch_agent_server,
+    aws_iam_role_policy_attachment.cloudwatch_xray,
+  ]
+}

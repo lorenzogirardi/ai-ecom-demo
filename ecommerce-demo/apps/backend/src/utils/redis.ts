@@ -1,6 +1,7 @@
 import Redis, { RedisOptions } from "ioredis";
 import { config } from "../config/index.js";
 import { logger } from "./logger.js";
+import { traceAsync } from "./xray.js";
 
 const redisOptions: RedisOptions = {
   host: config.redis.host,
@@ -31,54 +32,70 @@ redis.on("close", () => {
   logger.warn("Redis connection closed");
 });
 
-// Cache helper functions
+// Cache helper functions with X-Ray tracing
 export const cache = {
   async get<T>(key: string): Promise<T | null> {
-    const data = await redis.get(key);
-    if (!data) return null;
-    try {
-      return JSON.parse(data) as T;
-    } catch {
-      return data as unknown as T;
-    }
+    return traceAsync(`Redis.get`, async () => {
+      const data = await redis.get(key);
+      if (!data) return null;
+      try {
+        return JSON.parse(data) as T;
+      } catch {
+        return data as unknown as T;
+      }
+    });
   },
 
   async set(key: string, value: unknown, ttlSeconds?: number): Promise<void> {
-    const serialized =
-      typeof value === "string" ? value : JSON.stringify(value);
-    if (ttlSeconds) {
-      await redis.setex(key, ttlSeconds, serialized);
-    } else {
-      await redis.set(key, serialized);
-    }
+    return traceAsync(`Redis.set`, async () => {
+      const serialized =
+        typeof value === "string" ? value : JSON.stringify(value);
+      if (ttlSeconds) {
+        await redis.setex(key, ttlSeconds, serialized);
+      } else {
+        await redis.set(key, serialized);
+      }
+    });
   },
 
   async del(key: string): Promise<void> {
-    await redis.del(key);
+    return traceAsync(`Redis.del`, async () => {
+      await redis.del(key);
+    });
   },
 
   async delPattern(pattern: string): Promise<void> {
-    const keys = await redis.keys(pattern);
-    if (keys.length > 0) {
-      await redis.del(...keys);
-    }
+    return traceAsync(`Redis.delPattern`, async () => {
+      const keys = await redis.keys(pattern);
+      if (keys.length > 0) {
+        await redis.del(...keys);
+      }
+    });
   },
 
   async exists(key: string): Promise<boolean> {
-    const result = await redis.exists(key);
-    return result === 1;
+    return traceAsync(`Redis.exists`, async () => {
+      const result = await redis.exists(key);
+      return result === 1;
+    });
   },
 
   async ttl(key: string): Promise<number> {
-    return redis.ttl(key);
+    return traceAsync(`Redis.ttl`, async () => {
+      return redis.ttl(key);
+    });
   },
 
   async incr(key: string): Promise<number> {
-    return redis.incr(key);
+    return traceAsync(`Redis.incr`, async () => {
+      return redis.incr(key);
+    });
   },
 
   async expire(key: string, seconds: number): Promise<void> {
-    await redis.expire(key, seconds);
+    return traceAsync(`Redis.expire`, async () => {
+      await redis.expire(key, seconds);
+    });
   },
 };
 

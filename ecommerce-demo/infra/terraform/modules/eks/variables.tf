@@ -95,3 +95,9 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "enable_cloudwatch_observability" {
+  description = "Enable CloudWatch Observability add-on (Container Insights + X-Ray)"
+  type        = bool
+  default     = false
+}

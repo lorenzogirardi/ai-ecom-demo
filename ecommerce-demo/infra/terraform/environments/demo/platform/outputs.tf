@@ -68,6 +68,11 @@ output "oidc_provider_url" {
   value       = module.eks.oidc_provider_url
 }
 
+output "cloudwatch_observability_role_arn" {
+  description = "CloudWatch Observability IAM role ARN"
+  value       = module.eks.cloudwatch_observability_role_arn
+}
+
 # ============================================
 # ECR Outputs
 # ============================================

@@ -1,3 +1,7 @@
+// Initialize X-Ray FIRST (before any HTTP imports)
+import { initXRay, addAnnotation, isXRayEnabled } from "./utils/xray.js";
+initXRay();
+
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
@@ -118,6 +122,19 @@ async function buildServer() {
 
   // Error handler
   app.setErrorHandler(errorHandler as any);
+
+  // X-Ray request annotations
+  if (isXRayEnabled()) {
+    app.addHook("onRequest", async (request) => {
+      addAnnotation("http.method", request.method);
+      addAnnotation("http.url", request.url);
+      addAnnotation("http.user_agent", request.headers["user-agent"] || "");
+    });
+
+    app.addHook("onResponse", async (request, reply) => {
+      addAnnotation("http.status_code", reply.statusCode);
+    });
+  }
 
   // Health check
   app.get("/health", async () => {

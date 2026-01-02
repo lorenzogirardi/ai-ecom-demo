@@ -68,6 +68,11 @@ output "cluster_autoscaler_role_arn" {
   value       = aws_iam_role.cluster_autoscaler.arn
 }
 
+output "cloudwatch_observability_role_arn" {
+  description = "ARN of the CloudWatch Observability IAM role"
+  value       = aws_iam_role.cloudwatch_observability.arn
+}
+
 output "kubeconfig_command" {
   description = "Command to update kubeconfig"
   value       = "aws eks update-kubeconfig --name ${aws_eks_cluster.main.name} --region ${data.aws_region.current.name}"
