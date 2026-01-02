@@ -126,7 +126,12 @@ export function openSegment(name: string): any {
 
     return segment;
   } catch (error) {
-    logger.error({ error }, "Failed to open X-Ray segment");
+    const errMsg = error instanceof Error ? error.message : String(error);
+    const errStack = error instanceof Error ? error.stack : undefined;
+    logger.error(
+      { errorMessage: errMsg, errorStack: errStack },
+      "Failed to open X-Ray segment",
+    );
     return null;
   }
 }
@@ -158,7 +163,8 @@ export function closeSegment(segment: any, statusCode?: number): void {
     // close() should trigger segment emission to daemon
     segment.close();
   } catch (error) {
-    logger.error({ error }, "Failed to close X-Ray segment");
+    const errMsg = error instanceof Error ? error.message : String(error);
+    logger.error({ errorMessage: errMsg }, "Failed to close X-Ray segment");
   }
 }
 
