@@ -7,7 +7,6 @@
  * Enable with XRAY_ENABLED=true environment variable.
  */
 
-import crypto from "crypto";
 import { config } from "../config/index.js";
 import { logger } from "./logger.js";
 
@@ -105,7 +104,7 @@ export async function traceAsync<T>(
 
 /**
  * Create a root segment for an HTTP request
- * Uses express-style segment creation for proper daemon communication
+ * Let the SDK handle trace ID and segment ID generation
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function openSegment(name: string): any {
@@ -114,71 +113,52 @@ export function openSegment(name: string): any {
   }
 
   try {
-    // Create a proper root segment with trace ID
+    // Create segment - SDK auto-generates trace_id and id
     const segment = new AWSXRay.Segment(name);
 
-    // Add required fields for root segment
-    const traceId = `1-${Math.floor(Date.now() / 1000).toString(16)}-${crypto.randomBytes(12).toString("hex")}`;
-    segment.trace_id = traceId;
-    segment.id = crypto.randomBytes(8).toString("hex");
-    segment.name = name;
-    segment.start_time = Date.now() / 1000;
+    logger.info(
+      { traceId: segment.trace_id, segmentId: segment.id },
+      "X-Ray segment opened",
+    );
 
-    // Set as current segment
+    // Set as current segment for context propagation
     AWSXRay.setSegment(segment);
 
     return segment;
   } catch (error) {
-    logger.debug({ error }, "Failed to open X-Ray segment");
+    logger.error({ error }, "Failed to open X-Ray segment");
     return null;
   }
 }
 
 /**
- * Close a segment and send to daemon
+ * Close a segment - SDK handles sending to daemon
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function closeSegment(segment: any, statusCode?: number): void {
   if (!segment) return;
 
   try {
-    segment.end_time = Date.now() / 1000;
+    // Add HTTP response info
     if (statusCode) {
-      segment.http = {
-        response: { status: statusCode },
-      };
+      segment.addAnnotation("http_status", statusCode);
       if (statusCode >= 400 && statusCode < 500) {
-        segment.error = true;
+        segment.addErrorFlag();
       }
       if (statusCode >= 500) {
-        segment.fault = true;
+        segment.addFaultFlag();
       }
     }
 
-    // Manually send segment to daemon
-    try {
-      const SegmentEmitter = AWSXRay.SegmentEmitter;
-      logger.info(
-        {
-          hasEmitter: !!SegmentEmitter,
-          traceId: segment.trace_id,
-          segmentName: segment.name,
-        },
-        "Attempting to send X-Ray segment",
-      );
-      if (SegmentEmitter) {
-        SegmentEmitter.send(segment);
-        logger.info({ traceId: segment.trace_id }, "X-Ray segment sent");
-      } else {
-        logger.warn("X-Ray SegmentEmitter not available");
-      }
-    } catch (sendError) {
-      logger.error({ sendError }, "Failed to send X-Ray segment");
-    }
+    logger.info(
+      { traceId: segment.trace_id, segmentId: segment.id, statusCode },
+      "Closing X-Ray segment",
+    );
 
+    // close() should trigger segment emission to daemon
     segment.close();
-  } catch {
-    // Ignore close errors
+  } catch (error) {
+    logger.error({ error }, "Failed to close X-Ray segment");
   }
 }
 
