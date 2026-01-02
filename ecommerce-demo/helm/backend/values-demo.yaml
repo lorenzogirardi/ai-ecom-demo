@@ -27,7 +27,7 @@ resources:
     cpu: 1000m
     memory: 1Gi
   requests:
-    cpu: 200m
+    cpu: 250m      # Increased from 200m for more accurate scheduling
     memory: 512Mi
 
 autoscaling:
@@ -86,6 +86,7 @@ migration:
   enabled: true
 
 # Pod Anti-Affinity: distribute pods across different nodes for HA
+# Using "preferred" for flexibility while still attempting distribution
 affinity:
   podAntiAffinity:
     preferredDuringSchedulingIgnoredDuringExecution:

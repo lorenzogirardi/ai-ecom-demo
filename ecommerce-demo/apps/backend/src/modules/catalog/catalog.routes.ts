@@ -1,7 +1,8 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import { z } from "zod";
 import { prisma } from "../../utils/prisma.js";
-import { cache, cacheKeys } from "../../utils/redis.js";
+import { cache, cacheKeys, cacheMetrics } from "../../utils/redis.js";
+import { logger } from "../../utils/logger.js";
 import { adminGuard, optionalAuthGuard } from "../../middleware/auth-guard.js";
 import {
   NotFoundError,
@@ -63,11 +64,15 @@ export async function catalogRoutes(app: FastifyInstance): Promise<void> {
   app.get(
     "/categories",
     async (request: FastifyRequest, reply: FastifyReply) => {
+      const cacheKey = cacheKeys.categoryList();
       // Try cache first
-      const cached = await cache.get<unknown>(cacheKeys.categoryList());
+      const cached = await cache.get<unknown>(cacheKey);
       if (cached) {
+        logger.debug({ cacheKey, hitRate: cacheMetrics.getHitRate() }, "Cache HIT: categories");
         return reply.send({ success: true, data: cached });
       }
+
+      logger.debug({ cacheKey, hitRate: cacheMetrics.getHitRate() }, "Cache MISS: categories");
 
       const categories = await prisma.category.findMany({
         where: { isActive: true },
@@ -78,7 +83,7 @@ export async function catalogRoutes(app: FastifyInstance): Promise<void> {
       });
 
       // Cache for 5 minutes
-      await cache.set(cacheKeys.categoryList(), categories, 300);
+      await cache.set(cacheKey, categories, 300);
 
       return reply.send({ success: true, data: categories });
     },

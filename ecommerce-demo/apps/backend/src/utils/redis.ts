@@ -2,6 +2,20 @@ import Redis, { RedisOptions } from "ioredis";
 import { config } from "../config/index.js";
 import { logger } from "./logger.js";
 
+// Cache metrics for performance monitoring
+export const cacheMetrics = {
+  hits: 0,
+  misses: 0,
+  getHitRate: () => {
+    const total = cacheMetrics.hits + cacheMetrics.misses;
+    return total > 0 ? (cacheMetrics.hits / total * 100).toFixed(2) : "0.00";
+  },
+  reset: () => {
+    cacheMetrics.hits = 0;
+    cacheMetrics.misses = 0;
+  }
+};
+
 const redisOptions: RedisOptions = {
   host: config.redis.host,
   port: config.redis.port,
@@ -35,12 +49,51 @@ redis.on("close", () => {
 export const cache = {
   async get<T>(key: string): Promise<T | null> {
     const data = await redis.get(key);
-    if (!data) return null;
+    if (!data) {
+      cacheMetrics.misses++;
+      return null;
+    }
+    cacheMetrics.hits++;
     try {
       return JSON.parse(data) as T;
     } catch {
       return data as unknown as T;
     }
+  },
+
+  // Batch get using pipeline for better performance
+  async mget<T>(keys: string[]): Promise<(T | null)[]> {
+    if (keys.length === 0) return [];
+    const pipeline = redis.pipeline();
+    keys.forEach(key => pipeline.get(key));
+    const results = await pipeline.exec();
+    return (results || []).map(([err, data]) => {
+      if (err || !data) {
+        cacheMetrics.misses++;
+        return null;
+      }
+      cacheMetrics.hits++;
+      try {
+        return JSON.parse(data as string) as T;
+      } catch {
+        return data as unknown as T;
+      }
+    });
+  },
+
+  // Batch set using pipeline for better performance
+  async mset(items: Array<{ key: string; value: unknown; ttl?: number }>): Promise<void> {
+    if (items.length === 0) return;
+    const pipeline = redis.pipeline();
+    items.forEach(({ key, value, ttl }) => {
+      const serialized = typeof value === "string" ? value : JSON.stringify(value);
+      if (ttl) {
+        pipeline.setex(key, ttl, serialized);
+      } else {
+        pipeline.set(key, serialized);
+      }
+    });
+    await pipeline.exec();
   },
 
   async set(key: string, value: unknown, ttlSeconds?: number): Promise<void> {

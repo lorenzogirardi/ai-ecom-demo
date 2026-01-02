@@ -18,7 +18,7 @@ import swaggerUi from "@fastify/swagger-ui";
 import { config } from "./config/index.js";
 import { logger } from "./utils/logger.js";
 import { prisma } from "./utils/prisma.js";
-import { redis } from "./utils/redis.js";
+import { redis, cacheMetrics } from "./utils/redis.js";
 
 import { authRoutes } from "./modules/auth/auth.routes.js";
 import { catalogRoutes } from "./modules/catalog/catalog.routes.js";
@@ -162,6 +162,17 @@ async function buildServer() {
     } catch (error) {
       throw new Error("Service not ready");
     }
+  });
+
+  // Cache metrics endpoint (for debugging/monitoring)
+  app.get("/metrics/cache", async () => {
+    return {
+      hits: cacheMetrics.hits,
+      misses: cacheMetrics.misses,
+      hitRate: `${cacheMetrics.getHitRate()}%`,
+      total: cacheMetrics.hits + cacheMetrics.misses,
+      timestamp: new Date().toISOString(),
+    };
   });
 
   // Register routes

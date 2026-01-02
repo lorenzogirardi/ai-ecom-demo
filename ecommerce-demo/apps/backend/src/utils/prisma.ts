@@ -2,6 +2,19 @@ import { PrismaClient } from "@prisma/client";
 import { config } from "../config/index.js";
 import { logger } from "./logger.js";
 
+/**
+ * Prisma Client Configuration
+ *
+ * Connection pooling is configured via DATABASE_URL query parameters:
+ * - connection_limit: Max connections per Prisma instance (default: 2-4)
+ * - pool_timeout: Timeout waiting for a connection (default: 10s)
+ *
+ * Example: postgresql://...?connection_limit=10&pool_timeout=10
+ *
+ * With multiple pods (6-7), consider total connections:
+ * 7 pods × 10 connections = 70 total connections
+ * Ensure RDS max_connections can handle this (check RDS instance size)
+ */
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };

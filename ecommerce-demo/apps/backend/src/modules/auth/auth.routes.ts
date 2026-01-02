@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import { prisma } from "../../utils/prisma.js";
 import { config } from "../../config/index.js";
 import { authGuard } from "../../middleware/auth-guard.js";
+import { cache, cacheKeys } from "../../utils/redis.js";
 import {
   BadRequestError,
   ConflictError,
@@ -136,11 +137,31 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
     });
   });
 
-  // Get current user profile
+  // Get current user profile (cached for performance)
   app.get(
     "/me",
     { preHandler: [authGuard] },
     async (request: FastifyRequest, reply: FastifyReply) => {
+      const cacheKey = cacheKeys.user(request.userId!);
+
+      // Try cache first (reduces DB hits on frequent /me calls)
+      const cached = await cache.get<{
+        id: string;
+        email: string;
+        firstName: string | null;
+        lastName: string | null;
+        role: string;
+        createdAt: Date;
+        updatedAt: Date;
+      }>(cacheKey);
+
+      if (cached) {
+        return reply.send({
+          success: true,
+          data: cached,
+        });
+      }
+
       const user = await prisma.user.findUnique({
         where: { id: request.userId },
         select: {
@@ -157,6 +178,9 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
       if (!user) {
         throw new NotFoundError("User not found");
       }
+
+      // Cache user profile for 5 minutes
+      await cache.set(cacheKey, user, 300);
 
       return reply.send({
         success: true,
@@ -198,6 +222,9 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
           updatedAt: true,
         },
       });
+
+      // Invalidate user cache on profile update
+      await cache.del(cacheKeys.user(request.userId!));
 
       return reply.send({
         success: true,
