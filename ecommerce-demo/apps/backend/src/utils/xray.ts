@@ -46,8 +46,16 @@ export function initXRay(): void {
     AWSXRay.captureHTTPsGlobal(require("https"));
 
     xrayInitialized = true;
+
+    // Log available SDK properties for debugging
+    const sdkKeys = Object.keys(AWSXRay).filter(
+      (k) => typeof AWSXRay[k] !== "function",
+    );
     logger.info(
-      { daemonAddress: config.xray.daemonAddress },
+      {
+        daemonAddress: config.xray.daemonAddress,
+        sdkProperties: sdkKeys.slice(0, 10),
+      },
       "X-Ray tracing initialized",
     );
   } catch (error) {
@@ -150,12 +158,22 @@ export function closeSegment(segment: any, statusCode?: number): void {
     // Manually send segment to daemon
     try {
       const SegmentEmitter = AWSXRay.SegmentEmitter;
+      logger.info(
+        {
+          hasEmitter: !!SegmentEmitter,
+          traceId: segment.trace_id,
+          segmentName: segment.name,
+        },
+        "Attempting to send X-Ray segment",
+      );
       if (SegmentEmitter) {
         SegmentEmitter.send(segment);
-        logger.debug({ traceId: segment.trace_id }, "X-Ray segment sent");
+        logger.info({ traceId: segment.trace_id }, "X-Ray segment sent");
+      } else {
+        logger.warn("X-Ray SegmentEmitter not available");
       }
     } catch (sendError) {
-      logger.debug({ sendError }, "Failed to send X-Ray segment");
+      logger.error({ sendError }, "Failed to send X-Ray segment");
     }
 
     segment.close();
