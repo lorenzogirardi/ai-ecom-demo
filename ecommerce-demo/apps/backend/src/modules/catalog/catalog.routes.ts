@@ -68,11 +68,17 @@ export async function catalogRoutes(app: FastifyInstance): Promise<void> {
       // Try cache first
       const cached = await cache.get<unknown>(cacheKey);
       if (cached) {
-        logger.debug({ cacheKey, hitRate: cacheMetrics.getHitRate() }, "Cache HIT: categories");
+        logger.debug(
+          { cacheKey, hitRate: cacheMetrics.getHitRate() },
+          "Cache HIT: categories",
+        );
         return reply.send({ success: true, data: cached });
       }
 
-      logger.debug({ cacheKey, hitRate: cacheMetrics.getHitRate() }, "Cache MISS: categories");
+      logger.debug(
+        { cacheKey, hitRate: cacheMetrics.getHitRate() },
+        "Cache MISS: categories",
+      );
 
       const categories = await prisma.category.findMany({
         where: { isActive: true },
