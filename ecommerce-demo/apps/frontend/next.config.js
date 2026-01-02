@@ -62,15 +62,20 @@ const nextConfig = {
   },
 
   // Rewrites for API proxy (development)
+  // INTERNAL_API_URL is used for server-side rewrites (container-to-container)
+  // NEXT_PUBLIC_API_URL is for client-side (browser) requests
   async rewrites() {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+    const internalApiUrl =
+      process.env.INTERNAL_API_URL ||
+      process.env.NEXT_PUBLIC_API_URL ||
+      "http://localhost:4000";
     return {
       beforeFiles: [],
       afterFiles: [],
       fallback: [
         {
           source: "/api/:path*",
-          destination: `${apiUrl}/api/:path*`,
+          destination: `${internalApiUrl}/api/:path*`,
         },
       ],
     };

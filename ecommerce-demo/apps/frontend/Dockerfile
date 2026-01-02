@@ -29,9 +29,13 @@ COPY --from=deps /app/node_modules ./node_modules
 # Copy source code
 COPY . .
 
+# Build arguments for internal API URL (container-to-container)
+ARG INTERNAL_API_URL=http://backend:4000
+
 # Set environment variables for build
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
+ENV INTERNAL_API_URL=${INTERNAL_API_URL}
 
 # Build the application
 RUN npm run build
