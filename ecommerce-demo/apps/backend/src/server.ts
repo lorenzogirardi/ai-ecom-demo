@@ -132,11 +132,13 @@ async function buildServer() {
         request.url,
       );
       // Store close function for later
-      (request as unknown as { xrayClose?: () => void }).xrayClose = closeTrace ?? undefined;
+      (request as unknown as { xrayClose?: () => void }).xrayClose =
+        closeTrace ?? undefined;
     });
 
     app.addHook("onResponse", async (request) => {
-      const closeTrace = (request as unknown as { xrayClose?: () => void }).xrayClose;
+      const closeTrace = (request as unknown as { xrayClose?: () => void })
+        .xrayClose;
       if (closeTrace) closeTrace();
     });
   }
