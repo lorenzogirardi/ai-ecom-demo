@@ -88,8 +88,8 @@ docs/EXECUTION_PLAN.md
 | Categoria | Documenti |
 |-----------|-----------|
 | [Session Recaps](#session-recaps) | 8 sessioni di sviluppo |
-| [Architettura](#architettura) | 4 documenti con diagrammi |
-| [Documentazione Tecnica](#documentazione-tecnica) | 7 documenti specifici |
+| [Architettura](#architettura) | 5 documenti con diagrammi |
+| [Documentazione Tecnica](#documentazione-tecnica) | 8 documenti specifici |
 
 ---
 
@@ -106,7 +106,7 @@ Riepiloghi delle sessioni di sviluppo del progetto.
 | 5 | [SESSION_05_RECAP.md](./SESSION_05_RECAP.md) | **AWS Deployment** - EKS cluster, RDS, ElastiCache, CloudFront, External Secrets, ArgoCD deploy |
 | 6 | [SESSION_06_RECAP.md](./SESSION_06_RECAP.md) | **Load Testing** - k6 scenarios, Cluster Autoscaler, CloudWatch metrics, bottleneck analysis |
 | 7 | [SESSION_07_RECAP.md](./SESSION_07_RECAP.md) | **Performance Optimization** - Pod Anti-Affinity, HPA tuning, +134% throughput, -42% latency |
-| 8 | [SESSION_08_RECAP.md](./SESSION_08_RECAP.md) | **Deep Observability** - Container Insights, X-Ray distributed tracing, 1700+ traces, IRSA configuration |
+| 8 | [SESSION_08_RECAP.md](./SESSION_08_RECAP.md) | **Deep Observability** - Container Insights, X-Ray tracing, Code optimizations, 508 RPS (+116% vs Day 6), 99.95% cache hit rate |
 
 > **English versions:** Ogni documento ha una versione inglese con suffisso `_eng.md`
 
@@ -122,6 +122,7 @@ Diagrammi architetturali del sistema.
 | [AWS_ARCHITECTURE.md](./AWS_ARCHITECTURE.md) | 10 | **Infrastruttura AWS** - Network topology, traffic flow, EKS architecture, security groups, IAM/IRSA, secrets management, Terraform layers |
 | [GITHUB_PIPELINES.md](./GITHUB_PIPELINES.md) | 6 | **CI/CD Pipelines** - Backend CI, Frontend CI, Infra CI, ArgoCD deploy, Load test workflow, job dependencies |
 | [SEQUENCE_DIAGRAMS.md](./SEQUENCE_DIAGRAMS.md) | 10 | **Flussi Applicativi** - Login, registration, products, categories, cart, checkout, orders, search, autocomplete, proxy pattern |
+| [OBSERVABILITY_ARCHITECTURE.md](./OBSERVABILITY_ARCHITECTURE.md) | 12 | **Observability** - Logs, X-Ray tracing, Container Insights, metriche, IRSA, flussi dati |
 
 > **English versions:** Ogni documento ha una versione inglese con suffisso `_eng.md`
 
@@ -140,6 +141,7 @@ Documenti tecnici specifici.
 | [CLOUDWATCH_STRESS_ANALYSIS.md](./CLOUDWATCH_STRESS_ANALYSIS.md) | **Metrics Analysis** - Correlazione metriche k6 con CloudWatch, identificazione bottleneck (CPU 97%) |
 | [LOAD_TEST_ANALYSIS_RATE_ON.md](./LOAD_TEST_ANALYSIS_RATE_ON.md) | **Rate Limit Testing** - Test con rate limiting attivo, bypass header configuration |
 | [MULTI_TEAM_GUARDRAILS.md](./MULTI_TEAM_GUARDRAILS.md) | **Enterprise Guardrails** - Setup multi-repo con Claude Code, CLAUDE.md per team, CODEOWNERS, IAM isolation, CI/CD gates |
+| [OBSERVABILITY_ANALYSIS.md](./OBSERVABILITY_ANALYSIS.md) | **Observability Analysis** - X-Ray traces analysis, Container Insights metrics, performance optimization post-load-test |
 
 > **English versions:** Ogni documento ha una versione inglese con suffisso `_eng.md`
 
@@ -150,19 +152,19 @@ Documenti tecnici specifici.
 ```
 📁 slides/
 ├── 📄 Session Recaps     8 documenti × 2 lingue = 16 file
-├── 📄 Architettura       4 documenti × 2 lingue =  8 file
-├── 📄 Technical Docs     7 documenti × 2 lingue = 14 file
+├── 📄 Architettura       5 documenti × 2 lingue = 10 file
+├── 📄 Technical Docs     8 documenti × 2 lingue = 16 file
 ├── 📄 Index              1 documento × 2 lingue =  2 file
 └── ────────────────────────────────────────────────────
-    TOTALE               20 documenti × 2 lingue = 40 file
+    TOTALE               22 documenti × 2 lingue = 44 file
 ```
 
 | Metrica | Valore |
 |---------|--------|
-| **Documenti unici** | 20 |
-| **File totali** | 40 |
+| **Documenti unici** | 22 |
+| **File totali** | 44 |
 | **Lingue** | IT, EN |
-| **Diagrammi Mermaid** | ~40 |
+| **Diagrammi Mermaid** | ~52 |
 | **Dimensione totale** | ~530 KB |
 
 ---
@@ -217,9 +219,9 @@ Tutti i documenti sono disponibili in inglese con il suffisso `_eng.md`:
 
 | Metrica | Valore |
 |---------|--------|
-| **Documenti unici** | 20 |
-| **File totali** | 40 (IT + EN) |
-| **Diagrammi Mermaid** | ~40 |
+| **Documenti unici** | 22 |
+| **File totali** | 44 (IT + EN) |
+| **Diagrammi Mermaid** | ~52 |
 | **Dimensione totale** | ~530 KB |
 
 ### Confronto Tempi: Manuale vs Claude

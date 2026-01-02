@@ -784,10 +784,51 @@ k6/
 | IRSA Permission Error | Updated trust policy with StringLike and service account list |
 | Docker Networking | Added `INTERNAL_API_URL=http://backend:4000` for server-side rewrites |
 
+### Code Optimizations
+
+| Task | Status |
+|------|--------|
+| Redis pipeline (mget/mset) for batch operations | ✅ |
+| User caching for /me endpoint | ✅ |
+| Cache metrics endpoint (/metrics/cache) | ✅ |
+| Cache hit rate tracking | ✅ |
+
+### Stress Test Results (Post Code Optimizations)
+
+**Test Configuration:**
+- Test Type: Stress Test (200 VUs max)
+- Duration: 13 minutes
+- Scenario: Full user flow (login, products, orders, /me)
+
+**Results:**
+
+| Metric | Day 7 | Day 8 Post-Code | Delta |
+|--------|-------|-----------------|-------|
+| **Total Requests** | 291,480 | **396,830** | +36% |
+| **Average RPS** | 373.4 | **508.4** | +36% |
+| **p95 Latency** | 206ms | 263ms | +57ms |
+| **Error Rate** | 5.27% | **0%** | -100% |
+| **Cache Hit Rate** | N/A | **99.95%** | NEW |
+
+**Infrastructure During Test:**
+- Backend Pods: 6/7 active (1 pending - max nodes reached)
+- Cluster Nodes: 8 (HARD LIMIT)
+- CPU per pod: ~800m at peak
+
+**Total Improvements (Day 6 → Day 8):**
+
+| Metric | Day 6 | Day 8 | Improvement |
+|--------|-------|-------|-------------|
+| Throughput | 235 RPS | 508 RPS | **+116%** |
+| Latency p95 | 380ms | 263ms | **-31%** |
+| Error Rate | 5.33% | 0% | **-100%** |
+
 ### Documentation
 
 - [x] SESSION_08_RECAP.md (IT)
 - [x] SESSION_08_RECAP_eng.md (EN)
+- [x] OBSERVABILITY_ANALYSIS.md
+- [x] Presentation slides v0.2 (IT + EN)
 
 ---
 

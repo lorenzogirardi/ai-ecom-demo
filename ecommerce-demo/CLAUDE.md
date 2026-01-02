@@ -325,9 +325,31 @@ npm run lint                      # Lint all
 - [x] Frontend Dockerfile build arg for container-to-container comm
 - [x] docker-compose.full.yml updated
 
+**Code Optimizations:**
+- [x] Redis pipeline (mget/mset) for batch operations
+- [x] User caching for /me endpoint
+- [x] Cache metrics endpoint (/metrics/cache)
+- [x] Cache hit rate tracking
+
+**Stress Test Results (Day 8 - Post Code Optimizations):**
+- Total Requests: 396,830 (+83% vs Day 7)
+- Average RPS: 508.4 (+83% vs Day 7)
+- p95 Latency: 263ms
+- Error Rate: 0%
+- Cache Hit Rate: 99.95% (33,845 hits, 18 misses)
+- Backend Pods: 6/7 active
+- Cluster Nodes: 8 (max reached)
+
+**Total Improvements (Day 6 → Day 8):**
+- Throughput: +116% (235 → 508 RPS)
+- Latency: -31% (380ms → 263ms p95)
+- Errors: -100% (5.33% → 0%)
+
 **Documentation:**
 - [x] SESSION_08_RECAP.md (IT)
 - [x] SESSION_08_RECAP_eng.md (EN)
+- [x] OBSERVABILITY_ANALYSIS.md
+- [x] Presentation slides v0.2 (IT + EN)
 
 ### NOT Completed ❌ (Future Sessions)
 

@@ -171,6 +171,10 @@ spec:
             - --scale-down-delay-after-add=10m
             - --scale-down-unneeded-time=10m
             - --scale-down-utilization-threshold=0.5
+            # Handles terminated/failed nodes more gracefully
+            - --max-node-provision-time=15m
+            - --max-graceful-termination-sec=600
+            - --unremovable-node-recheck-timeout=5m
           env:
             - name: AWS_REGION
               value: us-east-1

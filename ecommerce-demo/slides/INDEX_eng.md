@@ -88,8 +88,8 @@ docs/EXECUTION_PLAN.md
 | Category | Documents |
 |----------|-----------|
 | [Session Recaps](#session-recaps) | 8 development sessions |
-| [Architecture](#architecture) | 4 documents with diagrams |
-| [Technical Documentation](#technical-documentation) | 7 specific documents |
+| [Architecture](#architecture) | 5 documents with diagrams |
+| [Technical Documentation](#technical-documentation) | 8 specific documents |
 
 ---
 
@@ -106,7 +106,7 @@ Summaries of project development sessions.
 | 5 | [SESSION_05_RECAP_eng.md](./SESSION_05_RECAP_eng.md) | **AWS Deployment** - EKS cluster, RDS, ElastiCache, CloudFront, External Secrets, ArgoCD deploy |
 | 6 | [SESSION_06_RECAP_eng.md](./SESSION_06_RECAP_eng.md) | **Load Testing** - k6 scenarios, Cluster Autoscaler, CloudWatch metrics, bottleneck analysis |
 | 7 | [SESSION_07_RECAP_eng.md](./SESSION_07_RECAP_eng.md) | **Performance Optimization** - Pod Anti-Affinity, HPA tuning, +134% throughput, -42% latency |
-| 8 | [SESSION_08_RECAP_eng.md](./SESSION_08_RECAP_eng.md) | **Deep Observability** - Container Insights, X-Ray distributed tracing, 1700+ traces, IRSA configuration |
+| 8 | [SESSION_08_RECAP_eng.md](./SESSION_08_RECAP_eng.md) | **Deep Observability** - Container Insights, X-Ray tracing, Code optimizations, 508 RPS (+116% vs Day 6), 99.95% cache hit rate |
 
 > **Italian versions:** Each document has an Italian version without the `_eng` suffix
 
@@ -122,6 +122,7 @@ System architecture diagrams.
 | [AWS_ARCHITECTURE_eng.md](./AWS_ARCHITECTURE_eng.md) | 10 | **AWS Infrastructure** - Network topology, traffic flow, EKS architecture, security groups, IAM/IRSA, secrets management, Terraform layers |
 | [GITHUB_PIPELINES_eng.md](./GITHUB_PIPELINES_eng.md) | 6 | **CI/CD Pipelines** - Backend CI, Frontend CI, Infra CI, ArgoCD deploy, Load test workflow, job dependencies |
 | [SEQUENCE_DIAGRAMS_eng.md](./SEQUENCE_DIAGRAMS_eng.md) | 10 | **Application Flows** - Login, registration, products, categories, cart, checkout, orders, search, autocomplete, proxy pattern |
+| [OBSERVABILITY_ARCHITECTURE_eng.md](./OBSERVABILITY_ARCHITECTURE_eng.md) | 12 | **Observability** - Logs, X-Ray tracing, Container Insights, metrics, IRSA, data flows |
 
 > **Italian versions:** Each document has an Italian version without the `_eng` suffix
 
@@ -140,6 +141,7 @@ Specific technical documents.
 | [CLOUDWATCH_STRESS_ANALYSIS_eng.md](./CLOUDWATCH_STRESS_ANALYSIS_eng.md) | **Metrics Analysis** - k6 metrics correlation with CloudWatch, bottleneck identification (CPU 97%) |
 | [LOAD_TEST_ANALYSIS_RATE_ON_eng.md](./LOAD_TEST_ANALYSIS_RATE_ON_eng.md) | **Rate Limit Testing** - Testing with rate limiting enabled, bypass header configuration |
 | [MULTI_TEAM_GUARDRAILS_eng.md](./MULTI_TEAM_GUARDRAILS_eng.md) | **Enterprise Guardrails** - Multi-repo setup with Claude Code, per-team CLAUDE.md, CODEOWNERS, IAM isolation, CI/CD gates |
+| [OBSERVABILITY_ANALYSIS_eng.md](./OBSERVABILITY_ANALYSIS_eng.md) | **Observability Analysis** - X-Ray traces analysis, Container Insights metrics, performance optimization post-load-test |
 
 > **Italian versions:** Each document has an Italian version without the `_eng` suffix
 
@@ -150,19 +152,19 @@ Specific technical documents.
 ```
 📁 slides/
 ├── 📄 Session Recaps     8 documents × 2 languages = 16 files
-├── 📄 Architecture       4 documents × 2 languages =  8 files
-├── 📄 Technical Docs     7 documents × 2 languages = 14 files
+├── 📄 Architecture       5 documents × 2 languages = 10 files
+├── 📄 Technical Docs     8 documents × 2 languages = 16 files
 ├── 📄 Index              1 document  × 2 languages =  2 files
 └── ────────────────────────────────────────────────────────
-    TOTAL                20 documents × 2 languages = 40 files
+    TOTAL                22 documents × 2 languages = 44 files
 ```
 
 | Metric | Value |
 |--------|-------|
-| **Unique documents** | 20 |
-| **Total files** | 40 |
+| **Unique documents** | 22 |
+| **Total files** | 44 |
 | **Languages** | IT, EN |
-| **Mermaid diagrams** | ~40 |
+| **Mermaid diagrams** | ~52 |
 | **Total size** | ~530 KB |
 
 ---
@@ -217,9 +219,9 @@ All documents are available in Italian without the `_eng` suffix:
 
 | Metric | Value |
 |--------|-------|
-| **Unique documents** | 20 |
-| **Total files** | 40 (IT + EN) |
-| **Mermaid diagrams** | ~40 |
+| **Unique documents** | 22 |
+| **Total files** | 44 (IT + EN) |
+| **Mermaid diagrams** | ~52 |
 | **Total size** | ~530 KB |
 
 ### Time Comparison: Manual vs Claude

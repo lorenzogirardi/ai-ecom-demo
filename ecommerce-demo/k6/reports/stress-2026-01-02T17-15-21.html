@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>k6 Report - Stress Test</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+      line-height: 1.6;
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 2rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+    }
+    h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+    .subtitle { opacity: 0.9; }
+    .status-badge {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      font-size: 0.875rem;
+      background: #22c55e;
+      color: white;
+      margin-top: 1rem;
+    }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .card-title { font-size: 0.875rem; color: #64748b; margin-bottom: 0.5rem; }
+    .card-value { font-size: 2rem; font-weight: 700; color: #1e293b; }
+    .card-unit { font-size: 0.875rem; color: #94a3b8; }
+    section { margin-bottom: 2rem; }
+    h2 { font-size: 1.25rem; margin-bottom: 1rem; color: #334155; }
+    table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    th, td { padding: 1rem; text-align: left; border-bottom: 1px solid #e2e8f0; }
+    th { background: #f1f5f9; font-weight: 600; color: #475569; }
+    tr:last-child td { border-bottom: none; }
+    .pass { color: #22c55e; }
+    .fail { color: #ef4444; }
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge-pass { background: #dcfce7; color: #166534; }
+    .badge-fail { background: #fee2e2; color: #991b1b; }
+    .progress-bar {
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 0.5rem;
+    }
+    .progress-fill { height: 100%; background: #22c55e; transition: width 0.3s; }
+    .progress-fill.warning { background: #f59e0b; }
+    .progress-fill.danger { background: #ef4444; }
+    footer { text-align: center; color: #94a3b8; font-size: 0.875rem; margin-top: 2rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Stress Test</h1>
+      <p class="subtitle">Generated: 2026-01-02T17:15:21.463Z</p>
+      <span class="status-badge">PASSED</span>
+    </header>
+
+    <div class="grid">
+      <div class="card">
+        <div class="card-title">Total Requests</div>
+        <div class="card-value">216375</div>
+        <div class="card-unit">277.2 req/s</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Response Time (p95)</div>
+        <div class="card-value">190</div>
+        <div class="card-unit">milliseconds</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Error Rate</div>
+        <div class="card-value pass">0.00%</div>
+        <div class="card-unit">of requests failed</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Virtual Users</div>
+        <div class="card-value">100</div>
+        <div class="card-unit">max concurrent</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Duration</div>
+        <div class="card-value">780.6</div>
+        <div class="card-unit">seconds</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Iterations</div>
+        <div class="card-value">56957</div>
+        <div class="card-unit">completed</div>
+      </div>
+    </div>
+
+    <section>
+      <h2>Response Time Distribution</h2>
+      <div class="card">
+        <table>
+          <tr>
+            <th>Percentile</th>
+            <th>Response Time</th>
+          </tr>
+          <tr><td>Minimum</td><td>109.50 ms</td></tr>
+          <tr><td>Average</td><td>130.34 ms</td></tr>
+          <tr><td>Median (p50)</td><td>117.87 ms</td></tr>
+          <tr><td>p90</td><td>166.29 ms</td></tr>
+          <tr><td>p95</td><td>189.62 ms</td></tr>
+          <tr><td>p99</td><td>0.00 ms</td></tr>
+          <tr><td>Maximum</td><td>2105.21 ms</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Thresholds (4 passed, 0 failed)</h2>
+      <div class="card">
+        <table>
+          <tr>
+            <th>Metric</th>
+            <th>Condition</th>
+            <th>Status</th>
+          </tr>
+          
+          <tr>
+            <td>requests_under_1s</td>
+            <td><code>rate>0.8</code></td>
+            <td><span class="badge badge-pass">PASS</span></td>
+          </tr>
+          
+          <tr>
+            <td>http_req_duration</td>
+            <td><code>p(95)<2000</code></td>
+            <td><span class="badge badge-pass">PASS</span></td>
+          </tr>
+          
+          <tr>
+            <td>http_req_failed</td>
+            <td><code>rate<0.10</code></td>
+            <td><span class="badge badge-pass">PASS</span></td>
+          </tr>
+          
+          <tr>
+            <td>requests_under_500ms</td>
+            <td><code>rate>0.5</code></td>
+            <td><span class="badge badge-pass">PASS</span></td>
+          </tr>
+          
+        </table>
+      </div>
+    </section>
+
+    
+    <section>
+      <h2>Checks</h2>
+      <div class="card">
+        <table>
+          <tr>
+            <th>Check</th>
+            <th>Passes</th>
+            <th>Fails</th>
+            <th>Success Rate</th>
+          </tr>
+          
+          <tr>
+            <td>Auth Stress > login successful</td>
+            <td class="pass">11453</td>
+            <td class="">0</td>
+            <td>
+              100.0%
+              <div class="progress-bar">
+                <div class="progress-fill " style="width: 100%"></div>
+              </div>
+            </td>
+          </tr>
+          
+          <tr>
+            <td>Auth Stress > has token</td>
+            <td class="pass">11453</td>
+            <td class="">0</td>
+            <td>
+              100.0%
+              <div class="progress-bar">
+                <div class="progress-fill " style="width: 100%"></div>
+              </div>
+            </td>
+          </tr>
+          
+          <tr>
+            <td>Auth Stress > orders ok</td>
+            <td class="pass">11453</td>
+            <td class="">0</td>
+            <td>
+              100.0%
+              <div class="progress-bar">
+                <div class="progress-fill " style="width: 100%"></div>
+              </div>
+            </td>
+          </tr>
+          
+          <tr>
+            <td>Auth Stress > me ok</td>
+            <td class="pass">11453</td>
+            <td class="">0</td>
+            <td>
+              100.0%
+              <div class="progress-bar">
+                <div class="progress-fill " style="width: 100%"></div>
+              </div>
+            </td>
+          </tr>
+          
+          <tr>
+            <td>API Stress > health ok</td>
+            <td class="pass">45504</td>
+            <td class="">0</td>
+            <td>
+              100.0%
+              <div class="progress-bar">
+                <div class="progress-fill " style="width: 100%"></div>
+              </div>
+            </td>
+          </tr>
+          
+          <tr>
+            <td>API Stress > products ok</td>
+            <td class="pass">45504</td>
+            <td class="">0</td>
+            <td>
+              100.0%
+              <div class="progress-bar">
+                <div class="progress-fill " style="width: 100%"></div>
+              </div>
+            </td>
+          </tr>
+          
+          <tr>
+            <td>API Stress > categories ok</td>
+            <td class="pass">45504</td>
+            <td class="">0</td>
+            <td>
+              100.0%
+              <div class="progress-bar">
+                <div class="progress-fill " style="width: 100%"></div>
+              </div>
+            </td>
+          </tr>
+          
+          <tr>
+            <td>API Stress > search ok</td>
+            <td class="pass">45504</td>
+            <td class="">0</td>
+            <td>
+              100.0%
+              <div class="progress-bar">
+                <div class="progress-fill " style="width: 100%"></div>
+              </div>
+            </td>
+          </tr>
+          
+        </table>
+      </div>
+    </section>
+    
+
+    <section>
+      <h2>Network</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="card-title">Data Received</div>
+          <div class="card-value">1221868.3</div>
+          <div class="card-unit">KB</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Data Sent</div>
+          <div class="card-value">16501.4</div>
+          <div class="card-unit">KB</div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>Generated by k6 Load Testing • E-commerce Demo</p>
+    </footer>
+  </div>
+</body>
+</html>

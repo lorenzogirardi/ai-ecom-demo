@@ -114,3 +114,4 @@ docker-compose.override.yml
 
 # Local presentations (not for repository)
 docs/presentation/
+k6/results.json
