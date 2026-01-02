@@ -87,7 +87,7 @@ docs/EXECUTION_PLAN.md
 
 | Categoria | Documenti |
 |-----------|-----------|
-| [Session Recaps](#session-recaps) | 7 sessioni di sviluppo |
+| [Session Recaps](#session-recaps) | 8 sessioni di sviluppo |
 | [Architettura](#architettura) | 4 documenti con diagrammi |
 | [Documentazione Tecnica](#documentazione-tecnica) | 7 documenti specifici |
 
@@ -106,6 +106,7 @@ Riepiloghi delle sessioni di sviluppo del progetto.
 | 5 | [SESSION_05_RECAP.md](./SESSION_05_RECAP.md) | **AWS Deployment** - EKS cluster, RDS, ElastiCache, CloudFront, External Secrets, ArgoCD deploy |
 | 6 | [SESSION_06_RECAP.md](./SESSION_06_RECAP.md) | **Load Testing** - k6 scenarios, Cluster Autoscaler, CloudWatch metrics, bottleneck analysis |
 | 7 | [SESSION_07_RECAP.md](./SESSION_07_RECAP.md) | **Performance Optimization** - Pod Anti-Affinity, HPA tuning, +134% throughput, -42% latency |
+| 8 | [SESSION_08_RECAP.md](./SESSION_08_RECAP.md) | **Deep Observability** - Container Insights, X-Ray distributed tracing, 1700+ traces, IRSA configuration |
 
 > **English versions:** Ogni documento ha una versione inglese con suffisso `_eng.md`
 
@@ -148,18 +149,18 @@ Documenti tecnici specifici.
 
 ```
 📁 slides/
-├── 📄 Session Recaps     7 documenti × 2 lingue = 14 file
+├── 📄 Session Recaps     8 documenti × 2 lingue = 16 file
 ├── 📄 Architettura       4 documenti × 2 lingue =  8 file
 ├── 📄 Technical Docs     7 documenti × 2 lingue = 14 file
 ├── 📄 Index              1 documento × 2 lingue =  2 file
 └── ────────────────────────────────────────────────────
-    TOTALE               19 documenti × 2 lingue = 38 file
+    TOTALE               20 documenti × 2 lingue = 40 file
 ```
 
 | Metrica | Valore |
 |---------|--------|
-| **Documenti unici** | 19 |
-| **File totali** | 38 |
+| **Documenti unici** | 20 |
+| **File totali** | 40 |
 | **Lingue** | IT, EN |
 | **Diagrammi Mermaid** | ~40 |
 | **Dimensione totale** | ~530 KB |
@@ -216,8 +217,8 @@ Tutti i documenti sono disponibili in inglese con il suffisso `_eng.md`:
 
 | Metrica | Valore |
 |---------|--------|
-| **Documenti unici** | 18 |
-| **File totali** | 36 (IT + EN) |
+| **Documenti unici** | 20 |
+| **File totali** | 40 (IT + EN) |
 | **Diagrammi Mermaid** | ~40 |
 | **Dimensione totale** | ~530 KB |
 
@@ -245,4 +246,4 @@ Tutti i documenti sono disponibili in inglese con il suffisso `_eng.md`:
 
 ---
 
-*Ultimo aggiornamento: 2025-12-31*
+*Ultimo aggiornamento: 2026-01-02*

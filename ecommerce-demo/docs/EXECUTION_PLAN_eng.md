@@ -28,7 +28,8 @@
 | 5 | Dec 29 | AWS Deploy + ArgoCD + External Secrets + CloudFront | ✅ |
 | 6 | Dec 30 | k6 Load Testing + Cluster Autoscaler + CloudWatch Analysis | ✅ |
 | 7 | Dec 30 | Performance Fix: Pod Anti-Affinity + HPA + k6 Bug Fix | ✅ |
-| 8 | TBD | Advanced Load Testing + Security Review | ⏳ |
+| 8 | Jan 2 | Deep Observability: Container Insights + X-Ray APM | ✅ |
+| 9 | TBD | Security Hardening: OWASP + Network Policies | ⏳ |
 
 ---
 
@@ -728,31 +729,113 @@ k6/
 
 ---
 
-## Day 8 Details - Advanced Load Testing & Security ⏳
+## Day 8 Details - January 2 (Deep Observability) ✅
 
-### Post-Optimization Testing
+### Container Insights (EKS Add-on)
 
 | Task | Status |
 |------|--------|
-| Re-run baseline tests | ⏳ |
-| Compare before/after metrics | ⏳ |
-| Validate HPA behavior | ⏳ |
-| Database connection pooling | ⏳ |
-| Redis cache effectiveness | ⏳ |
-| CDN cache hit ratio | ⏳ |
-| Cost per request analysis | ⏳ |
+| CloudWatch Observability add-on via Terraform | ✅ |
+| IRSA role for CloudWatch Agent + X-Ray Daemon | ✅ |
+| Pod-level metrics (CPU, memory, network) | ✅ |
 
-### Security Hardening
+**Available Metrics:**
+| Metric | Namespace | Description |
+|--------|-----------|-------------|
+| `pod_cpu_utilization` | ContainerInsights | CPU usage per pod |
+| `pod_memory_utilization` | ContainerInsights | Memory usage per pod |
+| `pod_network_rx_bytes` | ContainerInsights | Network in per pod |
+| `pod_network_tx_bytes` | ContainerInsights | Network out per pod |
+
+### AWS X-Ray Distributed Tracing
+
+| Task | Status |
+|------|--------|
+| X-Ray DaemonSet deployment (`k8s/xray-daemon/`) | ✅ |
+| Backend instrumentation (`aws-xray-sdk-core`) | ✅ |
+| Frontend instrumentation (Next.js `instrumentation.ts`) | ✅ |
+| Manual segment management (avoided CLS context issues) | ✅ |
+| 1700+ traces captured with annotations | ✅ |
+
+**Backend X-Ray Integration:**
+- `apps/backend/src/utils/xray.ts` - X-Ray utility
+- Fastify hooks for request tracing
+- Annotations: http_method, http_url, http_status
+- Error/fault flags for 4xx/5xx responses
+
+**Frontend X-Ray Integration:**
+- `apps/frontend/src/lib/xray.ts` - X-Ray utility
+- `apps/frontend/src/instrumentation.ts` - Server-side init
+- `captureHTTPsGlobal` for SSR→Backend tracing
+
+### Terraform Updates
+
+| Task | Status |
+|------|--------|
+| IAM trust policy updated for xray-daemon service account | ✅ |
+| StringLike condition for multiple service accounts | ✅ |
+| All CLI changes codified in Terraform | ✅ |
+
+### Issues Resolved
+
+| Issue | Solution |
+|-------|----------|
+| CLS Context Error | Removed `setSegment()`, manual segment management via request object |
+| IRSA Permission Error | Updated trust policy with StringLike and service account list |
+| Docker Networking | Added `INTERNAL_API_URL=http://backend:4000` for server-side rewrites |
+
+### Documentation
+
+- [x] SESSION_08_RECAP.md (IT)
+- [x] SESSION_08_RECAP_eng.md (EN)
+
+---
+
+## Day 9 Details - Security Hardening ⏳
+
+### Security Tasks
 
 | Task | Status |
 |------|--------|
 | OWASP Top 10 review | ⏳ |
-| Network policies (Kubernetes) | ⏳ |
-| Pod security policies | ⏳ |
-| Security headers audit | ⏳ |
-| Dependency audit (npm audit) | ⏳ |
-| Container image hardening | ⏳ |
-| IAM least privilege review | ⏳ |
+| Network policies (namespace isolation) | ⏳ |
+| Container hardening (securityContext) | ⏳ |
+| Pod Security Standards | ⏳ |
+| Secrets rotation strategy | ⏳ |
+
+### Security Checklist
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    SECURITY REVIEW CHECKLIST                     │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  APPLICATION SECURITY                                            │
+│  ├── [x] SQL Injection prevention (Prisma ORM)                  │
+│  ├── [x] XSS prevention (React escaping)                        │
+│  ├── [ ] CSRF protection                                         │
+│  ├── [x] Rate limiting configured                                │
+│  ├── [x] Input validation (Zod schemas)                         │
+│  └── [ ] Secure headers (HSTS, CSP, etc.)                       │
+│                                                                  │
+│  INFRASTRUCTURE SECURITY                                         │
+│  ├── [x] Network isolation (VPC, subnets)                       │
+│  ├── [x] Security groups minimal access                         │
+│  ├── [x] Encryption at rest (RDS, S3)                           │
+│  ├── [x] Encryption in transit (TLS)                            │
+│  ├── [x] Secrets management (AWS Secrets Manager)               │
+│  └── [ ] IAM roles with least privilege review                  │
+│                                                                  │
+│  KUBERNETES SECURITY                                             │
+│  ├── [ ] Non-root containers                                     │
+│  ├── [ ] Read-only root filesystem                              │
+│  ├── [ ] Network policies                                        │
+│  ├── [ ] Pod security standards                                  │
+│  ├── [ ] Service accounts with minimal permissions              │
+│  └── [x] RBAC configured correctly                               │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ---
 

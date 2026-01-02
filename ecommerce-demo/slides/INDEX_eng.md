@@ -87,7 +87,7 @@ docs/EXECUTION_PLAN.md
 
 | Category | Documents |
 |----------|-----------|
-| [Session Recaps](#session-recaps) | 7 development sessions |
+| [Session Recaps](#session-recaps) | 8 development sessions |
 | [Architecture](#architecture) | 4 documents with diagrams |
 | [Technical Documentation](#technical-documentation) | 7 specific documents |
 
@@ -106,6 +106,7 @@ Summaries of project development sessions.
 | 5 | [SESSION_05_RECAP_eng.md](./SESSION_05_RECAP_eng.md) | **AWS Deployment** - EKS cluster, RDS, ElastiCache, CloudFront, External Secrets, ArgoCD deploy |
 | 6 | [SESSION_06_RECAP_eng.md](./SESSION_06_RECAP_eng.md) | **Load Testing** - k6 scenarios, Cluster Autoscaler, CloudWatch metrics, bottleneck analysis |
 | 7 | [SESSION_07_RECAP_eng.md](./SESSION_07_RECAP_eng.md) | **Performance Optimization** - Pod Anti-Affinity, HPA tuning, +134% throughput, -42% latency |
+| 8 | [SESSION_08_RECAP_eng.md](./SESSION_08_RECAP_eng.md) | **Deep Observability** - Container Insights, X-Ray distributed tracing, 1700+ traces, IRSA configuration |
 
 > **Italian versions:** Each document has an Italian version without the `_eng` suffix
 
@@ -148,18 +149,18 @@ Specific technical documents.
 
 ```
 📁 slides/
-├── 📄 Session Recaps     7 documents × 2 languages = 14 files
+├── 📄 Session Recaps     8 documents × 2 languages = 16 files
 ├── 📄 Architecture       4 documents × 2 languages =  8 files
 ├── 📄 Technical Docs     7 documents × 2 languages = 14 files
 ├── 📄 Index              1 document  × 2 languages =  2 files
 └── ────────────────────────────────────────────────────────
-    TOTAL                19 documents × 2 languages = 38 files
+    TOTAL                20 documents × 2 languages = 40 files
 ```
 
 | Metric | Value |
 |--------|-------|
-| **Unique documents** | 19 |
-| **Total files** | 38 |
+| **Unique documents** | 20 |
+| **Total files** | 40 |
 | **Languages** | IT, EN |
 | **Mermaid diagrams** | ~40 |
 | **Total size** | ~530 KB |
@@ -216,8 +217,8 @@ All documents are available in Italian without the `_eng` suffix:
 
 | Metric | Value |
 |--------|-------|
-| **Unique documents** | 18 |
-| **Total files** | 36 (IT + EN) |
+| **Unique documents** | 20 |
+| **Total files** | 40 (IT + EN) |
 | **Mermaid diagrams** | ~40 |
 | **Total size** | ~530 KB |
 
@@ -245,4 +246,4 @@ All documents are available in Italian without the `_eng` suffix:
 
 ---
 
-*Last updated: 2025-12-31*
+*Last updated: 2026-01-02*

@@ -28,7 +28,8 @@
 | 5 | 29 Dic | Deploy AWS + ArgoCD + External Secrets + CloudFront | ✅ |
 | 6 | 30 Dic | k6 Load Testing + Cluster Autoscaler + CloudWatch Analysis | ✅ |
 | 7 | 30 Dic | Performance Fix: Pod Anti-Affinity + HPA + k6 Bug Fix | ✅ |
-| 8 | TBD | Advanced Load Testing + Security Review | ⏳ |
+| 8 | 2 Gen | Deep Observability: Container Insights + X-Ray APM | ✅ |
+| 9 | TBD | Security Hardening: OWASP + Network Policies | ⏳ |
 
 ---
 
@@ -752,38 +753,79 @@ k6/
 
 ---
 
-## Dettaglio Giorno 8 - Advanced Load Testing & Security ⏳
+## Dettaglio Giorno 8 - 2 Gennaio (Deep Observability) ✅
 
-### Post-Optimization Testing
+### Container Insights (EKS Add-on)
 
 | Task | Stato |
 |------|-------|
-| Re-run baseline tests | ⏳ |
-| Compare before/after metrics | ⏳ |
-| Validate HPA behavior | ⏳ |
-| Database connection pooling | ⏳ |
-| Redis cache effectiveness | ⏳ |
-| CDN cache hit ratio | ⏳ |
-| Cost per request analysis | ⏳ |
+| CloudWatch Observability add-on via Terraform | ✅ |
+| IRSA role per CloudWatch Agent + X-Ray Daemon | ✅ |
+| Metriche pod-level (CPU, memoria, network) | ✅ |
+
+**Metriche Disponibili:**
+| Metrica | Namespace | Descrizione |
+|---------|-----------|-------------|
+| `pod_cpu_utilization` | ContainerInsights | CPU usage per pod |
+| `pod_memory_utilization` | ContainerInsights | Memory usage per pod |
+| `pod_network_rx_bytes` | ContainerInsights | Network in per pod |
+| `pod_network_tx_bytes` | ContainerInsights | Network out per pod |
+
+### AWS X-Ray Distributed Tracing
+
+| Task | Stato |
+|------|-------|
+| X-Ray DaemonSet deployment (`k8s/xray-daemon/`) | ✅ |
+| Backend instrumentation (`aws-xray-sdk-core`) | ✅ |
+| Frontend instrumentation (Next.js `instrumentation.ts`) | ✅ |
+| Manual segment management (evitato CLS context issues) | ✅ |
+| 1700+ traces catturati con annotations | ✅ |
+
+**Backend X-Ray Integration:**
+- `apps/backend/src/utils/xray.ts` - X-Ray utility
+- Fastify hooks per request tracing
+- Annotations: http_method, http_url, http_status
+- Error/fault flags per 4xx/5xx responses
+
+**Frontend X-Ray Integration:**
+- `apps/frontend/src/lib/xray.ts` - X-Ray utility
+- `apps/frontend/src/instrumentation.ts` - Server-side init
+- `captureHTTPsGlobal` per SSR→Backend tracing
+
+### Terraform Updates
+
+| Task | Stato |
+|------|-------|
+| IAM trust policy aggiornata per xray-daemon service account | ✅ |
+| StringLike condition per multiple service accounts | ✅ |
+| Tutte le modifiche CLI codificate in Terraform | ✅ |
+
+### Problemi Risolti
+
+| Problema | Soluzione |
+|----------|-----------|
+| CLS Context Error | Rimosso `setSegment()`, gestione manuale segmenti via request object |
+| IRSA Permission Error | Aggiornata trust policy con StringLike e lista service accounts |
+| Docker Networking | Aggiunto `INTERNAL_API_URL=http://backend:4000` per rewrites server-side |
+
+### Documentation
+
+- [x] SESSION_08_RECAP.md (IT)
+- [x] SESSION_08_RECAP_eng.md (EN)
 
 ---
 
-## Dettaglio Giorno 9 - Security Review ⏳
+## Dettaglio Giorno 9 - Security Hardening ⏳
 
-### Security Hardening
+### Security Tasks
 
 | Task | Stato |
 |------|-------|
 | OWASP Top 10 review | ⏳ |
-| Penetration testing (basic) | ⏳ |
-| Network policies (Kubernetes) | ⏳ |
-| Pod security policies | ⏳ |
+| Network policies (namespace isolation) | ⏳ |
+| Container hardening (securityContext) | ⏳ |
+| Pod Security Standards | ⏳ |
 | Secrets rotation strategy | ⏳ |
-| WAF configuration | ⏳ |
-| Security headers audit | ⏳ |
-| Dependency audit (npm audit) | ⏳ |
-| Container image hardening | ⏳ |
-| IAM least privilege review | ⏳ |
 
 ### Security Checklist
 
@@ -793,20 +835,20 @@ k6/
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                  │
 │  APPLICATION SECURITY                                            │
-│  ├── [ ] SQL Injection prevention (Prisma ORM)                  │
-│  ├── [ ] XSS prevention (React escaping)                        │
+│  ├── [x] SQL Injection prevention (Prisma ORM)                  │
+│  ├── [x] XSS prevention (React escaping)                        │
 │  ├── [ ] CSRF protection                                         │
-│  ├── [ ] Rate limiting configured                                │
-│  ├── [ ] Input validation (Zod schemas)                         │
+│  ├── [x] Rate limiting configured                                │
+│  ├── [x] Input validation (Zod schemas)                         │
 │  └── [ ] Secure headers (HSTS, CSP, etc.)                       │
 │                                                                  │
 │  INFRASTRUCTURE SECURITY                                         │
-│  ├── [ ] Network isolation (VPC, subnets)                       │
-│  ├── [ ] Security groups minimal access                         │
-│  ├── [ ] Encryption at rest (RDS, S3)                           │
-│  ├── [ ] Encryption in transit (TLS)                            │
-│  ├── [ ] Secrets management (AWS Secrets Manager)               │
-│  └── [ ] IAM roles with least privilege                         │
+│  ├── [x] Network isolation (VPC, subnets)                       │
+│  ├── [x] Security groups minimal access                         │
+│  ├── [x] Encryption at rest (RDS, S3)                           │
+│  ├── [x] Encryption in transit (TLS)                            │
+│  ├── [x] Secrets management (AWS Secrets Manager)               │
+│  └── [ ] IAM roles with least privilege review                  │
 │                                                                  │
 │  KUBERNETES SECURITY                                             │
 │  ├── [ ] Non-root containers                                     │
@@ -814,7 +856,7 @@ k6/
 │  ├── [ ] Network policies                                        │
 │  ├── [ ] Pod security standards                                  │
 │  ├── [ ] Service accounts with minimal permissions              │
-│  └── [ ] RBAC configured correctly                               │
+│  └── [x] RBAC configured correctly                               │
 │                                                                  │
 └─────────────────────────────────────────────────────────────────┘
 ```
