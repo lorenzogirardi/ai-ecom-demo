@@ -194,6 +194,20 @@ Browser → CloudFront → Frontend (SSR) → Backend → RDS/Redis
 
 ---
 
+## Screenshots
+
+### X-Ray Traces in CloudWatch
+
+![CloudWatch X-Ray Trace 001](https://res.cloudinary.com/ethzero/image/upload/v1735833696/ai/ai-ecom-demo/cloudwatch-trace-001.png)
+
+![CloudWatch X-Ray Trace 002](https://res.cloudinary.com/ethzero/image/upload/v1735833696/ai/ai-ecom-demo/cloudwatch-trace-002.png)
+
+### APM Performance Evaluation
+
+![APM Performance Evaluation](https://res.cloudinary.com/ethzero/image/upload/v1735833696/ai/ai-ecom-demo/apm-performance-evaluation.png)
+
+---
+
 ## Next Steps (Day 9)
 
 1. **OWASP Top 10 Review**
