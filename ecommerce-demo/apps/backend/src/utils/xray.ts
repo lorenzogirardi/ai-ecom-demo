@@ -146,6 +146,18 @@ export function closeSegment(segment: any, statusCode?: number): void {
         segment.fault = true;
       }
     }
+
+    // Manually send segment to daemon
+    try {
+      const SegmentEmitter = AWSXRay.SegmentEmitter;
+      if (SegmentEmitter) {
+        SegmentEmitter.send(segment);
+        logger.debug({ traceId: segment.trace_id }, "X-Ray segment sent");
+      }
+    } catch (sendError) {
+      logger.debug({ sendError }, "Failed to send X-Ray segment");
+    }
+
     segment.close();
   } catch {
     // Ignore close errors
