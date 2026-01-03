@@ -112,6 +112,21 @@ async function buildServer() {
 
   // Swagger documentation
   if (config.swagger.enabled) {
+    // Build servers list based on environment
+    const swaggerServers = config.isProduction
+      ? [
+          {
+            url: config.swagger.publicUrl || "/",
+            description: "Production server",
+          },
+        ]
+      : [
+          {
+            url: `http://localhost:${config.port}`,
+            description: "Development server",
+          },
+        ];
+
     await app.register(swagger, {
       openapi: {
         info: {
@@ -119,12 +134,7 @@ async function buildServer() {
           description: "API documentation for the e-commerce demo backend",
           version: "1.0.0",
         },
-        servers: [
-          {
-            url: `http://localhost:${config.port}`,
-            description: "Development server",
-          },
-        ],
+        servers: swaggerServers,
         components: {
           securitySchemes: {
             bearerAuth: {

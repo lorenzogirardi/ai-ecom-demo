@@ -89,6 +89,7 @@ export const config = {
   // Swagger
   swagger: {
     enabled: getEnvBoolean("ENABLE_SWAGGER", true),
+    publicUrl: getEnv("SWAGGER_PUBLIC_URL", ""),
   },
 
   // AWS

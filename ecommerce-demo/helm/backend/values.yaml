@@ -110,6 +110,7 @@ env:
   LOG_LEVEL: info
   ENABLE_SWAGGER: "true"
   ENABLE_RATE_LIMITING: "true"
+  SWAGGER_PUBLIC_URL: "/"  # Uses relative URL, works with any domain
 
 # Environment variables from secrets
 envFrom: []
