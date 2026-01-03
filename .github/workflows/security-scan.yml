@@ -100,23 +100,16 @@ EOF
           TIMESTAMP=$(date +%Y%m%d_%H%M%S)
           SCAN_TYPE="${{ inputs.scan_type }}"
 
-          # Move ZAP reports with timestamp
+          # ZAP actions output reports as {scan_type}-report.{ext}
           for ext in html json md; do
-            if [ -f "report_${ext}.${ext}" ]; then
-              mv "report_${ext}.${ext}" "ecommerce-demo/security/reports/zap/zap-${SCAN_TYPE}-${TIMESTAMP}.${ext}"
+            # Try baseline-report, api-report, full-report patterns
+            if [ -f "${SCAN_TYPE}-report.${ext}" ]; then
+              mv "${SCAN_TYPE}-report.${ext}" "ecommerce-demo/security/reports/zap/zap-${SCAN_TYPE}-${TIMESTAMP}.${ext}"
+            # Also check generic report names
+            elif [ -f "report.${ext}" ]; then
+              mv "report.${ext}" "ecommerce-demo/security/reports/zap/zap-${SCAN_TYPE}-${TIMESTAMP}.${ext}"
             fi
           done
-
-          # Check for alternate report names
-          if [ -f "report.html" ]; then
-            mv report.html "ecommerce-demo/security/reports/zap/zap-${SCAN_TYPE}-${TIMESTAMP}.html"
-          fi
-          if [ -f "report.json" ]; then
-            mv report.json "ecommerce-demo/security/reports/zap/zap-${SCAN_TYPE}-${TIMESTAMP}.json"
-          fi
-          if [ -f "report.md" ]; then
-            mv report.md "ecommerce-demo/security/reports/zap/zap-${SCAN_TYPE}-${TIMESTAMP}.md"
-          fi
 
           echo "Generated reports:"
           ls -la ecommerce-demo/security/reports/zap/ || echo "No reports generated"
