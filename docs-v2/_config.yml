@@ -2,7 +2,7 @@
 title: E-commerce Demo Documentation
 description: "Technical documentation for the AI-Augmented E-commerce Platform - 10 Days from Zero to Production"
 author: Lorenzo Girardi
-baseurl: "/ai-ecom-demo/docs-v2"
+baseurl: "/ai-ecom-demo"
 url: "https://lorenzogirardi.github.io"
 
 # Build settings
