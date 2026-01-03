@@ -176,20 +176,24 @@ Each Claude Code session = 1 component 100% finished
 
 ## Realistic Estimate
 
-### With Max Account ($100/month):
+### With Max Account ($100/month)
 
-**Total time**: 25-30 working days
-**Claude Code sessions**: ~25 intensive sessions
-**Actual coding hours with Claude**: ~50-60 hours distributed
-**Rate limit management**: Work 2-3 sessions per day with breaks
+| Metric | Estimate |
+|--------|----------|
+| Total time | 25-30 working days |
+| Claude Code sessions | ~25 intensive sessions |
+| Actual coding hours | ~50-60 hours distributed |
+| Rate limit management | 2-3 sessions per day with breaks |
 
-### What to expect:
+### Expectations
 
-✅ **Completely achievable** with discipline
-✅ **Demonstrates all required skills**
-✅ **Scalable**: can expand later (add microservices)
-❌ **Requires discipline**: precise prompts, don't iterate too much
-❌ **Some parts done manually**: small fixes, AWS configurations
+| Aspect | Notes |
+|--------|-------|
+| Achievable | Yes, with discipline |
+| Skill coverage | Demonstrates all required skills |
+| Scalability | Can expand later (add microservices) |
+| Discipline required | Precise prompts, minimal iterations |
+| Manual work | Small fixes, AWS configurations |
 
 ---
 
