@@ -386,9 +386,42 @@ npm run lint                      # Lint all
 - [x] SESSION_09_RECAP_eng.md (EN)
 - [x] SECURITY_ARCHITECTURE.md (IT + EN)
 
+### Completed ✅ (Day 10 - Operational Portal)
+
+**L1 Support GitHub Actions (Non-Destructive Only):**
+
+*Diagnostics (Read-Only):*
+- [x] OPS: Pod Health Check - Pod status, resources, conditions
+- [x] OPS: View Pod Logs - Tail logs from specific pods
+- [x] OPS: Service Health Check - Endpoint health verification
+- [x] OPS: Database Connection Test - RDS connectivity check
+- [x] OPS: Redis Status - Cache connectivity and stats
+- [x] OPS: Deployment Info - Current deployment status
+- [x] OPS: Recent Errors - Aggregate error logs
+
+*Remediation (Safe Actions):*
+- [x] OPS: Pod Restart - Rolling restart (no downtime)
+- [x] OPS: Scale Replicas - Adjust replica count (2-10)
+- [x] OPS: Clear App Cache - Redis cache invalidation
+- [x] OPS: ArgoCD Sync - Trigger GitOps sync
+- [x] OPS: Invalidate CloudFront Cache - CDN cache purge
+
+*Reports:*
+- [x] OPS: Export Logs - Download logs for analysis
+- [x] OPS: Performance Snapshot - Current metrics summary
+
+**Security:**
+- [x] GitHub Environment `production` with required reviewers
+- [x] Only repo admins can trigger OPS workflows
+- [x] All workflows require approval before execution
+
+**Documentation:**
+- [x] SESSION_10_RECAP.md (IT)
+- [x] SESSION_10_RECAP_eng.md (EN)
+
 ### NOT Completed ❌ (Future Sessions)
 
-**Day 10 - Operational Portal:**
+**Day 11+:**
 - [ ] TBD (proposals coming)
 
 ## Technical Notes
@@ -575,8 +608,12 @@ Per ogni CVE:
     - Pod Security Standards (PSS)
     - CSP, HSTS, rate limiting
     - OWASP ZAP security scan (168 tests passed)
-16. **Day 10: Operational Portal** (Next)
-    - TBD (proposals coming)
+16. ~~**Day 10: Operational Portal**~~ ✅
+    - 14 OPS GitHub Actions for L1 Support
+    - Diagnostics (read-only) + Remediation (safe actions)
+    - GitHub Environment protection with required reviewers
+17. **Day 11+:** (Future)
+    - TBD
 
 ## Completed Refactors
 

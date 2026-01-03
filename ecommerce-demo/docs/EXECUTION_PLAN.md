@@ -951,11 +951,78 @@ k6/
 
 ## Dettaglio Giorno 10 - Operational Portal ⏳
 
-### Tasks Pianificati
+### Obiettivo
 
-| Task | Stato |
-|------|-------|
-| TBD (proposals coming) | ⏳ |
+Creare un set di workflow GitHub Actions per operazioni L1 Support **non distruttive**.
+Tutte le operazioni devono essere safe e non richiedere competenze DevOps avanzate.
+
+### Principi Guida
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    GUARDRAILS L1 SUPPORT                         │
+├─────────────────────────────────────────────────────────────────┤
+│ ✅ PERMESSO                  │ ❌ VIETATO                        │
+│──────────────────────────────│──────────────────────────────────│
+│ kubectl get/describe/logs    │ kubectl delete                   │
+│ rollout restart              │ kubectl apply/patch              │
+│ scale (2-7 replicas)         │ scale (0 o >7)                   │
+│ redis DEL pattern:*          │ redis FLUSHALL/FLUSHDB           │
+│ argocd sync                  │ argocd app delete                │
+│ cloudfront invalidation      │ cloudfront delete-dist           │
+│ read cloudwatch logs         │ modify alarms                    │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Workflow Pianificati
+
+#### Diagnostica (Read-Only)
+
+| # | Workflow | Descrizione | File |
+|---|----------|-------------|------|
+| 1 | OPS: Pod Health Check | Stato pods, events, risorse | `ops-pod-health-check.yml` |
+| 2 | OPS: View Pod Logs | Ultimi N log lines da pods | `ops-view-pod-logs.yml` |
+| 3 | OPS: Service Health Check | Ping health endpoints | `ops-service-health-check.yml` |
+| 4 | OPS: Database Connection Test | Verifica connettività RDS | `ops-database-connection-test.yml` |
+| 5 | OPS: Redis Status | Stats cache, memory, hit rate | `ops-redis-status.yml` |
+| 6 | OPS: Deployment Info | Versioni correnti, image tags | `ops-deployment-info.yml` |
+| 7 | OPS: Recent Errors | Query CloudWatch per errori | `ops-recent-errors.yml` |
+
+#### Remediation (Safe Actions)
+
+| # | Workflow | Descrizione | Safeguard |
+|---|----------|-------------|-----------|
+| 8 | OPS: Pod Restart | `kubectl rollout restart` | Solo rollout, no delete |
+| 9 | OPS: Scale Replicas | Scale deployment | Min 2, Max 7 |
+| 10 | OPS: Clear App Cache | Flush cache Redis per pattern | No FLUSHALL |
+| 11 | OPS: ArgoCD Sync | Force sync applicazione | Solo sync, no prune |
+| 12 | OPS: Invalidate CloudFront Cache | Invalida cache CDN | ✅ Già implementato |
+
+#### Reports
+
+| # | Workflow | Descrizione | Output |
+|---|----------|-------------|--------|
+| 13 | OPS: Export Logs | Scarica logs come artifact | ZIP con logs |
+| 14 | OPS: Performance Snapshot | Metriche CPU/Memory/RPS | Summary markdown |
+
+### Stato Implementazione
+
+| Workflow | Stato |
+|----------|-------|
+| OPS: Invalidate CloudFront Cache | ✅ |
+| OPS: Pod Health Check | ⏳ |
+| OPS: View Pod Logs | ⏳ |
+| OPS: Service Health Check | ⏳ |
+| OPS: Pod Restart | ⏳ |
+| OPS: Database Connection Test | ⏳ |
+| OPS: Redis Status | ⏳ |
+| OPS: Deployment Info | ⏳ |
+| OPS: Recent Errors | ⏳ |
+| OPS: Scale Replicas | ⏳ |
+| OPS: Clear App Cache | ⏳ |
+| OPS: ArgoCD Sync | ⏳ |
+| OPS: Export Logs | ⏳ |
+| OPS: Performance Snapshot | ⏳ |
 
 ---
 

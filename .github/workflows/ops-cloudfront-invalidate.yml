@@ -1,4 +1,4 @@
-name: Invalidate CloudFront Cache
+name: "OPS: Invalidate CloudFront Cache"
 
 on:
   workflow_dispatch:
@@ -16,13 +16,13 @@ on:
           - production
 
 env:
-  # CloudFront Distribution IDs
   CLOUDFRONT_DISTRIBUTION_ID: E1UREM48VZYPQA
 
 jobs:
   invalidate:
-    name: Invalidate CloudFront Cache
+    name: Invalidate Cache
     runs-on: ubuntu-latest
+    environment: production
 
     permissions:
       id-token: write
@@ -38,7 +38,6 @@ jobs:
       - name: Parse paths
         id: paths
         run: |
-          # Convert comma-separated paths to space-separated for AWS CLI
           PATHS="${{ github.event.inputs.paths }}"
           echo "paths=$PATHS" >> $GITHUB_OUTPUT
 
@@ -46,8 +45,6 @@ jobs:
         id: invalidate
         run: |
           echo "Creating invalidation for paths: ${{ steps.paths.outputs.paths }}"
-
-          # Convert comma-separated to individual --paths arguments
           IFS=',' read -ra PATH_ARRAY <<< "${{ steps.paths.outputs.paths }}"
 
           INVALIDATION_ID=$(aws cloudfront create-invalidation \
@@ -62,20 +59,18 @@ jobs:
       - name: Wait for Invalidation to Complete
         run: |
           echo "Waiting for invalidation ${{ steps.invalidate.outputs.invalidation_id }} to complete..."
-
           aws cloudfront wait invalidation-completed \
             --distribution-id ${{ env.CLOUDFRONT_DISTRIBUTION_ID }} \
             --id ${{ steps.invalidate.outputs.invalidation_id }}
-
           echo "Invalidation completed successfully!"
 
       - name: Summary
         run: |
-          echo "## CloudFront Cache Invalidation" >> $GITHUB_STEP_SUMMARY
+          echo "## 🌐 CloudFront Cache Invalidation" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
           echo "| Distribution ID | \`${{ env.CLOUDFRONT_DISTRIBUTION_ID }}\` |" >> $GITHUB_STEP_SUMMARY
           echo "| Invalidation ID | \`${{ steps.invalidate.outputs.invalidation_id }}\` |" >> $GITHUB_STEP_SUMMARY
           echo "| Paths | \`${{ steps.paths.outputs.paths }}\` |" >> $GITHUB_STEP_SUMMARY
-          echo "| Status | Completed |" >> $GITHUB_STEP_SUMMARY
+          echo "| Status | ✅ Completed |" >> $GITHUB_STEP_SUMMARY
