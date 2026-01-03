@@ -45,7 +45,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
 
           # Get backend pod
-          POD=$(kubectl get pods -n ${{ inputs.namespace }} -l app=backend -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+          POD=$(kubectl get pods -n ${{ inputs.namespace }} -l app.kubernetes.io/name=backend -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
 
           if [ -z "$POD" ]; then
             echo "### ❌ No backend pods found" >> $GITHUB_STEP_SUMMARY

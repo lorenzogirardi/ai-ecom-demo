@@ -58,7 +58,7 @@ jobs:
           if [ "${{ inputs.app }}" == "all" ]; then
             SELECTOR=""
           else
-            SELECTOR="-l app=${{ inputs.app }}"
+            SELECTOR="-l app.kubernetes.io/name=${{ inputs.app }}"
           fi
 
           echo "### Pod Status" >> $GITHUB_STEP_SUMMARY
@@ -90,7 +90,7 @@ jobs:
           if [ "${{ inputs.app }}" == "all" ]; then
             PODS=$(kubectl get pods -n ${{ inputs.namespace }} -o jsonpath='{.items[*].metadata.name}')
           else
-            PODS=$(kubectl get pods -n ${{ inputs.namespace }} -l app=${{ inputs.app }} -o jsonpath='{.items[*].metadata.name}')
+            PODS=$(kubectl get pods -n ${{ inputs.namespace }} -l app.kubernetes.io/name=${{ inputs.app }} -o jsonpath='{.items[*].metadata.name}')
           fi
 
           for POD in $PODS; do
