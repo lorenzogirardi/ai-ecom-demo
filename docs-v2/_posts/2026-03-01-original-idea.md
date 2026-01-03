@@ -75,24 +75,28 @@ Create a **functional and complete e-commerce demo** that showcases all competen
          S3 Bucket (product images)
 ```
 
-### What we ELIMINATE from the original project:
+### Scope Decisions
 
-❌ **5 separate microservices** → ✅ 1 well-structured modular monolith
-❌ **Strapi CMS** → ✅ Simple Admin API in backend
-❌ **Algolia** → ✅ In-memory or Redis search with basic filtering
-❌ **Cognito** → ✅ Custom JWT auth (simpler to demonstrate)
-❌ **Stripe** → ✅ Mock payment (fake checkout)
-❌ **SQS** → ✅ Synchronous functionality
-❌ **Multi-repo** → ✅ Simple monorepo
+| Original Plan | Demo Version | Rationale |
+|---------------|--------------|-----------|
+| 5 separate microservices | 1 modular monolith | Faster to build, same patterns |
+| Strapi CMS | Simple Admin API | No external dependency |
+| Algolia search | Redis search | Cost-effective, sufficient for demo |
+| AWS Cognito | Custom JWT auth | Simpler to demonstrate |
+| Stripe payments | Mock checkout | No payment integration needed |
+| SQS queues | Synchronous calls | Reduced complexity |
+| Multi-repo | Monorepo | Easier CI/CD, single context |
 
-### What we KEEP (demo value):
+### What We Keep (Enterprise Value)
 
-✅ **EKS + managed services** (Aurora, Redis, S3, CloudFront)
-✅ **Complete Terraform IaC** (VPC, EKS, RDS, ALB, CloudFront)
-✅ **Helm charts** (professional deployment)
-✅ **GitHub Actions CI/CD** (build, test, Docker, deploy)
-✅ **Full-stack TypeScript** (frontend + backend)
-✅ **Best practices** (error handling, logging, monitoring)
+| Component | Why It Matters |
+|-----------|----------------|
+| EKS + managed services | Production-grade infrastructure |
+| Complete Terraform IaC | Reproducible, auditable |
+| Helm charts | Professional K8s deployment |
+| GitHub Actions CI/CD | Automated build, test, deploy |
+| Full-stack TypeScript | Type safety, consistency |
+| Best practices | Error handling, logging, monitoring |
 
 ---
 
