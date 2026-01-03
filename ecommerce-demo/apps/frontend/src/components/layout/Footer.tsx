@@ -90,7 +90,7 @@ export function Footer() {
             <ul className="space-y-3">
               <li>
                 <Link
-                  href="/docs"
+                  href="/api/docs"
                   className="text-gray-600 hover:text-gray-900 transition-colors"
                 >
                   Documentation
@@ -98,7 +98,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/docs/api"
+                  href="/api/docs"
                   className="text-gray-600 hover:text-gray-900 transition-colors"
                 >
                   API Reference
