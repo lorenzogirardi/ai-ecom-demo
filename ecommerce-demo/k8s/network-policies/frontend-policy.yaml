@@ -15,8 +15,10 @@ spec:
     - Ingress
     - Egress
   ingress:
-    # Allow from any source (ALB ingress controller)
-    - from: []
+    # Allow from ALB (VPC CIDR - ALB uses IP target mode)
+    - from:
+        - ipBlock:
+            cidr: 10.0.0.0/16  # VPC CIDR where ALB resides
       ports:
         - protocol: TCP
           port: 3000

@@ -440,6 +440,55 @@ done
 
 ---
 
+## 8. Bug Fix: Swagger UI Routing
+
+### Problem
+Swagger UI at `/api/docs` wasn't working correctly in the browser:
+- `/api/docs` → incorrect relative redirect → `/api/index.html/static/index.html`
+
+### Root Cause
+1. Swagger UI uses relative redirect `./static/index.html`
+2. Without trailing slash, the browser resolves the path incorrectly
+3. Next.js `<Link>` component doesn't handle external API URLs properly
+
+### Solution
+
+```typescript
+// 1. onRequest hook for trailing slash redirect
+app.addHook("onRequest", async (request, reply) => {
+  if (request.url === "/api/docs") {
+    return reply.redirect(301, "/api/docs/");
+  }
+});
+
+// 2. Frontend: use <a> instead of <Link> for API URLs
+<a href="/api/docs">View Documentation</a>  // ✅
+<Link href="/api/docs">...</Link>           // ❌
+```
+
+### GitHub Action: CloudFront Cache Invalidation
+
+```yaml
+# .github/workflows/invalidate-cache.yml
+name: Invalidate CloudFront Cache
+on:
+  workflow_dispatch:
+    inputs:
+      paths:
+        default: '/*'
+jobs:
+  invalidate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create CloudFront Invalidation
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ env.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "${{ inputs.paths }}"
+```
+
+---
+
 ## Next Steps (Day 10)
 
 ```

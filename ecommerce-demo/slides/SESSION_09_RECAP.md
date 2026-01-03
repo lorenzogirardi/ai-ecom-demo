@@ -63,7 +63,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: default-deny-all
-  namespace: default
+  namespace: ecommerce  # ← Namespace applicazione
 spec:
   podSelector: {}
   policyTypes:
@@ -165,11 +165,11 @@ spec:
 ### Implementazione (Rollout Graduale)
 
 ```yaml
-# k8s/namespaces/default-pss.yaml
+# k8s/namespaces/ecommerce-pss.yaml
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: default
+  name: ecommerce
   labels:
     # Fase 1: Audit e Warn (attuale)
     pod-security.kubernetes.io/audit: restricted
@@ -434,6 +434,55 @@ done
 | A08 | Data Integrity | Request validation, signed JWTs |
 | A09 | Logging & Monitoring | Security event logging, X-Ray |
 | A10 | SSRF | Network policies, egress control |
+
+---
+
+## 8. Bug Fix: Swagger UI Routing
+
+### Problema
+Swagger UI a `/api/docs` non funzionava correttamente nel browser:
+- `/api/docs` → redirect relativo errato → `/api/index.html/static/index.html`
+
+### Causa
+1. Swagger UI usa redirect relativo `./static/index.html`
+2. Senza trailing slash, il browser risolve male il path
+3. Next.js `<Link>` gestisce male link esterni all'app
+
+### Soluzione
+
+```typescript
+// 1. onRequest hook per redirect con trailing slash
+app.addHook("onRequest", async (request, reply) => {
+  if (request.url === "/api/docs") {
+    return reply.redirect(301, "/api/docs/");
+  }
+});
+
+// 2. Frontend: <a> invece di <Link> per URL API
+<a href="/api/docs">View Documentation</a>  // ✅
+<Link href="/api/docs">...</Link>           // ❌
+```
+
+### GitHub Action: CloudFront Cache Invalidation
+
+```yaml
+# .github/workflows/invalidate-cache.yml
+name: Invalidate CloudFront Cache
+on:
+  workflow_dispatch:
+    inputs:
+      paths:
+        default: '/*'
+jobs:
+  invalidate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create CloudFront Invalidation
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ env.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "${{ inputs.paths }}"
+```
 
 ---
 
