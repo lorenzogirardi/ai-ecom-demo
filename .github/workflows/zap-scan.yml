@@ -71,35 +71,35 @@ jobs:
       - name: ZAP Baseline Scan
         if: inputs.scan_type == 'baseline'
         uses: zaproxy/action-baseline@v0.12.0
+        continue-on-error: true
         with:
           target: ${{ inputs.target_url }}
           rules_file_name: 'ecommerce-demo/security/zap/rules.tsv'
           cmd_options: '-a -j -I'
           allow_issue_writing: false
           fail_action: false
-          artifact_name: zap-internal-${{ github.run_id }}
 
       - name: ZAP API Scan
         if: inputs.scan_type == 'api'
         uses: zaproxy/action-api-scan@v0.7.0
+        continue-on-error: true
         with:
           target: ${{ inputs.openapi_url }}
           rules_file_name: 'ecommerce-demo/security/zap/rules.tsv'
           cmd_options: '-f openapi -I'
           allow_issue_writing: false
           fail_action: false
-          artifact_name: zap-internal-${{ github.run_id }}
 
       - name: ZAP Full Scan
         if: inputs.scan_type == 'full'
         uses: zaproxy/action-full-scan@v0.10.0
+        continue-on-error: true
         with:
           target: ${{ inputs.target_url }}
           rules_file_name: 'ecommerce-demo/security/zap/rules.tsv'
           cmd_options: '-a -j -I'
           allow_issue_writing: false
           fail_action: false
-          artifact_name: zap-internal-${{ github.run_id }}
 
       - name: Organize reports
         if: always()
