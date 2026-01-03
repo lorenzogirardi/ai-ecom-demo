@@ -27,6 +27,12 @@ title: Home
                 <p>CLAUDE.md, prompt patterns, how Claude makes decisions, and collaboration best practices.</p>
                 <span class="read-link">Read the guide &rarr;</span>
             </a>
+            <a href="{{ '/economics/' | relative_url }}" class="category-card featured-economics">
+                <span class="card-badge badge-economics">ROI</span>
+                <h3>Economics</h3>
+                <p>Cost analysis, ROI calculations, and efficiency comparisons: human vs AI-augmented development.</p>
+                <span class="read-link link-economics">See the numbers &rarr;</span>
+            </a>
         </div>
     </section>
 
@@ -47,11 +53,6 @@ title: Home
                 <h3>Technical Docs</h3>
                 <p>Deep dives: CVE analysis, K8s upgrades, autoscaling, observability, multi-team setup.</p>
                 <span class="category-count">9 documents</span>
-            </a>
-            <a href="{{ '/economics/' | relative_url }}" class="category-card economics">
-                <h3>Economics</h3>
-                <p>Cost analysis, ROI calculations, and efficiency comparisons: human vs AI-augmented development.</p>
-                <span class="category-count">1 document</span>
             </a>
         </div>
     </section>
@@ -120,7 +121,7 @@ title: Home
 
 .featured-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: var(--spacing-lg);
 }
 
@@ -140,6 +141,23 @@ title: Home
 
 .category-card.introduction h3 {
     color: #3fb950;
+}
+
+.category-card.featured-economics {
+    border-top: 3px solid #58a6ff;
+    position: relative;
+}
+
+.category-card.featured-economics h3 {
+    color: #58a6ff;
+}
+
+.badge-economics {
+    background: #58a6ff !important;
+}
+
+.link-economics {
+    color: #58a6ff !important;
 }
 
 .card-badge {
@@ -163,7 +181,7 @@ title: Home
     font-weight: 500;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
     .featured-grid {
         grid-template-columns: 1fr;
     }
