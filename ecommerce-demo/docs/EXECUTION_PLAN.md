@@ -30,7 +30,7 @@
 | 7 | 30 Dic | Performance Fix: Pod Anti-Affinity + HPA + k6 Bug Fix | ✅ |
 | 8 | 2 Gen | Deep Observability: Container Insights + X-Ray APM | ✅ |
 | 9 | 3 Gen | Security Hardening: Network Policies + PSS + OWASP ZAP | ✅ |
-| 10 | TBD | Operational Portal | ⏳ |
+| 10 | 3 Gen | Operational Portal: 14 OPS Workflows for L1 Support | ✅ |
 
 ---
 
@@ -949,12 +949,12 @@ k6/
 
 ---
 
-## Dettaglio Giorno 10 - Operational Portal ⏳
+## Dettaglio Giorno 10 - 3 Gennaio (Operational Portal) ✅
 
 ### Obiettivo
 
 Creare un set di workflow GitHub Actions per operazioni L1 Support **non distruttive**.
-Tutte le operazioni devono essere safe e non richiedere competenze DevOps avanzate.
+Tutte le operazioni sono safe e non richiedono competenze DevOps avanzate.
 
 ### Principi Guida
 
@@ -966,63 +966,67 @@ Tutte le operazioni devono essere safe e non richiedere competenze DevOps avanza
 │──────────────────────────────│──────────────────────────────────│
 │ kubectl get/describe/logs    │ kubectl delete                   │
 │ rollout restart              │ kubectl apply/patch              │
-│ scale (2-7 replicas)         │ scale (0 o >7)                   │
-│ redis DEL pattern:*          │ redis FLUSHALL/FLUSHDB           │
+│ scale (2-10 replicas)        │ scale (0 o >10)                  │
+│ cache refresh via restart    │ redis FLUSHALL/FLUSHDB           │
 │ argocd sync                  │ argocd app delete                │
 │ cloudfront invalidation      │ cloudfront delete-dist           │
 │ read cloudwatch logs         │ modify alarms                    │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### Workflow Pianificati
+### GitHub Environment Protection
 
-#### Diagnostica (Read-Only)
+```yaml
+jobs:
+  operation:
+    environment: production  # Requires approval before execution
 
-| # | Workflow | Descrizione | File |
-|---|----------|-------------|------|
-| 1 | OPS: Pod Health Check | Stato pods, events, risorse | `ops-pod-health-check.yml` |
-| 2 | OPS: View Pod Logs | Ultimi N log lines da pods | `ops-view-pod-logs.yml` |
-| 3 | OPS: Service Health Check | Ping health endpoints | `ops-service-health-check.yml` |
-| 4 | OPS: Database Connection Test | Verifica connettività RDS | `ops-database-connection-test.yml` |
-| 5 | OPS: Redis Status | Stats cache, memory, hit rate | `ops-redis-status.yml` |
-| 6 | OPS: Deployment Info | Versioni correnti, image tags | `ops-deployment-info.yml` |
-| 7 | OPS: Recent Errors | Query CloudWatch per errori | `ops-recent-errors.yml` |
+    permissions:
+      id-token: write   # For AWS OIDC
+      contents: read
+```
 
-#### Remediation (Safe Actions)
+### Workflow Implementati (14 totali)
 
-| # | Workflow | Descrizione | Safeguard |
-|---|----------|-------------|-----------|
-| 8 | OPS: Pod Restart | `kubectl rollout restart` | Solo rollout, no delete |
-| 9 | OPS: Scale Replicas | Scale deployment | Min 2, Max 7 |
-| 10 | OPS: Clear App Cache | Flush cache Redis per pattern | No FLUSHALL |
-| 11 | OPS: ArgoCD Sync | Force sync applicazione | Solo sync, no prune |
-| 12 | OPS: Invalidate CloudFront Cache | Invalida cache CDN | ✅ Già implementato |
+#### Diagnostica (Read-Only) - 8 workflows
 
-#### Reports
+| # | Workflow | Descrizione | Stato |
+|---|----------|-------------|-------|
+| 1 | OPS: Pod Health Check | Stato pods, events, risorse | ✅ |
+| 2 | OPS: View Pod Logs | Ultimi N log lines da pods | ✅ |
+| 3 | OPS: Service Health Check | Ping health endpoints | ✅ |
+| 4 | OPS: Database Connection Test | Verifica connettività RDS | ✅ |
+| 5 | OPS: Redis Status | Test cache via API response time | ✅ |
+| 6 | OPS: Deployment Info | Versioni correnti, image tags, HPA | ✅ |
+| 7 | OPS: Recent Errors | Cerca errori nei logs | ✅ |
+| 8 | OPS: Performance Snapshot | Node/pod resources, API timing | ✅ |
 
-| # | Workflow | Descrizione | Output |
-|---|----------|-------------|--------|
-| 13 | OPS: Export Logs | Scarica logs come artifact | ZIP con logs |
-| 14 | OPS: Performance Snapshot | Metriche CPU/Memory/RPS | Summary markdown |
+#### Remediation (Safe Actions) - 6 workflows
 
-### Stato Implementazione
+| # | Workflow | Descrizione | Safeguard | Stato |
+|---|----------|-------------|-----------|-------|
+| 9 | OPS: Pod Restart | Rolling restart deployment | Rollout status wait | ✅ |
+| 10 | OPS: Scale Replicas | Scale deployment | Bounded 2-10 | ✅ |
+| 11 | OPS: Clear App Cache | Refresh cache via restart | Rollout status wait | ✅ |
+| 12 | OPS: ArgoCD Sync | Trigger sync applicazione | Single app | ✅ |
+| 13 | OPS: CloudFront Invalidate | Invalida cache CDN | Path limit | ✅ |
+| 14 | OPS: Export Logs | Scarica logs come artifact | 7 day retention | ✅ |
 
-| Workflow | Stato |
-|----------|-------|
-| OPS: Invalidate CloudFront Cache | ✅ |
-| OPS: Pod Health Check | ⏳ |
-| OPS: View Pod Logs | ⏳ |
-| OPS: Service Health Check | ⏳ |
-| OPS: Pod Restart | ⏳ |
-| OPS: Database Connection Test | ⏳ |
-| OPS: Redis Status | ⏳ |
-| OPS: Deployment Info | ⏳ |
-| OPS: Recent Errors | ⏳ |
-| OPS: Scale Replicas | ⏳ |
-| OPS: Clear App Cache | ⏳ |
-| OPS: ArgoCD Sync | ⏳ |
-| OPS: Export Logs | ⏳ |
-| OPS: Performance Snapshot | ⏳ |
+### Lessons Learned
+
+| Problema | Soluzione |
+|----------|-----------|
+| Container no curl/wget | Usare `node -e fetch()` |
+| Pod label selector | Helm usa `app.kubernetes.io/name` |
+| EKS cluster name | Verificare nome esatto |
+| Namespace default | Specificare sempre `ecommerce` |
+| Input arbitrario | Usare `type: choice` invece di `string` |
+
+### Documentation
+
+- [x] OPERATIONAL_PORTAL_ARCHITECTURE.md con Mermaid diagrams
+- [x] SESSION_10_RECAP.md (IT)
+- [x] SESSION_10_RECAP_eng.md (EN)
 
 ---
 
@@ -1364,20 +1368,21 @@ terraform apply
 
 ## Statistiche Progetto
 
-| Metrica | Sess. 1 | Sess. 2 | Sess. 3 | Sess. 4 | Sess. 5 | Sess. 6 | Sess. 7 | Sess. 8 | Sess. 9 | Totale |
-|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|--------|
-| File creati | 82 | 21 | 24 | 15 | 12 | 12 | 6 | 11 | 7 | 190 |
-| Linee di codice | ~8,900 | ~3,200 | ~2,500 | ~1,500 | ~3,400 | ~1,800 | ~300 | ~400 | ~500 | ~22,500 |
-| Backend Tests | 0 | 177 | 177 | 177 | 177 | 177 | 177 | 177 | 177 | 177 |
-| Frontend Tests | 0 | 0 | 29 | 29 | 29 | 29 | 29 | 29 | 29 | 29 |
-| Tempo Claude | ~2h | ~1.5h | ~1.5h | ~2h | ~5h | ~2h | ~2h | ~2h | ~2h | ~20h |
-| Tempo equiv. dev | ~50h | ~50h | ~26.5h | ~40h | ~20h | ~18h | ~12h | ~14h | ~16h | ~246.5h |
-| Bug fixes | 0 | 0 | 5 | 10+ | 8 | 3 | 1 | 3 | 2 | 32+ |
-| CVE analyzed | 0 | 0 | 0 | 36 | 0 | 0 | 0 | 0 | 0 | 36 |
-| AWS Resources | 0 | 0 | 0 | 4 | 85 | 89 | 89 | 91 | 91 | 91 |
-| Load Tests | 0 | 0 | 0 | 0 | 0 | 183K | 291K | 291K | 291K | 291K |
-| X-Ray Traces | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1700+ | 1700+ | 1700+ |
-| ZAP Security Tests | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 168 | 168 |
+| Metrica | Sess. 1 | Sess. 2 | Sess. 3 | Sess. 4 | Sess. 5 | Sess. 6 | Sess. 7 | Sess. 8 | Sess. 9 | Sess. 10 | Totale |
+|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|----------|--------|
+| File creati | 82 | 21 | 24 | 15 | 12 | 12 | 6 | 11 | 7 | 17 | 207 |
+| Linee di codice | ~8,900 | ~3,200 | ~2,500 | ~1,500 | ~3,400 | ~1,800 | ~300 | ~400 | ~500 | ~1,700 | ~24,200 |
+| Backend Tests | 0 | 177 | 177 | 177 | 177 | 177 | 177 | 177 | 177 | 177 | 177 |
+| Frontend Tests | 0 | 0 | 29 | 29 | 29 | 29 | 29 | 29 | 29 | 29 | 29 |
+| Tempo Claude | ~2h | ~1.5h | ~1.5h | ~2h | ~5h | ~2h | ~2h | ~2h | ~2h | ~1.5h | ~21.5h |
+| Tempo equiv. dev | ~50h | ~50h | ~26.5h | ~40h | ~20h | ~18h | ~12h | ~14h | ~16h | ~12h | ~258.5h |
+| Bug fixes | 0 | 0 | 5 | 10+ | 8 | 3 | 1 | 3 | 2 | 5 | 37+ |
+| CVE analyzed | 0 | 0 | 0 | 36 | 0 | 0 | 0 | 0 | 0 | 0 | 36 |
+| AWS Resources | 0 | 0 | 0 | 4 | 85 | 89 | 89 | 91 | 91 | 91 | 91 |
+| Load Tests | 0 | 0 | 0 | 0 | 0 | 183K | 291K | 291K | 291K | 291K | 291K |
+| X-Ray Traces | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1700+ | 1700+ | 1700+ | 1700+ |
+| ZAP Security Tests | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 168 | 168 | 168 |
+| OPS Workflows | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 14 | 14 |
 
 ### Distribuzione Codice (~22.000 linee)
 

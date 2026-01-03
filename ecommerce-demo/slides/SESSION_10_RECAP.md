@@ -223,6 +223,34 @@ Tutto senza contattare DevOps!
 
 ---
 
+## Screenshots: Workflow in Azione
+
+### Interfaccia GitHub Actions
+
+| Workflow | Screenshot |
+|----------|------------|
+| Pod Health Check | ![Health Check](https://res.cloudinary.com/ethzero/image/upload/ai/ai-ecom-demo/github-action-ops-health-check.png) |
+| View Logs | ![Logs](https://res.cloudinary.com/ethzero/image/upload/ai/ai-ecom-demo/github-action-ops-logs.png) |
+| Deployment Info | ![Deployment](https://res.cloudinary.com/ethzero/image/upload/ai/ai-ecom-demo/github-action-ops-deployment-info.png) |
+| Pod Restart | ![Restart](https://res.cloudinary.com/ethzero/image/upload/ai/ai-ecom-demo/github-action-ops-pod-restart.png) |
+| Performance Snapshot | ![Performance](https://res.cloudinary.com/ethzero/image/upload/ai/ai-ecom-demo/github-action-ops-performance-snapshot.png) |
+| Export Logs | ![Export](https://res.cloudinary.com/ethzero/image/upload/ai/ai-ecom-demo/github-action-ops-export-logs.png) |
+
+---
+
+## Screenshots: Flusso Approvazione
+
+### Environment Protection in Azione
+
+| Step | Screenshot |
+|------|------------|
+| 1. Richiesta approvazione | ![Approve 1](https://res.cloudinary.com/ethzero/image/upload/ai/ai-ecom-demo/github-action-ops-approve-001.png) |
+| 2. Review parametri | ![Approve 2](https://res.cloudinary.com/ethzero/image/upload/ai/ai-ecom-demo/github-action-ops-approve-002.png) |
+| 3. Approvazione concessa | ![Approve 3](https://res.cloudinary.com/ethzero/image/upload/ai/ai-ecom-demo/github-action-ops-approve-003.png) |
+| 4. Risultato in Job Summary | ![Result](https://res.cloudinary.com/ethzero/image/upload/ai/ai-ecom-demo/github-action-ops-pod-restart-001.png) |
+
+---
+
 ## Audit Trail
 
 ### GitHub
@@ -276,7 +304,7 @@ Tutto senza contattare DevOps!
 - [GitHub Environments](https://docs.github.com/en/actions/deployment/targeting-different-environments)
 - [AWS OIDC with GitHub](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services)
 - [kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/)
-- [OPERATIONAL_PORTAL_ARCHITECTURE.md](../docs/OPERATIONAL_PORTAL_ARCHITECTURE.md)
+- [OPERATIONAL_PORTAL_ARCHITECTURE.md](./OPERATIONAL_PORTAL_ARCHITECTURE.md)
 
 ---
 
