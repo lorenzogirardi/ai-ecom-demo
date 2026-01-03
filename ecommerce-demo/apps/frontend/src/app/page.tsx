@@ -20,9 +20,9 @@ export default function HomePage() {
             <Link href="/products" className="btn btn-primary btn-lg">
               Browse Products
             </Link>
-            <Link href="/api/docs" className="btn btn-outline btn-lg">
+            <a href="/api/docs" className="btn btn-outline btn-lg">
               View Documentation
-            </Link>
+            </a>
           </div>
         </div>
       </section>

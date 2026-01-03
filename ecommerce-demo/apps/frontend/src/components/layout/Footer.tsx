@@ -89,20 +89,20 @@ export function Footer() {
             <h3 className="font-semibold text-gray-900 mb-4">Support</h3>
             <ul className="space-y-3">
               <li>
-                <Link
+                <a
                   href="/api/docs"
                   className="text-gray-600 hover:text-gray-900 transition-colors"
                 >
                   Documentation
-                </Link>
+                </a>
               </li>
               <li>
-                <Link
+                <a
                   href="/api/docs"
                   className="text-gray-600 hover:text-gray-900 transition-colors"
                 >
                   API Reference
-                </Link>
+                </a>
               </li>
               <li>
                 <a
