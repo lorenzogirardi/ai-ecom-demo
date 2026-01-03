@@ -14,20 +14,59 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
     <!-- Mermaid -->
-    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <script>
-        mermaid.initialize({
-            startOnLoad: true,
-            theme: 'dark',
-            themeVariables: {
-                primaryColor: '#58a6ff',
-                primaryTextColor: '#e6edf3',
-                primaryBorderColor: '#30363d',
-                lineColor: '#8b949e',
-                secondaryColor: '#161b22',
-                tertiaryColor: '#21262d',
-                background: '#0d1117'
-            }
+        document.addEventListener('DOMContentLoaded', function() {
+            // Convert code blocks to mermaid divs
+            document.querySelectorAll('pre code.language-mermaid, pre > code').forEach(function(codeBlock) {
+                const content = codeBlock.textContent;
+                if (content.trim().startsWith('flowchart') ||
+                    content.trim().startsWith('graph') ||
+                    content.trim().startsWith('sequenceDiagram') ||
+                    content.trim().startsWith('classDiagram') ||
+                    content.trim().startsWith('stateDiagram') ||
+                    content.trim().startsWith('erDiagram') ||
+                    content.trim().startsWith('journey') ||
+                    content.trim().startsWith('gantt') ||
+                    content.trim().startsWith('pie') ||
+                    content.trim().startsWith('mindmap') ||
+                    content.trim().startsWith('timeline') ||
+                    content.trim().startsWith('gitGraph') ||
+                    content.trim().startsWith('C4') ||
+                    content.trim().startsWith('subgraph')) {
+                    const pre = codeBlock.parentElement;
+                    const div = document.createElement('div');
+                    div.className = 'mermaid';
+                    div.textContent = content;
+                    pre.parentNode.replaceChild(div, pre);
+                }
+            });
+
+            // Initialize mermaid
+            mermaid.initialize({
+                startOnLoad: true,
+                theme: 'dark',
+                themeVariables: {
+                    primaryColor: '#58a6ff',
+                    primaryTextColor: '#e6edf3',
+                    primaryBorderColor: '#30363d',
+                    lineColor: '#8b949e',
+                    secondaryColor: '#161b22',
+                    tertiaryColor: '#21262d',
+                    background: '#0d1117',
+                    fontFamily: 'Inter, sans-serif'
+                },
+                flowchart: {
+                    useMaxWidth: true,
+                    htmlLabels: true
+                },
+                sequence: {
+                    useMaxWidth: true
+                }
+            });
+
+            // Re-run mermaid
+            mermaid.run();
         });
     </script>
 
