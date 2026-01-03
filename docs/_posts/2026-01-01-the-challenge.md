@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "The Challenge: 70 Developers and the Cost of Fragmentation"
+title: "The Challenge: When More Developers Means Slower Delivery"
 date: 2026-01-01
 category: Architecture
 reading_time: 5
@@ -13,9 +13,9 @@ takeaway: "A single developer with AI can produce what a team of 5-8 would, but 
 
 In enterprise software development, there's a paradox: **more developers often means slower delivery**.
 
-Consider a typical scenario:
-- **70 developers** across multiple teams
-- **65% contractors** with varying commitment levels
+It's a pattern many of us have seen:
+- **Large teams** spread across multiple squads
+- **Mixed commitment levels** between full-time and external resources
 - **Team silos** with limited cross-communication
 - **Unclear ownership** leading to "infrastructure workarounds"
 
