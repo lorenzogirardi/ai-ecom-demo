@@ -5,30 +5,142 @@ permalink: /blog/
 ---
 
 <div class="container">
-    <h1 style="margin-bottom: var(--spacing-xl);">Blog</h1>
-    <p style="color: var(--text-secondary); margin-bottom: var(--spacing-2xl);">
-        10 days of building a production e-commerce platform with AI.
-        Each post covers a different aspect: architecture, development, infrastructure, performance, security, and operations.
+    <h1>The 10-Day Journey</h1>
+    <p class="blog-intro">
+        Follow the complete story of building a production e-commerce platform with AI assistance.
+        <strong>Read in order from Day 1 to Day 10</strong> for the full experience.
     </p>
 
-    <section class="post-list">
-        {% for post in site.posts %}
-        <article class="post-card">
-            <div class="post-card-meta">
-                <span class="post-category {{ post.category | downcase }}">{{ post.category }}</span>
-                <span class="post-date">{{ post.date | date: "%B %d, %Y" }}</span>
-                <span class="post-reading-time">{{ post.reading_time | default: "5" }} min read</span>
+    <div class="journey-timeline">
+        {% assign sorted_posts = site.posts | sort: "date" %}
+        {% for post in sorted_posts %}
+        <article class="timeline-item">
+            <div class="timeline-marker">
+                <span class="day-number">{{ forloop.index }}</span>
             </div>
-            <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
-            <p class="post-excerpt">{{ post.excerpt | strip_html | truncate: 250 }}</p>
-            <a href="{{ post.url | relative_url }}" class="read-more">Read more &rarr;</a>
+            <div class="timeline-content">
+                <div class="post-card-meta">
+                    <span class="post-category {{ post.category | downcase }}">{{ post.category }}</span>
+                    <span class="post-reading-time">{{ post.reading_time | default: "5" }} min</span>
+                </div>
+                <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+                <p class="post-excerpt">{{ post.excerpt | strip_html | truncate: 200 }}</p>
+                <a href="{{ post.url | relative_url }}" class="read-more">Read article &rarr;</a>
+            </div>
         </article>
         {% endfor %}
-
-        {% if site.posts.size == 0 %}
-        <p style="text-align: center; color: var(--text-muted); padding: var(--spacing-2xl);">
-            Blog posts coming soon. Check back later!
-        </p>
-        {% endif %}
-    </section>
+    </div>
 </div>
+
+<style>
+.blog-intro {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.journey-timeline {
+    position: relative;
+    padding-left: 60px;
+}
+
+.journey-timeline::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--accent-color), var(--accent-hover));
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.timeline-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -60px;
+    width: 40px;
+    height: 40px;
+    background: var(--accent-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.day-number {
+    color: white;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.timeline-content {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.timeline-content h2 {
+    margin: 0.5rem 0;
+    font-size: 1.3rem;
+}
+
+.timeline-content h2 a {
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+.timeline-content h2 a:hover {
+    color: var(--accent-color);
+}
+
+.timeline-content .post-excerpt {
+    color: var(--text-secondary);
+    margin: 0.75rem 0;
+    font-size: 0.95rem;
+}
+
+.timeline-content .read-more {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.timeline-content .read-more:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+    .journey-timeline {
+        padding-left: 50px;
+    }
+
+    .journey-timeline::before {
+        left: 15px;
+    }
+
+    .timeline-marker {
+        left: -50px;
+        width: 30px;
+        height: 30px;
+    }
+
+    .day-number {
+        font-size: 0.85rem;
+    }
+}
+</style>
