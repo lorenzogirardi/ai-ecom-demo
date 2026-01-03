@@ -15,10 +15,10 @@ on:
       namespace:
         description: 'Kubernetes namespace'
         required: true
-        default: 'default'
+        default: 'ecommerce'
         type: choice
         options:
-          - default
+          - ecommerce
 
 env:
   AWS_REGION: us-east-1
