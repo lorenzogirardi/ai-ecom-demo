@@ -1,0 +1,82 @@
+---
+layout: default
+title: Home
+---
+
+<div class="container">
+    <section class="hero">
+        <h1>E-commerce Demo Documentation</h1>
+        <p class="hero-subtitle">
+            Complete technical documentation for the AI-Augmented E-commerce Platform.
+            <strong>10 days from zero to production</strong> with Claude Code.
+        </p>
+    </section>
+
+    <div class="category-grid">
+        <a href="{{ '/sessions/' | relative_url }}" class="category-card sessions">
+            <h3>Session Recaps</h3>
+            <p>Day-by-day development journey with Claude Code. What was built, metrics, and lessons learned.</p>
+            <span class="category-count">10 documents</span>
+        </a>
+        <a href="{{ '/architecture/' | relative_url }}" class="category-card architecture">
+            <h3>Architecture</h3>
+            <p>System architecture diagrams: C4 model, AWS infrastructure, CI/CD pipelines, security.</p>
+            <span class="category-count">7 documents</span>
+        </a>
+        <a href="{{ '/technical/' | relative_url }}" class="category-card technical">
+            <h3>Technical Docs</h3>
+            <p>Deep dives: CVE analysis, K8s upgrades, autoscaling, observability, multi-team setup.</p>
+            <span class="category-count">8 documents</span>
+        </a>
+    </div>
+
+    <section class="quick-links">
+        <h2>Quick Access</h2>
+        <div class="links-grid">
+            <div class="link-group">
+                <h4>By Role</h4>
+                <ul>
+                    <li><strong>Developer</strong>: <a href="{{ '/architecture/sequence-diagrams/' | relative_url }}">Sequence Diagrams</a>, Sessions 1-3</li>
+                    <li><strong>DevOps/SRE</strong>: <a href="{{ '/architecture/github-pipelines/' | relative_url }}">CI/CD Pipelines</a>, <a href="{{ '/architecture/aws-architecture/' | relative_url }}">AWS Architecture</a></li>
+                    <li><strong>Security</strong>: <a href="{{ '/technical/cve-analysis/' | relative_url }}">CVE Analysis</a>, <a href="{{ '/architecture/security-architecture/' | relative_url }}">Security Architecture</a></li>
+                    <li><strong>Architect</strong>: <a href="{{ '/architecture/enterprise-architecture/' | relative_url }}">Enterprise Architecture</a></li>
+                </ul>
+            </div>
+            <div class="link-group">
+                <h4>By Topic</h4>
+                <ul>
+                    <li><strong>How the app works</strong>: <a href="{{ '/architecture/sequence-diagrams/' | relative_url }}">Sequence Diagrams</a></li>
+                    <li><strong>How to deploy</strong>: <a href="{{ '/architecture/github-pipelines/' | relative_url }}">GitHub Pipelines</a></li>
+                    <li><strong>How to scale</strong>: <a href="{{ '/technical/cluster-autoscaler/' | relative_url }}">Cluster Autoscaler</a></li>
+                    <li><strong>Observability</strong>: <a href="{{ '/technical/observability-analysis/' | relative_url }}">X-Ray & Metrics Analysis</a></li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats-section">
+        <h2>Documentation Stats</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Unique Documents</td>
+                    <td>25</td>
+                </tr>
+                <tr>
+                    <td>Mermaid Diagrams</td>
+                    <td>~66</td>
+                </tr>
+                <tr>
+                    <td>Sessions Documented</td>
+                    <td>10</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+</div>

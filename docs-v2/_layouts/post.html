@@ -1,0 +1,60 @@
+---
+layout: default
+---
+<article class="post">
+    <div class="container">
+        <header class="post-header">
+            <div class="post-meta">
+                <a href="{{ '/' | append: page.category | append: '/' | relative_url }}" class="post-category {{ page.category }}">{{ page.category | capitalize }}</a>
+                {% if page.session %}
+                <span class="session-badge">Session {{ page.session }}</span>
+                {% endif %}
+                <span class="post-reading-time">{{ page.reading_time | default: "10" }} min read</span>
+            </div>
+            <h1 class="post-title">{{ page.title }}</h1>
+            {% if page.subtitle %}
+            <p class="post-subtitle">{{ page.subtitle }}</p>
+            {% endif %}
+        </header>
+
+        <div class="post-content">
+            {{ content }}
+        </div>
+
+        <footer class="post-footer">
+            {% if page.tags %}
+            <div class="post-tags">
+                {% for tag in page.tags %}
+                <span class="tag">{{ tag }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <nav class="post-navigation">
+                {% assign sorted_posts = site.posts | where: "category", page.category | sort: "order" %}
+                {% assign current_index = nil %}
+                {% for p in sorted_posts %}
+                    {% if p.url == page.url %}
+                        {% assign current_index = forloop.index0 %}
+                    {% endif %}
+                {% endfor %}
+                {% if current_index %}
+                    {% assign prev_index = current_index | minus: 1 %}
+                    {% assign next_index = current_index | plus: 1 %}
+                    {% if prev_index >= 0 %}
+                        {% assign prev_post = sorted_posts[prev_index] %}
+                        <a href="{{ prev_post.url | relative_url }}" class="prev-post">
+                            &larr; {{ prev_post.title | truncate: 40 }}
+                        </a>
+                    {% endif %}
+                    {% if next_index < sorted_posts.size %}
+                        {% assign next_post = sorted_posts[next_index] %}
+                        <a href="{{ next_post.url | relative_url }}" class="next-post">
+                            {{ next_post.title | truncate: 40 }} &rarr;
+                        </a>
+                    {% endif %}
+                {% endif %}
+            </nav>
+        </footer>
+    </div>
+</article>

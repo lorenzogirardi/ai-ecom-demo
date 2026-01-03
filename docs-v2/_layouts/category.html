@@ -1,0 +1,33 @@
+---
+layout: default
+---
+<div class="container">
+    <header class="category-header">
+        <span class="category-badge {{ page.category_id }}">{{ page.title }}</span>
+        <p class="category-description">{{ page.description }}</p>
+    </header>
+
+    <div class="post-list">
+        {% assign category_posts = site.posts | where: "category", page.category_id | sort: "order" %}
+        {% for post in category_posts %}
+        <article class="post-card">
+            <div class="post-card-meta">
+                {% if post.session %}
+                <span class="session-number">{{ post.session }}</span>
+                {% endif %}
+                <span class="post-reading-time">{{ post.reading_time | default: "10" }} min</span>
+            </div>
+            <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+            <p class="post-excerpt">{{ post.excerpt | strip_html | truncate: 180 }}</p>
+            {% if post.highlights %}
+            <ul class="post-highlights">
+                {% for h in post.highlights limit:3 %}
+                <li>{{ h }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            <a href="{{ post.url | relative_url }}" class="read-more">Read documentation &rarr;</a>
+        </article>
+        {% endfor %}
+    </div>
+</div>
