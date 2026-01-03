@@ -579,6 +579,13 @@ kubectl port-forward svc/argocd-server -n argocd 8080:80
 
 ---
 
+## Screenshots
+
+### ArgoCD Deploy Workflow
+![ArgoCD Deploy](https://res.cloudinary.com/ethzero/image/upload/ai/ai-ecom-demo/github-action-argo.png)
+
+---
+
 ## Video
 
 ### Full Session Recording

@@ -621,6 +621,18 @@ jobs:
 
 ---
 
+## Screenshots
+
+### OWASP ZAP Security Scan Workflow
+![ZAP Security Scan](https://res.cloudinary.com/ethzero/image/upload/ai/ai-ecom-demo/github-action-zap.png)
+
+### CloudFront Cache Invalidation
+![CloudFront Invalidation](https://res.cloudinary.com/ethzero/image/upload/ai/ai-ecom-demo/github-action-cloudfront-001.png)
+
+![CloudFront Invalidation Result](https://res.cloudinary.com/ethzero/image/upload/ai/ai-ecom-demo/github-action-cloudfront-002.png)
+
+---
+
 ## Session Statistics
 
 | Metric | Value |

@@ -324,6 +324,8 @@ gh run watch $(gh run list --workflow=load-test.yml --limit=1 --json databaseId 
 ### GitHub Actions Load Test Pipeline
 ![GitHub Pipeline Load Test](https://res.cloudinary.com/ethzero/image/upload/v1767097163/ai/ai-ecom-demo/github-pipeline-loadtest-001.png)
 
+![Load Test Workflow](https://res.cloudinary.com/ethzero/image/upload/ai/ai-ecom-demo/github-action-loadtest.png)
+
 ### Load Test Results
 ![Load Test Pipeline Result](https://res.cloudinary.com/ethzero/image/upload/v1767097164/ai/ai-ecom-demo/loadtest-pipeline-result-001.png)
 

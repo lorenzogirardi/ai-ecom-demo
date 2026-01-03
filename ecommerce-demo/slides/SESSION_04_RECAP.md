@@ -684,6 +684,13 @@ kubectl apply --dry-run=client -f ecommerce-demo/argocd/
 ### GitHub Actions Workflow
 ![Add GitHub Action Workflow](https://res.cloudinary.com/ethzero/image/upload/v1767094810/ai/ai-ecom-demo/add-github-action-workflow-001.png)
 
+### CI/CD Pipelines
+![Backend CI](https://res.cloudinary.com/ethzero/image/upload/ai/ai-ecom-demo/github-action-be.png)
+
+![Frontend CI](https://res.cloudinary.com/ethzero/image/upload/ai/ai-ecom-demo/github-action-fe.png)
+
+![Infrastructure CI](https://res.cloudinary.com/ethzero/image/upload/ai/ai-ecom-demo/github-action-infra.png)
+
 ---
 
 *Generato con Claude Code - Sessione del 27 Dicembre 2024*
