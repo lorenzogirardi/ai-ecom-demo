@@ -1,0 +1,54 @@
+---
+layout: default
+title: Home
+---
+
+<div class="container">
+    <section class="hero">
+        <h1>AI-Augmented Development</h1>
+        <p class="hero-subtitle">
+            How one developer built a production-ready e-commerce platform in 10 days using Claude Code.
+            Not a replacement for developers, but a 10x multiplier.
+        </p>
+        <div class="hero-stats">
+            <div class="stat-item">
+                <span class="stat-number">10</span>
+                <span class="stat-label">Days</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">508</span>
+                <span class="stat-label">RPS Peak</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">206</span>
+                <span class="stat-label">Tests</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">96</span>
+                <span class="stat-label">Terraform Resources</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="post-list">
+        <h2 style="margin-top: 0;">Latest Posts</h2>
+
+        {% for post in site.posts %}
+        <article class="post-card">
+            <div class="post-card-meta">
+                <span class="post-category {{ post.category | downcase }}">{{ post.category }}</span>
+                <span class="post-date">{{ post.date | date: "%B %d, %Y" }}</span>
+            </div>
+            <h2><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+            <p class="post-excerpt">{{ post.excerpt | strip_html | truncate: 200 }}</p>
+            <a href="{{ post.url | relative_url }}" class="read-more">Read more &rarr;</a>
+        </article>
+        {% endfor %}
+
+        {% if site.posts.size == 0 %}
+        <p style="text-align: center; color: var(--text-muted);">
+            Blog posts coming soon. Check back later!
+        </p>
+        {% endif %}
+    </section>
+</div>
