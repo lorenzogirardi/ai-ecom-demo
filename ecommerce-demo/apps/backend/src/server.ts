@@ -154,6 +154,11 @@ async function buildServer() {
         deepLinking: true,
       },
     });
+
+    // Redirect /api/docs to /api/docs/ for correct relative path resolution
+    app.get("/api/docs", async (_, reply) => {
+      return reply.redirect("/api/docs/");
+    });
   }
 
   // Error handler
