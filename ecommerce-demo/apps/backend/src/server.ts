@@ -31,6 +31,7 @@ async function buildServer() {
   const app = Fastify({
     logger: logger as any,
     trustProxy: true,
+    bodyLimit: 1048576, // 1MB max request body size (DoS protection)
   });
 
   // CORS - supports multiple origins and wildcards (*.domain.com)
@@ -67,7 +68,27 @@ async function buildServer() {
   });
 
   await app.register(helmet, {
-    contentSecurityPolicy: false,
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "https:", "data:"],
+        connectSrc: ["'self'"],
+        fontSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        frameSrc: ["'none'"],
+        baseUri: ["'self'"],
+        formAction: ["'self'"],
+        frameAncestors: ["'none'"],
+      },
+    },
+    // Strict Transport Security
+    hsts: {
+      maxAge: 31536000, // 1 year
+      includeSubDomains: true,
+      preload: true,
+    },
   });
 
   if (config.rateLimit.enabled) {
@@ -117,7 +138,7 @@ async function buildServer() {
     });
 
     await app.register(swaggerUi, {
-      routePrefix: "/docs",
+      routePrefix: "/api/docs",
       uiConfig: {
         docExpansion: "list",
         deepLinking: true,

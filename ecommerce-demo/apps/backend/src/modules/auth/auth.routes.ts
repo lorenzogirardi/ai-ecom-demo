@@ -5,12 +5,41 @@ import { prisma } from "../../utils/prisma.js";
 import { config } from "../../config/index.js";
 import { authGuard } from "../../middleware/auth-guard.js";
 import { cache, cacheKeys } from "../../utils/redis.js";
+import { logger } from "../../utils/logger.js";
 import {
   BadRequestError,
   ConflictError,
   NotFoundError,
   UnauthorizedError,
 } from "../../middleware/error-handler.js";
+
+// Security: Rate limit configurations for auth endpoints
+// Supports bypass via X-Load-Test-Bypass header for k6 load testing
+const loginRateLimitConfig = {
+  config: {
+    rateLimit: {
+      max: 5,
+      timeWindow: "15 minutes",
+      allowList: (request: FastifyRequest) => {
+        const bypassHeader = request.headers["x-load-test-bypass"];
+        return bypassHeader === config.rateLimit.bypassToken;
+      },
+    },
+  },
+};
+
+const registerRateLimitConfig = {
+  config: {
+    rateLimit: {
+      max: 3,
+      timeWindow: "1 hour",
+      allowList: (request: FastifyRequest) => {
+        const bypassHeader = request.headers["x-load-test-bypass"];
+        return bypassHeader === config.rateLimit.bypassToken;
+      },
+    },
+  },
+};
 
 // Schemas
 const registerSchema = z.object({
@@ -37,9 +66,10 @@ const changePasswordSchema = z.object({
 });
 
 export async function authRoutes(app: FastifyInstance): Promise<void> {
-  // Register
+  // Register (rate limited: 3 per hour)
   app.post(
     "/register",
+    registerRateLimitConfig,
     async (request: FastifyRequest, reply: FastifyReply) => {
       const body = registerSchema.parse(request.body);
 
@@ -49,6 +79,16 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
       });
 
       if (existingUser) {
+        // Security: Log registration attempt with existing email
+        logger.warn(
+          {
+            event: "register_conflict",
+            email: body.email,
+            ip: request.ip,
+            timestamp: new Date().toISOString(),
+          },
+          "Security: Registration attempted with existing email",
+        );
         throw new ConflictError("User with this email already exists");
       }
 
@@ -76,6 +116,18 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
         },
       });
 
+      // Security: Log successful registration
+      logger.info(
+        {
+          event: "register_success",
+          userId: user.id,
+          email: user.email,
+          ip: request.ip,
+          timestamp: new Date().toISOString(),
+        },
+        "Security: User registered successfully",
+      );
+
       // Generate token
       const token = app.jwt.sign({
         sub: user.id,
@@ -92,50 +144,104 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
     },
   );
 
-  // Login
-  app.post("/login", async (request: FastifyRequest, reply: FastifyReply) => {
-    const body = loginSchema.parse(request.body);
+  // Login (rate limited: 5 per 15 minutes)
+  app.post(
+    "/login",
+    loginRateLimitConfig,
+    async (request: FastifyRequest, reply: FastifyReply) => {
+      const body = loginSchema.parse(request.body);
 
-    // Find user
-    const user = await prisma.user.findUnique({
-      where: { email: body.email },
-    });
+      // Find user
+      const user = await prisma.user.findUnique({
+        where: { email: body.email },
+      });
 
-    if (!user) {
-      throw new UnauthorizedError("Invalid email or password");
-    }
+      if (!user) {
+        // Security: Log failed login - user not found
+        logger.warn(
+          {
+            event: "login_failed",
+            reason: "user_not_found",
+            email: body.email,
+            ip: request.ip,
+            timestamp: new Date().toISOString(),
+          },
+          "Security: Login failed - user not found",
+        );
+        throw new UnauthorizedError("Invalid email or password");
+      }
 
-    if (!user.isActive) {
-      throw new UnauthorizedError("Account is disabled");
-    }
+      if (!user.isActive) {
+        // Security: Log failed login - account disabled
+        logger.warn(
+          {
+            event: "login_failed",
+            reason: "account_disabled",
+            userId: user.id,
+            email: body.email,
+            ip: request.ip,
+            timestamp: new Date().toISOString(),
+          },
+          "Security: Login failed - account disabled",
+        );
+        throw new UnauthorizedError("Account is disabled");
+      }
 
-    // Verify password
-    const isValidPassword = await bcrypt.compare(body.password, user.password);
+      // Verify password
+      const isValidPassword = await bcrypt.compare(
+        body.password,
+        user.password,
+      );
 
-    if (!isValidPassword) {
-      throw new UnauthorizedError("Invalid email or password");
-    }
+      if (!isValidPassword) {
+        // Security: Log failed login - invalid password
+        logger.warn(
+          {
+            event: "login_failed",
+            reason: "invalid_password",
+            userId: user.id,
+            email: body.email,
+            ip: request.ip,
+            timestamp: new Date().toISOString(),
+          },
+          "Security: Login failed - invalid password",
+        );
+        throw new UnauthorizedError("Invalid email or password");
+      }
 
-    // Generate token
-    const token = app.jwt.sign({
-      sub: user.id,
-      role: user.role,
-    });
-
-    return reply.send({
-      success: true,
-      data: {
-        user: {
-          id: user.id,
+      // Security: Log successful login
+      logger.info(
+        {
+          event: "login_success",
+          userId: user.id,
           email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          role: user.role,
+          ip: request.ip,
+          timestamp: new Date().toISOString(),
         },
-        token,
-      },
-    });
-  });
+        "Security: Login successful",
+      );
+
+      // Generate token
+      const token = app.jwt.sign({
+        sub: user.id,
+        role: user.role,
+      });
+
+      return reply.send({
+        success: true,
+        data: {
+          user: {
+            id: user.id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            role: user.role,
+          },
+          token,
+        },
+      });
+    },
+  );
 
   // Get current user profile (cached for performance)
   app.get(
@@ -255,6 +361,17 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
       );
 
       if (!isValidPassword) {
+        // Security: Log failed password change attempt
+        logger.warn(
+          {
+            event: "password_change_failed",
+            reason: "invalid_current_password",
+            userId: request.userId,
+            ip: request.ip,
+            timestamp: new Date().toISOString(),
+          },
+          "Security: Password change failed - invalid current password",
+        );
         throw new BadRequestError("Current password is incorrect");
       }
 
@@ -268,6 +385,17 @@ export async function authRoutes(app: FastifyInstance): Promise<void> {
         where: { id: request.userId },
         data: { password: hashedPassword },
       });
+
+      // Security: Log successful password change
+      logger.info(
+        {
+          event: "password_change_success",
+          userId: request.userId,
+          ip: request.ip,
+          timestamp: new Date().toISOString(),
+        },
+        "Security: Password changed successfully",
+      );
 
       return reply.send({
         success: true,

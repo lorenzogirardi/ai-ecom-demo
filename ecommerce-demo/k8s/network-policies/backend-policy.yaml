@@ -1,0 +1,71 @@
+# Backend Network Policy
+# Allows:
+# - Ingress: from frontend pods and ALB health checks
+# - Egress: to DNS, RDS, Redis, X-Ray daemon, CloudWatch
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: backend-network-policy
+  namespace: ecommerce
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: backend
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow from frontend pods
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: frontend
+      ports:
+        - protocol: TCP
+          port: 4000
+    # Allow from any pod for health checks (ALB via kube-proxy)
+    - from: []
+      ports:
+        - protocol: TCP
+          port: 4000
+  egress:
+    # Allow DNS resolution (CoreDNS)
+    - to:
+        - namespaceSelector: {}
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # Allow RDS PostgreSQL (VPC CIDR)
+    - to:
+        - ipBlock:
+            cidr: 10.0.0.0/16
+      ports:
+        - protocol: TCP
+          port: 5432
+    # Allow ElastiCache Redis (VPC CIDR)
+    - to:
+        - ipBlock:
+            cidr: 10.0.0.0/16
+      ports:
+        - protocol: TCP
+          port: 6379
+    # Allow X-Ray daemon (UDP)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: xray-daemon
+      ports:
+        - protocol: UDP
+          port: 2000
+    # Allow AWS APIs (HTTPS) for X-Ray, CloudWatch, Secrets Manager
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+      ports:
+        - protocol: TCP
+          port: 443

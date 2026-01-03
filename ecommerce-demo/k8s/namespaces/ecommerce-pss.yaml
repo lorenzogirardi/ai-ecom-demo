@@ -1,0 +1,29 @@
+# Pod Security Standards for ecommerce namespace
+# Using "restricted" profile with audit/warn first for safe rollout
+# To enforce: change audit/warn to enforce
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ecommerce
+  labels:
+    # Pod Security Standards (PSS) - Kubernetes 1.25+
+    # https://kubernetes.io/docs/concepts/security/pod-security-standards/
+    #
+    # Levels: privileged < baseline < restricted
+    # - privileged: unrestricted (default if no label)
+    # - baseline: prevents known privilege escalations
+    # - restricted: heavily restricted, follows security best practices
+    #
+    # Modes:
+    # - enforce: reject pods that violate the policy
+    # - audit: log violations to audit log
+    # - warn: show warnings to users
+    #
+    # Using audit+warn initially for safe rollout
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/audit-version: latest
+    pod-security.kubernetes.io/warn: restricted
+    pod-security.kubernetes.io/warn-version: latest
+    # Uncomment to enforce (after verifying no violations):
+    # pod-security.kubernetes.io/enforce: restricted
+    # pod-security.kubernetes.io/enforce-version: latest
