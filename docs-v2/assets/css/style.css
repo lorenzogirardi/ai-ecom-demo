@@ -464,6 +464,26 @@ a:hover {
     margin: var(--spacing-2xl) 0;
 }
 
+/* Images - constrained size for readability */
+.post-content img {
+    max-width: 100%;
+    max-height: 400px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 8px;
+    margin: var(--spacing-lg) 0;
+    display: block;
+    border: 1px solid var(--border-color);
+}
+
+/* Images in tables - smaller */
+.post-content table img {
+    max-width: 280px;
+    max-height: 180px;
+    margin: var(--spacing-xs) 0;
+}
+
 /* Mermaid diagrams */
 .mermaid {
     background: var(--bg-secondary);
