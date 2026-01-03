@@ -37,7 +37,7 @@ jobs:
         run: |
           aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
 
-      - name: Check Redis Status
+      - name: Check Redis via Catalog API
         run: |
           echo "## 🔴 Redis Status" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -45,47 +45,45 @@ jobs:
           echo "**Timestamp:** $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
-          # Check cache metrics endpoint
-          echo "### Cache Metrics" >> $GITHUB_STEP_SUMMARY
+          # Test catalog API (uses Redis cache)
+          echo "### Catalog API Test (Redis Cached)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo '```json' >> $GITHUB_STEP_SUMMARY
-          curl -s "${{ env.CLOUDFRONT_URL }}/api/metrics/cache" | jq . >> $GITHUB_STEP_SUMMARY 2>/dev/null || echo "Metrics endpoint not available" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
 
-          # Get backend pod for additional checks
+          # First request (may be cache miss)
+          START1=$(date +%s%N)
+          RESP1=$(curl -s -o /dev/null -w "%{http_code}" "${{ env.CLOUDFRONT_URL }}/api/catalog/products?limit=5")
+          END1=$(date +%s%N)
+          TIME1=$(( (END1 - START1) / 1000000 ))
+
+          # Second request (should be cache hit)
+          START2=$(date +%s%N)
+          RESP2=$(curl -s -o /dev/null -w "%{http_code}" "${{ env.CLOUDFRONT_URL }}/api/catalog/products?limit=5")
+          END2=$(date +%s%N)
+          TIME2=$(( (END2 - START2) / 1000000 ))
+
+          echo "| Request | Status | Response Time |" >> $GITHUB_STEP_SUMMARY
+          echo "|---------|--------|---------------|" >> $GITHUB_STEP_SUMMARY
+          echo "| First (potential miss) | $RESP1 | ${TIME1}ms |" >> $GITHUB_STEP_SUMMARY
+          echo "| Second (cache hit) | $RESP2 | ${TIME2}ms |" >> $GITHUB_STEP_SUMMARY
+
+          if [ "$TIME2" -lt "$TIME1" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### ✅ Cache Working (2nd request faster)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### ℹ️ Cache Status: Check Logs Below" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Check Redis Logs
+        run: |
           POD=$(kubectl get pods -n ${{ inputs.namespace }} -l app.kubernetes.io/name=backend -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
 
           if [ -n "$POD" ]; then
             echo "" >> $GITHUB_STEP_SUMMARY
-            echo "### Backend Pod Redis Logs (last 20 lines with 'redis')" >> $GITHUB_STEP_SUMMARY
+            echo "### Backend Pod: \`$POD\`" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### Redis Connection Logs (last 30 lines)" >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
-            kubectl logs $POD -n ${{ inputs.namespace }} --tail=500 2>/dev/null | grep -i redis | tail -20 >> $GITHUB_STEP_SUMMARY || echo "No Redis-related logs found" >> $GITHUB_STEP_SUMMARY
+            kubectl logs $POD -n ${{ inputs.namespace }} --tail=1000 2>/dev/null | grep -iE "(redis|cache|elasticache)" | tail -30 >> $GITHUB_STEP_SUMMARY || echo "No Redis-related logs found" >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
-          fi
-
-      - name: Cache Hit Rate Analysis
-        run: |
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Cache Performance" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-          METRICS=$(curl -s "${{ env.CLOUDFRONT_URL }}/api/metrics/cache" 2>/dev/null)
-
-          if [ -n "$METRICS" ]; then
-            HITS=$(echo "$METRICS" | jq -r '.hits // 0')
-            MISSES=$(echo "$METRICS" | jq -r '.misses // 0')
-            TOTAL=$((HITS + MISSES))
-
-            if [ "$TOTAL" -gt 0 ]; then
-              HIT_RATE=$(echo "scale=2; $HITS * 100 / $TOTAL" | bc)
-              echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
-              echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
-              echo "| Hits | $HITS |" >> $GITHUB_STEP_SUMMARY
-              echo "| Misses | $MISSES |" >> $GITHUB_STEP_SUMMARY
-              echo "| Hit Rate | ${HIT_RATE}% |" >> $GITHUB_STEP_SUMMARY
-            else
-              echo "No cache activity recorded yet." >> $GITHUB_STEP_SUMMARY
-            fi
-          else
-            echo "Unable to fetch cache metrics." >> $GITHUB_STEP_SUMMARY
           fi

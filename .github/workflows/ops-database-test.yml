@@ -59,8 +59,8 @@ jobs:
           echo "### Connection Status" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
-          # Execute a simple query via the backend pod
-          RESULT=$(kubectl exec $POD -n ${{ inputs.namespace }} -- sh -c 'wget -qO- http://localhost:4000/health 2>/dev/null' || echo '{"error": "connection failed"}')
+          # Execute health check via node fetch (container has no curl/wget)
+          RESULT=$(kubectl exec $POD -n ${{ inputs.namespace }} -- node -e "fetch('http://localhost:4000/health').then(r=>r.json()).then(d=>console.log(JSON.stringify(d))).catch(e=>console.log(JSON.stringify({error:e.message})))" 2>/dev/null || echo '{"error": "connection failed"}')
 
           echo '```json' >> $GITHUB_STEP_SUMMARY
           echo "$RESULT" | jq . 2>/dev/null || echo "$RESULT" >> $GITHUB_STEP_SUMMARY
