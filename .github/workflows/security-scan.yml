@@ -40,12 +40,12 @@ jobs:
       - name: Verify target is accessible
         run: |
           echo "Checking target: ${{ inputs.target_url }}"
-          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${{ inputs.target_url }}/api/health" || echo "000")
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${{ inputs.target_url }}" || echo "000")
           if [ "$HTTP_STATUS" != "200" ]; then
-            echo "Warning: Target health check returned HTTP $HTTP_STATUS"
-            echo "Proceeding with scan anyway..."
+            echo "::error::Target not accessible (HTTP $HTTP_STATUS)"
+            exit 1
           else
-            echo "Target is healthy (HTTP 200)"
+            echo "Target is accessible (HTTP 200)"
           fi
 
       - name: Create ZAP rules file
