@@ -1,0 +1,151 @@
+# OWASP ZAP Security Scan
+# Runs automated security scanning against the deployed application
+# Uses OWASP ZAP (Zed Attack Proxy) for dynamic application security testing (DAST)
+
+name: Security Scan (OWASP ZAP)
+
+on:
+  workflow_dispatch:
+    inputs:
+      scan_type:
+        description: 'Type of scan to run'
+        required: true
+        default: 'baseline'
+        type: choice
+        options:
+          - baseline
+          - api
+          - full
+      target_url:
+        description: 'Target URL to scan'
+        required: false
+        default: 'https://dls03qes9fc77.cloudfront.net'
+      openapi_url:
+        description: 'OpenAPI spec URL (for API scan)'
+        required: false
+        default: 'https://dls03qes9fc77.cloudfront.net/api/docs/json'
+
+jobs:
+  zap-scan:
+    name: OWASP ZAP ${{ inputs.scan_type }} Scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify target is accessible
+        run: |
+          echo "Checking target: ${{ inputs.target_url }}"
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${{ inputs.target_url }}" || echo "000")
+          if [ "$HTTP_STATUS" != "200" ]; then
+            echo "::error::Target not accessible (HTTP $HTTP_STATUS)"
+            exit 1
+          else
+            echo "Target is accessible (HTTP 200)"
+          fi
+
+      - name: Create ZAP rules file
+        run: |
+          mkdir -p ecommerce-demo/security/zap
+          cat > ecommerce-demo/security/zap/rules.tsv << 'EOF'
+10021	IGNORE	X-Content-Type-Options Header Missing
+10036	IGNORE	Server Leaks Version Information
+10055	IGNORE	CSP Wildcard Directive
+10096	IGNORE	Timestamp Disclosure
+10017	WARN	Cross-Domain JavaScript Source File Inclusion
+10020	WARN	X-Frame-Options Header Not Set
+10038	WARN	Content Security Policy Header Not Set
+10012	WARN	Password Autocomplete in Browser
+10015	WARN	Cache-control Header Missing
+EOF
+
+      - name: ZAP Baseline Scan
+        if: inputs.scan_type == 'baseline'
+        uses: zaproxy/action-baseline@v0.12.0
+        with:
+          target: ${{ inputs.target_url }}
+          rules_file_name: 'ecommerce-demo/security/zap/rules.tsv'
+          cmd_options: '-a -j -I'
+          allow_issue_writing: false
+          fail_action: false
+
+      - name: ZAP API Scan
+        if: inputs.scan_type == 'api'
+        uses: zaproxy/action-api-scan@v0.7.0
+        with:
+          target: ${{ inputs.openapi_url }}
+          rules_file_name: 'ecommerce-demo/security/zap/rules.tsv'
+          cmd_options: '-f openapi -I'
+          allow_issue_writing: false
+          fail_action: false
+
+      - name: ZAP Full Scan
+        if: inputs.scan_type == 'full'
+        uses: zaproxy/action-full-scan@v0.10.0
+        with:
+          target: ${{ inputs.target_url }}
+          rules_file_name: 'ecommerce-demo/security/zap/rules.tsv'
+          cmd_options: '-a -j -I'
+          allow_issue_writing: false
+          fail_action: false
+
+      - name: Organize reports
+        if: always()
+        run: |
+          mkdir -p ecommerce-demo/security/reports/zap
+          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+          SCAN_TYPE="${{ inputs.scan_type }}"
+
+          # ZAP actions output reports as {scan_type}-report.{ext}
+          for ext in html json md; do
+            # Try baseline-report, api-report, full-report patterns
+            if [ -f "${SCAN_TYPE}-report.${ext}" ]; then
+              mv "${SCAN_TYPE}-report.${ext}" "ecommerce-demo/security/reports/zap/zap-${SCAN_TYPE}-${TIMESTAMP}.${ext}"
+            # Also check generic report names
+            elif [ -f "report.${ext}" ]; then
+              mv "report.${ext}" "ecommerce-demo/security/reports/zap/zap-${SCAN_TYPE}-${TIMESTAMP}.${ext}"
+            fi
+          done
+
+          echo "Generated reports:"
+          ls -la ecommerce-demo/security/reports/zap/ || echo "No reports generated"
+
+      - name: Generate summary
+        if: always()
+        run: |
+          echo "## OWASP ZAP Security Scan Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Scan Type:** ${{ inputs.scan_type }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Target:** ${{ inputs.target_url }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Timestamp:** $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          REPORT_JSON=$(ls ecommerce-demo/security/reports/zap/zap-*.json 2>/dev/null | head -1)
+          if [ -f "$REPORT_JSON" ]; then
+            echo "### Alert Summary" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+
+            HIGH=$(jq '[.site[].alerts[] | select(.riskcode == "3")] | length' "$REPORT_JSON" 2>/dev/null || echo "0")
+            MEDIUM=$(jq '[.site[].alerts[] | select(.riskcode == "2")] | length' "$REPORT_JSON" 2>/dev/null || echo "0")
+            LOW=$(jq '[.site[].alerts[] | select(.riskcode == "1")] | length' "$REPORT_JSON" 2>/dev/null || echo "0")
+            INFO=$(jq '[.site[].alerts[] | select(.riskcode == "0")] | length' "$REPORT_JSON" 2>/dev/null || echo "0")
+
+            echo "| Risk Level | Count |" >> $GITHUB_STEP_SUMMARY
+            echo "|------------|-------|" >> $GITHUB_STEP_SUMMARY
+            echo "| High | $HIGH |" >> $GITHUB_STEP_SUMMARY
+            echo "| Medium | $MEDIUM |" >> $GITHUB_STEP_SUMMARY
+            echo "| Low | $LOW |" >> $GITHUB_STEP_SUMMARY
+            echo "| Informational | $INFO |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Upload ZAP reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: zap-reports-${{ inputs.scan_type }}-${{ github.run_number }}
+          path: ecommerce-demo/security/reports/zap/
+          retention-days: 30
