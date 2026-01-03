@@ -1,0 +1,88 @@
+name: "OPS: ArgoCD Sync"
+
+on:
+  workflow_dispatch:
+    inputs:
+      app:
+        description: 'Application to sync'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - backend
+          - frontend
+
+env:
+  AWS_REGION: us-east-1
+  EKS_CLUSTER_NAME: ecommerce-demo-demo-eks
+  ARGOCD_NAMESPACE: argocd
+
+jobs:
+  argocd-sync:
+    name: Sync ArgoCD Application
+    runs-on: ubuntu-latest
+    environment: production
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::170674040462:role/ecommerce-demo-github-actions
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure kubectl
+        run: |
+          aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+
+      - name: Get ArgoCD Status
+        run: |
+          echo "## 🔄 ArgoCD Sync" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Application:** \`${{ inputs.app }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Timestamp:** $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          echo "### Current Status" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          kubectl get applications -n ${{ env.ARGOCD_NAMESPACE }} >> $GITHUB_STEP_SUMMARY 2>/dev/null || echo "No ArgoCD applications found" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Trigger Sync
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Triggering Sync" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ inputs.app }}" == "all" ]; then
+            APPS="backend frontend"
+          else
+            APPS="${{ inputs.app }}"
+          fi
+
+          for APP in $APPS; do
+            echo "Syncing \`$APP\`..." >> $GITHUB_STEP_SUMMARY
+
+            # Patch the application to trigger a refresh
+            kubectl patch application $APP -n ${{ env.ARGOCD_NAMESPACE }} --type=merge -p '{"metadata":{"annotations":{"argocd.argoproj.io/refresh":"hard"}}}' 2>/dev/null || echo "Could not sync $APP" >> $GITHUB_STEP_SUMMARY
+
+            echo "" >> $GITHUB_STEP_SUMMARY
+          done
+
+      - name: Wait and Verify
+        run: |
+          echo "### Post-Sync Status" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          sleep 10
+
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          kubectl get applications -n ${{ env.ARGOCD_NAMESPACE }} >> $GITHUB_STEP_SUMMARY 2>/dev/null
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### ✅ Sync Triggered" >> $GITHUB_STEP_SUMMARY

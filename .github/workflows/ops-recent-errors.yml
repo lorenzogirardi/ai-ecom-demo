@@ -1,0 +1,85 @@
+name: "OPS: Recent Errors"
+
+on:
+  workflow_dispatch:
+    inputs:
+      app:
+        description: 'Application'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - backend
+          - frontend
+      namespace:
+        description: 'Kubernetes namespace'
+        required: true
+        default: 'ecommerce'
+        type: choice
+        options:
+          - ecommerce
+
+env:
+  AWS_REGION: us-east-1
+  EKS_CLUSTER_NAME: ecommerce-demo-demo-eks
+
+jobs:
+  recent-errors:
+    name: Get Recent Errors
+    runs-on: ubuntu-latest
+    environment: production
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::170674040462:role/ecommerce-demo-github-actions
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure kubectl
+        run: |
+          aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+
+      - name: Get Recent Errors
+        run: |
+          echo "## ❌ Recent Errors" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Namespace:** \`${{ inputs.namespace }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Application:** \`${{ inputs.app }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Timestamp:** $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ inputs.app }}" == "all" ]; then
+            PODS=$(kubectl get pods -n ${{ inputs.namespace }} -o jsonpath='{.items[*].metadata.name}')
+          else
+            PODS=$(kubectl get pods -n ${{ inputs.namespace }} -l app.kubernetes.io/name=${{ inputs.app }} -o jsonpath='{.items[*].metadata.name}')
+          fi
+
+          for POD in $PODS; do
+            echo "### Pod: \`$POD\`" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+
+            # Check for error logs
+            ERRORS=$(kubectl logs $POD -n ${{ inputs.namespace }} --tail=500 2>/dev/null | grep -iE "(error|exception|fatal|panic|failed)" | tail -20)
+
+            if [ -n "$ERRORS" ]; then
+              echo '```' >> $GITHUB_STEP_SUMMARY
+              echo "$ERRORS" >> $GITHUB_STEP_SUMMARY
+              echo '```' >> $GITHUB_STEP_SUMMARY
+            else
+              echo "✅ No recent errors found" >> $GITHUB_STEP_SUMMARY
+            fi
+            echo "" >> $GITHUB_STEP_SUMMARY
+          done
+
+      - name: Warning Events
+        run: |
+          echo "### Kubernetes Warning Events" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          kubectl get events -n ${{ inputs.namespace }} --field-selector type=Warning --sort-by='.lastTimestamp' 2>/dev/null | tail -15 >> $GITHUB_STEP_SUMMARY || echo "No warning events" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY

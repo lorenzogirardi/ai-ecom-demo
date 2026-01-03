@@ -1,0 +1,80 @@
+name: "OPS: Pod Restart"
+
+on:
+  workflow_dispatch:
+    inputs:
+      app:
+        description: 'Application to restart'
+        required: true
+        type: choice
+        options:
+          - backend
+          - frontend
+      namespace:
+        description: 'Kubernetes namespace'
+        required: true
+        default: 'ecommerce'
+        type: choice
+        options:
+          - ecommerce
+
+env:
+  AWS_REGION: us-east-1
+  EKS_CLUSTER_NAME: ecommerce-demo-demo-eks
+
+jobs:
+  pod-restart:
+    name: Restart Pods
+    runs-on: ubuntu-latest
+    environment: production
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::170674040462:role/ecommerce-demo-github-actions
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure kubectl
+        run: |
+          aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+
+      - name: Pre-Restart Status
+        run: |
+          echo "## 🔄 Pod Restart" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Application:** \`${{ inputs.app }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Namespace:** \`${{ inputs.namespace }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Timestamp:** $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          echo "### Before Restart" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          kubectl get pods -n ${{ inputs.namespace }} -l app.kubernetes.io/name=${{ inputs.app }} -o wide >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Rolling Restart
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Executing Rolling Restart..." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          kubectl rollout restart deployment/${{ inputs.app }} -n ${{ inputs.namespace }}
+
+          echo "Waiting for rollout to complete..." >> $GITHUB_STEP_SUMMARY
+          kubectl rollout status deployment/${{ inputs.app }} -n ${{ inputs.namespace }} --timeout=300s
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### ✅ Rollout Complete" >> $GITHUB_STEP_SUMMARY
+
+      - name: Post-Restart Status
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### After Restart" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          kubectl get pods -n ${{ inputs.namespace }} -l app.kubernetes.io/name=${{ inputs.app }} -o wide >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY

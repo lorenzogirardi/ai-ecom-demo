@@ -1,0 +1,94 @@
+name: "OPS: Clear App Cache"
+
+on:
+  workflow_dispatch:
+    inputs:
+      cache_type:
+        description: 'Cache to clear'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - products
+          - categories
+      namespace:
+        description: 'Kubernetes namespace'
+        required: true
+        default: 'ecommerce'
+        type: choice
+        options:
+          - ecommerce
+
+env:
+  AWS_REGION: us-east-1
+  EKS_CLUSTER_NAME: ecommerce-demo-demo-eks
+  CLOUDFRONT_URL: https://dls03qes9fc77.cloudfront.net
+
+jobs:
+  clear-cache:
+    name: Clear Application Cache
+    runs-on: ubuntu-latest
+    environment: production
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::170674040462:role/ecommerce-demo-github-actions
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure kubectl
+        run: |
+          aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+
+      - name: Clear Cache
+        run: |
+          echo "## 🗑️ Clear Application Cache" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Cache Type:** \`${{ inputs.cache_type }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Namespace:** \`${{ inputs.namespace }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Timestamp:** $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Get backend pod
+          POD=$(kubectl get pods -n ${{ inputs.namespace }} -l app.kubernetes.io/name=backend -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+
+          if [ -z "$POD" ]; then
+            echo "### ❌ No backend pods found" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+          echo "**Pod:** \`$POD\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Force cache refresh by restarting the backend pod
+          echo "### Triggering Cache Refresh" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Performing rolling restart to clear in-memory cache..." >> $GITHUB_STEP_SUMMARY
+
+          kubectl rollout restart deployment/backend -n ${{ inputs.namespace }}
+          kubectl rollout status deployment/backend -n ${{ inputs.namespace }} --timeout=300s
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### ✅ Cache Cleared Successfully" >> $GITHUB_STEP_SUMMARY
+
+      - name: Verify Cache
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Verification" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Test products endpoint
+          START=$(date +%s%N)
+          RESP=$(curl -s -o /dev/null -w "%{http_code}" "${{ env.CLOUDFRONT_URL }}/api/catalog/products?limit=5")
+          END=$(date +%s%N)
+          TIME=$(( (END - START) / 1000000 ))
+
+          echo "| Endpoint | Status | Response Time |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|--------|---------------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Products API | $RESP | ${TIME}ms |" >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,91 @@
+name: "OPS: Deployment Info"
+
+on:
+  workflow_dispatch:
+    inputs:
+      app:
+        description: 'Application'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - backend
+          - frontend
+      namespace:
+        description: 'Kubernetes namespace'
+        required: true
+        default: 'ecommerce'
+        type: choice
+        options:
+          - ecommerce
+
+env:
+  AWS_REGION: us-east-1
+  EKS_CLUSTER_NAME: ecommerce-demo-demo-eks
+
+jobs:
+  deployment-info:
+    name: Get Deployment Info
+    runs-on: ubuntu-latest
+    environment: production
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::170674040462:role/ecommerce-demo-github-actions
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure kubectl
+        run: |
+          aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+
+      - name: Get Deployment Info
+        run: |
+          echo "## 📦 Deployment Info" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Namespace:** \`${{ inputs.namespace }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Application:** \`${{ inputs.app }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Timestamp:** $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ inputs.app }}" == "all" ]; then
+            SELECTOR=""
+          else
+            SELECTOR="-l app.kubernetes.io/name=${{ inputs.app }}"
+          fi
+
+          echo "### Deployments" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          kubectl get deployments -n ${{ inputs.namespace }} $SELECTOR -o wide >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Replica Sets" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          kubectl get replicasets -n ${{ inputs.namespace }} $SELECTOR >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### HPA Status" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          kubectl get hpa -n ${{ inputs.namespace }} >> $GITHUB_STEP_SUMMARY 2>/dev/null || echo "No HPA configured" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Get Image Info
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Container Images" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Deployment | Image |" >> $GITHUB_STEP_SUMMARY
+          echo "|------------|-------|" >> $GITHUB_STEP_SUMMARY
+
+          for DEPLOY in $(kubectl get deployments -n ${{ inputs.namespace }} -o jsonpath='{.items[*].metadata.name}'); do
+            IMAGE=$(kubectl get deployment $DEPLOY -n ${{ inputs.namespace }} -o jsonpath='{.spec.template.spec.containers[0].image}')
+            echo "| $DEPLOY | \`$IMAGE\` |" >> $GITHUB_STEP_SUMMARY
+          done

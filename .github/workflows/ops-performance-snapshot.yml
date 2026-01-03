@@ -1,0 +1,94 @@
+name: "OPS: Performance Snapshot"
+
+on:
+  workflow_dispatch:
+    inputs:
+      namespace:
+        description: 'Kubernetes namespace'
+        required: true
+        default: 'ecommerce'
+        type: choice
+        options:
+          - ecommerce
+
+env:
+  AWS_REGION: us-east-1
+  EKS_CLUSTER_NAME: ecommerce-demo-demo-eks
+  CLOUDFRONT_URL: https://dls03qes9fc77.cloudfront.net
+
+jobs:
+  performance-snapshot:
+    name: Performance Snapshot
+    runs-on: ubuntu-latest
+    environment: production
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::170674040462:role/ecommerce-demo-github-actions
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure kubectl
+        run: |
+          aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+
+      - name: Cluster Resources
+        run: |
+          echo "## 📊 Performance Snapshot" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Namespace:** \`${{ inputs.namespace }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Timestamp:** $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          echo "### Node Resources" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          kubectl top nodes 2>/dev/null >> $GITHUB_STEP_SUMMARY || echo "Metrics not available" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Pod Resources" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          kubectl top pods -n ${{ inputs.namespace }} 2>/dev/null >> $GITHUB_STEP_SUMMARY || echo "Metrics not available" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: API Response Times
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### API Response Times" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Endpoint | Status | Response Time |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|--------|---------------|" >> $GITHUB_STEP_SUMMARY
+
+          # Test various endpoints
+          for ENDPOINT in "/" "/api/catalog/products" "/api/catalog/categories"; do
+            START=$(date +%s%N)
+            RESP=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "${{ env.CLOUDFRONT_URL }}${ENDPOINT}" 2>/dev/null)
+            END=$(date +%s%N)
+            TIME=$(( (END - START) / 1000000 ))
+            echo "| \`$ENDPOINT\` | $RESP | ${TIME}ms |" >> $GITHUB_STEP_SUMMARY
+          done
+
+      - name: HPA Status
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### HPA Status" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          kubectl get hpa -n ${{ inputs.namespace }} 2>/dev/null >> $GITHUB_STEP_SUMMARY || echo "No HPA configured" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Pod Distribution
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Pod Distribution" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Pod | Node | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|------|--------|" >> $GITHUB_STEP_SUMMARY
+
+          kubectl get pods -n ${{ inputs.namespace }} -o custom-columns='POD:.metadata.name,NODE:.spec.nodeName,STATUS:.status.phase' --no-headers | while read POD NODE STATUS; do
+            echo "| \`$POD\` | \`$NODE\` | $STATUS |" >> $GITHUB_STEP_SUMMARY
+          done

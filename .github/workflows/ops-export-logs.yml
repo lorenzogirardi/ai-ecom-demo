@@ -1,0 +1,93 @@
+name: "OPS: Export Logs"
+
+on:
+  workflow_dispatch:
+    inputs:
+      app:
+        description: 'Application'
+        required: true
+        type: choice
+        options:
+          - backend
+          - frontend
+      lines:
+        description: 'Number of lines'
+        required: true
+        default: '1000'
+        type: choice
+        options:
+          - '500'
+          - '1000'
+          - '2000'
+          - '5000'
+      namespace:
+        description: 'Kubernetes namespace'
+        required: true
+        default: 'ecommerce'
+        type: choice
+        options:
+          - ecommerce
+
+env:
+  AWS_REGION: us-east-1
+  EKS_CLUSTER_NAME: ecommerce-demo-demo-eks
+
+jobs:
+  export-logs:
+    name: Export Logs
+    runs-on: ubuntu-latest
+    environment: production
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::170674040462:role/ecommerce-demo-github-actions
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure kubectl
+        run: |
+          aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+
+      - name: Export Logs
+        run: |
+          echo "## 📥 Export Logs" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Application:** \`${{ inputs.app }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Lines:** ${{ inputs.lines }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Namespace:** \`${{ inputs.namespace }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Timestamp:** $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          mkdir -p logs
+
+          PODS=$(kubectl get pods -n ${{ inputs.namespace }} -l app.kubernetes.io/name=${{ inputs.app }} -o jsonpath='{.items[*].metadata.name}')
+
+          for POD in $PODS; do
+            echo "Exporting logs from \`$POD\`..." >> $GITHUB_STEP_SUMMARY
+            kubectl logs $POD -n ${{ inputs.namespace }} --tail=${{ inputs.lines }} > logs/${POD}.log 2>&1
+          done
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Exported Files" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          ls -la logs/ >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload Logs Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-${{ inputs.app }}-${{ github.run_id }}
+          path: logs/
+          retention-days: 7
+
+      - name: Summary
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### ✅ Logs Exported" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Download the logs artifact from the workflow run page." >> $GITHUB_STEP_SUMMARY
