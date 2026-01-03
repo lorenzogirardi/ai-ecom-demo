@@ -109,6 +109,84 @@ At the end of each session, we update CLAUDE.md:
 
 This creates continuity across days and sessions.
 
+## The EXECUTION_PLAN File: Project Roadmap
+
+While CLAUDE.md provides context about **what exists**, `EXECUTION_PLAN.md` tracks **what needs to be done**. It's your project roadmap that Claude reads to understand priorities and progress.
+
+### What Goes in EXECUTION_PLAN
+
+```markdown
+# Execution Plan - E-commerce Demo
+
+## Calendar
+
+| Day | Date | Focus | Status |
+|-----|------|-------|--------|
+| 1 | 24 Dec | Backend API + Terraform | ✅ |
+| 2 | 25 Dec | Frontend + Tests | ✅ |
+| 3 | 26 Dec | Auth + Checkout | 🔄 |
+| 4 | 27 Dec | CI/CD + Security | ⏳ |
+
+## Day 3 Details
+
+### Auth Pages
+| Task | File | Status |
+|------|------|--------|
+| Login page | src/app/auth/login/page.tsx | ✅ |
+| Register page | src/app/auth/register/page.tsx | ✅ |
+| Auth context | src/lib/auth-context.tsx | 🔄 |
+
+### Checkout Flow
+| Task | File | Status |
+|------|------|--------|
+| Checkout page | src/app/checkout/page.tsx | ⏳ |
+| Order confirmation | src/app/orders/[id]/page.tsx | ⏳ |
+```
+
+### Why Use Both Files
+
+| File | Purpose | Updates |
+|------|---------|---------|
+| **CLAUDE.md** | Project context, conventions, architecture | When patterns change |
+| **EXECUTION_PLAN.md** | Task tracking, daily goals, progress | Every session |
+
+### How Claude Uses EXECUTION_PLAN
+
+When you say "Continue with the plan", Claude:
+
+1. Reads EXECUTION_PLAN.md to find tasks marked ⏳ or 🔄
+2. Identifies the next logical step
+3. Implements the task
+4. Updates the status to ✅
+
+```
+User: "Continue with Day 3"
+
+Claude: "Looking at EXECUTION_PLAN.md, I see:
+- Login page ✅
+- Register page ✅
+- Auth context 🔄 <- I'll finish this
+- Checkout page ⏳ <- Then this
+
+Let me complete the auth context first..."
+```
+
+### Keeping It Updated
+
+At session end, update both files:
+
+```markdown
+# EXECUTION_PLAN.md
+| 3 | 26 Dec | Auth + Checkout | ✅ |  <- Mark day complete
+
+# CLAUDE.md
+## Current State
+- [x] Auth system complete  <- Reflect in context
+- [ ] Load testing          <- Next priority
+```
+
+This dual-file approach gives Claude both the **big picture** (CLAUDE.md) and the **specific tasks** (EXECUTION_PLAN.md).
+
 ## Prompt Patterns That Work
 
 ### 1. Be Specific, Not Vague
@@ -369,6 +447,7 @@ Working effectively with Claude Code requires:
 | Principle | Practice |
 |-----------|----------|
 | **Context** | Maintain CLAUDE.md as project memory |
+| **Roadmap** | Use EXECUTION_PLAN.md for task tracking |
 | **Specificity** | Detailed prompts get detailed results |
 | **Patterns** | Reference existing code for consistency |
 | **Iteration** | Small steps, frequent reviews |
