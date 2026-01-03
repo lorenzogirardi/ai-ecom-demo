@@ -12,23 +12,44 @@ title: Home
         </p>
     </section>
 
-    <div class="category-grid">
-        <a href="{{ '/sessions/' | relative_url }}" class="category-card sessions">
-            <h3>Session Recaps</h3>
-            <p>Day-by-day development journey with Claude Code. What was built, metrics, and lessons learned.</p>
-            <span class="category-count">10 documents</span>
-        </a>
-        <a href="{{ '/architecture/' | relative_url }}" class="category-card architecture">
-            <h3>Architecture</h3>
-            <p>System architecture diagrams: C4 model, AWS infrastructure, CI/CD pipelines, security.</p>
-            <span class="category-count">7 documents</span>
-        </a>
-        <a href="{{ '/technical/' | relative_url }}" class="category-card technical">
-            <h3>Technical Docs</h3>
-            <p>Deep dives: CVE analysis, K8s upgrades, autoscaling, observability, multi-team setup.</p>
-            <span class="category-count">8 documents</span>
-        </a>
-    </div>
+    <section class="featured-section">
+        <h2>Start Here</h2>
+        <div class="featured-grid">
+            <a href="{{ '/introduction/the-challenge/' | relative_url }}" class="category-card introduction">
+                <span class="card-badge">Why</span>
+                <h3>The Challenge</h3>
+                <p>When more developers means slower delivery. Why AI augmentation might be the solution.</p>
+                <span class="read-link">Read the challenge &rarr;</span>
+            </a>
+            <a href="{{ '/introduction/working-with-claude-code/' | relative_url }}" class="category-card introduction">
+                <span class="card-badge">How</span>
+                <h3>Working with Claude Code</h3>
+                <p>CLAUDE.md, prompt patterns, how Claude makes decisions, and collaboration best practices.</p>
+                <span class="read-link">Read the guide &rarr;</span>
+            </a>
+        </div>
+    </section>
+
+    <section class="categories-section">
+        <h2>Documentation</h2>
+        <div class="category-grid">
+            <a href="{{ '/sessions/' | relative_url }}" class="category-card sessions">
+                <h3>Session Recaps</h3>
+                <p>Day-by-day development journey with Claude Code. What was built, metrics, and lessons learned.</p>
+                <span class="category-count">10 documents</span>
+            </a>
+            <a href="{{ '/architecture/' | relative_url }}" class="category-card architecture">
+                <h3>Architecture</h3>
+                <p>System architecture diagrams: C4 model, AWS infrastructure, CI/CD pipelines, security.</p>
+                <span class="category-count">7 documents</span>
+            </a>
+            <a href="{{ '/technical/' | relative_url }}" class="category-card technical">
+                <h3>Technical Docs</h3>
+                <p>Deep dives: CVE analysis, K8s upgrades, autoscaling, observability, multi-team setup.</p>
+                <span class="category-count">8 documents</span>
+            </a>
+        </div>
+    </section>
 
     <section class="quick-links">
         <h2>Quick Access</h2>
@@ -66,7 +87,7 @@ title: Home
             <tbody>
                 <tr>
                     <td>Unique Documents</td>
-                    <td>25</td>
+                    <td>27</td>
                 </tr>
                 <tr>
                     <td>Mermaid Diagrams</td>
@@ -80,3 +101,65 @@ title: Home
         </table>
     </section>
 </div>
+
+<style>
+.featured-section {
+    margin-bottom: var(--spacing-2xl);
+}
+
+.featured-section h2 {
+    margin-top: 0;
+    margin-bottom: var(--spacing-lg);
+}
+
+.featured-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-lg);
+}
+
+.categories-section {
+    margin-bottom: var(--spacing-2xl);
+}
+
+.categories-section h2 {
+    margin-top: 0;
+    margin-bottom: var(--spacing-lg);
+}
+
+.category-card.introduction {
+    border-top: 3px solid #3fb950;
+    position: relative;
+}
+
+.category-card.introduction h3 {
+    color: #3fb950;
+}
+
+.card-badge {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    background: #3fb950;
+    color: var(--bg-primary);
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.read-link {
+    display: inline-block;
+    margin-top: var(--spacing-sm);
+    color: #3fb950;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .featured-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
