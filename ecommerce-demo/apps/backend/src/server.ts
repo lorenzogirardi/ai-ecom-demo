@@ -154,12 +154,15 @@ async function buildServer() {
         deepLinking: true,
       },
     });
-
-    // Redirect /api/docs to /api/docs/ for correct relative path resolution
-    app.get("/api/docs", async (_, reply) => {
-      return reply.redirect("/api/docs/");
-    });
   }
+
+  // Redirect /api/docs to /api/docs/ for correct relative path resolution
+  // This must be an onRequest hook since swagger-ui already handles the route
+  app.addHook("onRequest", async (request, reply) => {
+    if (request.url === "/api/docs") {
+      return reply.redirect(301, "/api/docs/");
+    }
+  });
 
   // Error handler
   app.setErrorHandler(errorHandler as any);
