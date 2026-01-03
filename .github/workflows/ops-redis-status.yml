@@ -1,0 +1,91 @@
+name: "OPS: Redis Status"
+
+on:
+  workflow_dispatch:
+    inputs:
+      namespace:
+        description: 'Kubernetes namespace'
+        required: true
+        default: 'default'
+        type: choice
+        options:
+          - default
+
+env:
+  AWS_REGION: us-east-1
+  EKS_CLUSTER_NAME: ecommerce-demo-cluster
+  CLOUDFRONT_URL: https://dls03qes9fc77.cloudfront.net
+
+jobs:
+  redis-status:
+    name: Check Redis Status
+    runs-on: ubuntu-latest
+    environment: production
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::170674040462:role/ecommerce-demo-github-actions
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure kubectl
+        run: |
+          aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+
+      - name: Check Redis Status
+        run: |
+          echo "## 🔴 Redis Status" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Namespace:** \`${{ inputs.namespace }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Timestamp:** $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Check cache metrics endpoint
+          echo "### Cache Metrics" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```json' >> $GITHUB_STEP_SUMMARY
+          curl -s "${{ env.CLOUDFRONT_URL }}/api/metrics/cache" | jq . >> $GITHUB_STEP_SUMMARY 2>/dev/null || echo "Metrics endpoint not available" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+          # Get backend pod for additional checks
+          POD=$(kubectl get pods -n ${{ inputs.namespace }} -l app=backend -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+
+          if [ -n "$POD" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### Backend Pod Redis Logs (last 20 lines with 'redis')" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            kubectl logs $POD -n ${{ inputs.namespace }} --tail=500 2>/dev/null | grep -i redis | tail -20 >> $GITHUB_STEP_SUMMARY || echo "No Redis-related logs found" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Cache Hit Rate Analysis
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Cache Performance" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          METRICS=$(curl -s "${{ env.CLOUDFRONT_URL }}/api/metrics/cache" 2>/dev/null)
+
+          if [ -n "$METRICS" ]; then
+            HITS=$(echo "$METRICS" | jq -r '.hits // 0')
+            MISSES=$(echo "$METRICS" | jq -r '.misses // 0')
+            TOTAL=$((HITS + MISSES))
+
+            if [ "$TOTAL" -gt 0 ]; then
+              HIT_RATE=$(echo "scale=2; $HITS * 100 / $TOTAL" | bc)
+              echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+              echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+              echo "| Hits | $HITS |" >> $GITHUB_STEP_SUMMARY
+              echo "| Misses | $MISSES |" >> $GITHUB_STEP_SUMMARY
+              echo "| Hit Rate | ${HIT_RATE}% |" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "No cache activity recorded yet." >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "Unable to fetch cache metrics." >> $GITHUB_STEP_SUMMARY
+          fi

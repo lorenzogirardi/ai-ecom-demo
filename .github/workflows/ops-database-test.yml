@@ -1,0 +1,76 @@
+name: "OPS: Database Connection Test"
+
+on:
+  workflow_dispatch:
+    inputs:
+      namespace:
+        description: 'Kubernetes namespace'
+        required: true
+        default: 'default'
+        type: choice
+        options:
+          - default
+
+env:
+  AWS_REGION: us-east-1
+  EKS_CLUSTER_NAME: ecommerce-demo-cluster
+
+jobs:
+  db-test:
+    name: Test Database Connection
+    runs-on: ubuntu-latest
+    environment: production
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::170674040462:role/ecommerce-demo-github-actions
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure kubectl
+        run: |
+          aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+
+      - name: Test Database Connection
+        run: |
+          echo "## 🗄️ Database Connection Test" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Namespace:** \`${{ inputs.namespace }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Timestamp:** $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Get backend pod
+          POD=$(kubectl get pods -n ${{ inputs.namespace }} -l app=backend -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+
+          if [ -z "$POD" ]; then
+            echo "### ❌ No backend pods found" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+          echo "**Pod:** \`$POD\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Check database connection via health endpoint
+          echo "### Connection Status" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Execute a simple query via the backend pod
+          RESULT=$(kubectl exec $POD -n ${{ inputs.namespace }} -- sh -c 'wget -qO- http://localhost:4000/health 2>/dev/null' || echo '{"error": "connection failed"}')
+
+          echo '```json' >> $GITHUB_STEP_SUMMARY
+          echo "$RESULT" | jq . 2>/dev/null || echo "$RESULT" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+          # Check if database is in the health response
+          if echo "$RESULT" | grep -q '"status":"ok"'; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### ✅ Database Connection: Healthy" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### ⚠️ Database Connection: Check Required" >> $GITHUB_STEP_SUMMARY
+          fi

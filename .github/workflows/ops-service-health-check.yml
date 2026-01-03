@@ -1,0 +1,73 @@
+name: "OPS: Service Health Check"
+
+on:
+  workflow_dispatch:
+    inputs:
+      endpoint:
+        description: 'Endpoint to check'
+        required: true
+        type: choice
+        options:
+          - all
+          - api-health
+          - frontend
+          - api-products
+
+env:
+  CLOUDFRONT_URL: https://dls03qes9fc77.cloudfront.net
+
+jobs:
+  health-check:
+    name: Check Service Health
+    runs-on: ubuntu-latest
+    environment: production
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Check Endpoints
+        run: |
+          echo "## 🏥 Service Health Check" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Timestamp:** $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Endpoint | Status | Response Time | Details |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|--------|---------------|---------|" >> $GITHUB_STEP_SUMMARY
+
+          check_endpoint() {
+            local name=$1
+            local url=$2
+            local start=$(date +%s%N)
+            local response=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$url" 2>/dev/null)
+            local end=$(date +%s%N)
+            local duration=$(( (end - start) / 1000000 ))
+
+            if [ "$response" = "200" ]; then
+              echo "| $name | ✅ $response | ${duration}ms | OK |" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "| $name | ❌ $response | ${duration}ms | Failed |" >> $GITHUB_STEP_SUMMARY
+            fi
+          }
+
+          if [ "${{ inputs.endpoint }}" = "all" ] || [ "${{ inputs.endpoint }}" = "api-health" ]; then
+            check_endpoint "API Health" "${{ env.CLOUDFRONT_URL }}/api/health"
+          fi
+
+          if [ "${{ inputs.endpoint }}" = "all" ] || [ "${{ inputs.endpoint }}" = "frontend" ]; then
+            check_endpoint "Frontend" "${{ env.CLOUDFRONT_URL }}"
+          fi
+
+          if [ "${{ inputs.endpoint }}" = "all" ] || [ "${{ inputs.endpoint }}" = "api-products" ]; then
+            check_endpoint "API Products" "${{ env.CLOUDFRONT_URL }}/api/catalog/products"
+          fi
+
+      - name: API Health Details
+        if: inputs.endpoint == 'all' || inputs.endpoint == 'api-health'
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### API Health Response" >> $GITHUB_STEP_SUMMARY
+          echo '```json' >> $GITHUB_STEP_SUMMARY
+          curl -s "${{ env.CLOUDFRONT_URL }}/api/health" | jq . >> $GITHUB_STEP_SUMMARY 2>/dev/null || echo "Unable to parse response" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY

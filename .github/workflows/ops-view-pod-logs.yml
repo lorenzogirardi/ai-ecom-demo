@@ -1,0 +1,79 @@
+name: "OPS: View Pod Logs"
+
+on:
+  workflow_dispatch:
+    inputs:
+      app:
+        description: 'Application'
+        required: true
+        type: choice
+        options:
+          - backend
+          - frontend
+      lines:
+        description: 'Number of lines to tail'
+        required: true
+        default: '100'
+        type: choice
+        options:
+          - '50'
+          - '100'
+          - '200'
+          - '500'
+      namespace:
+        description: 'Kubernetes namespace'
+        required: true
+        default: 'default'
+        type: choice
+        options:
+          - default
+
+env:
+  AWS_REGION: us-east-1
+  EKS_CLUSTER_NAME: ecommerce-demo-cluster
+
+jobs:
+  view-logs:
+    name: View Pod Logs
+    runs-on: ubuntu-latest
+    environment: production
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::170674040462:role/ecommerce-demo-github-actions
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Configure kubectl
+        run: |
+          aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
+
+      - name: Get Pod Logs
+        run: |
+          echo "## 📋 Pod Logs" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Application:** \`${{ inputs.app }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Namespace:** \`${{ inputs.namespace }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Lines:** ${{ inputs.lines }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Timestamp:** $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Get the first running pod for the app
+          POD=$(kubectl get pods -n ${{ inputs.namespace }} -l app=${{ inputs.app }} -o jsonpath='{.items[0].metadata.name}' 2>/dev/null)
+
+          if [ -z "$POD" ]; then
+            echo "### ❌ No pods found for app=${{ inputs.app }}" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+          echo "**Pod:** \`$POD\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Logs (last ${{ inputs.lines }} lines)" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          kubectl logs $POD -n ${{ inputs.namespace }} --tail=${{ inputs.lines }} >> $GITHUB_STEP_SUMMARY 2>&1 || echo "Error fetching logs" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
