@@ -1,0 +1,81 @@
+name: Invalidate CloudFront Cache
+
+on:
+  workflow_dispatch:
+    inputs:
+      paths:
+        description: 'Paths to invalidate (comma-separated, e.g., /api/*,/)'
+        required: false
+        default: '/*'
+      distribution:
+        description: 'CloudFront Distribution'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+
+env:
+  # CloudFront Distribution IDs
+  CLOUDFRONT_DISTRIBUTION_ID: E1UREM48VZYPQA
+
+jobs:
+  invalidate:
+    name: Invalidate CloudFront Cache
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::170674040462:role/github-actions-role
+          aws-region: us-east-1
+
+      - name: Parse paths
+        id: paths
+        run: |
+          # Convert comma-separated paths to space-separated for AWS CLI
+          PATHS="${{ github.event.inputs.paths }}"
+          echo "paths=$PATHS" >> $GITHUB_OUTPUT
+
+      - name: Create CloudFront Invalidation
+        id: invalidate
+        run: |
+          echo "Creating invalidation for paths: ${{ steps.paths.outputs.paths }}"
+
+          # Convert comma-separated to individual --paths arguments
+          IFS=',' read -ra PATH_ARRAY <<< "${{ steps.paths.outputs.paths }}"
+
+          INVALIDATION_ID=$(aws cloudfront create-invalidation \
+            --distribution-id ${{ env.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "${PATH_ARRAY[@]}" \
+            --query 'Invalidation.Id' \
+            --output text)
+
+          echo "Invalidation created: $INVALIDATION_ID"
+          echo "invalidation_id=$INVALIDATION_ID" >> $GITHUB_OUTPUT
+
+      - name: Wait for Invalidation to Complete
+        run: |
+          echo "Waiting for invalidation ${{ steps.invalidate.outputs.invalidation_id }} to complete..."
+
+          aws cloudfront wait invalidation-completed \
+            --distribution-id ${{ env.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --id ${{ steps.invalidate.outputs.invalidation_id }}
+
+          echo "Invalidation completed successfully!"
+
+      - name: Summary
+        run: |
+          echo "## CloudFront Cache Invalidation" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Distribution ID | \`${{ env.CLOUDFRONT_DISTRIBUTION_ID }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Invalidation ID | \`${{ steps.invalidate.outputs.invalidation_id }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Paths | \`${{ steps.paths.outputs.paths }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| Status | Completed |" >> $GITHUB_STEP_SUMMARY
