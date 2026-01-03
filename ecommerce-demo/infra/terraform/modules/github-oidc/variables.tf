@@ -46,6 +46,18 @@ variable "enable_secrets_access" {
   default     = true
 }
 
+variable "enable_cloudfront_access" {
+  description = "Enable access to CloudFront for cache invalidation"
+  type        = bool
+  default     = false
+}
+
+variable "cloudfront_distribution_ids" {
+  description = "List of CloudFront distribution IDs to allow invalidation"
+  type        = list(string)
+  default     = []
+}
+
 variable "tags" {
   description = "Tags to apply to resources"
   type        = map(string)

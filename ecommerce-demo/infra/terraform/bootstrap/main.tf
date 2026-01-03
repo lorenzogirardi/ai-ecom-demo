@@ -24,6 +24,10 @@ module "github_oidc" {
 
   enable_secrets_access = true
 
+  # CloudFront cache invalidation
+  enable_cloudfront_access    = true
+  cloudfront_distribution_ids = ["E1UREM48VZYPQA"]
+
   tags = {
     Project     = var.project_name
     Environment = "bootstrap"

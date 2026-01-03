@@ -210,3 +210,30 @@ resource "aws_iam_role_policy" "secrets" {
     ]
   })
 }
+
+# CloudFront Policy - Cache invalidation
+resource "aws_iam_role_policy" "cloudfront" {
+  count = var.enable_cloudfront_access ? 1 : 0
+
+  name = "github-actions-cloudfront"
+  role = aws_iam_role.github_actions.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "CloudFrontInvalidation"
+        Effect = "Allow"
+        Action = [
+          "cloudfront:CreateInvalidation",
+          "cloudfront:GetInvalidation",
+          "cloudfront:ListInvalidations"
+        ]
+        Resource = length(var.cloudfront_distribution_ids) > 0 ? [
+          for dist_id in var.cloudfront_distribution_ids :
+          "arn:aws:cloudfront::${local.account_id}:distribution/${dist_id}"
+        ] : ["arn:aws:cloudfront::${local.account_id}:distribution/*"]
+      }
+    ]
+  })
+}
