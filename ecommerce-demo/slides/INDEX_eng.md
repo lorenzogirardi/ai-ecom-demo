@@ -87,8 +87,8 @@ docs/EXECUTION_PLAN.md
 
 | Category | Documents |
 |----------|-----------|
-| [Session Recaps](#session-recaps) | 8 development sessions |
-| [Architecture](#architecture) | 5 documents with diagrams |
+| [Session Recaps](#session-recaps) | 9 development sessions |
+| [Architecture](#architecture) | 6 documents with diagrams |
 | [Technical Documentation](#technical-documentation) | 8 specific documents |
 
 ---
@@ -107,6 +107,7 @@ Summaries of project development sessions.
 | 6 | [SESSION_06_RECAP_eng.md](./SESSION_06_RECAP_eng.md) | **Load Testing** - k6 scenarios, Cluster Autoscaler, CloudWatch metrics, bottleneck analysis |
 | 7 | [SESSION_07_RECAP_eng.md](./SESSION_07_RECAP_eng.md) | **Performance Optimization** - Pod Anti-Affinity, HPA tuning, +134% throughput, -42% latency |
 | 8 | [SESSION_08_RECAP_eng.md](./SESSION_08_RECAP_eng.md) | **Deep Observability** - Container Insights, X-Ray tracing, Code optimizations, 508 RPS (+116% vs Day 6), 99.95% cache hit rate |
+| 9 | [SESSION_09_RECAP_eng.md](./SESSION_09_RECAP_eng.md) | **Security Hardening** - Network Policies (Zero Trust), PSS, CSP/HSTS, Rate Limiting, OWASP ZAP scan (168 tests passed) |
 
 > **Italian versions:** Each document has an Italian version without the `_eng` suffix
 
@@ -123,6 +124,7 @@ System architecture diagrams.
 | [GITHUB_PIPELINES_eng.md](./GITHUB_PIPELINES_eng.md) | 6 | **CI/CD Pipelines** - Backend CI, Frontend CI, Infra CI, ArgoCD deploy, Load test workflow, job dependencies |
 | [SEQUENCE_DIAGRAMS_eng.md](./SEQUENCE_DIAGRAMS_eng.md) | 10 | **Application Flows** - Login, registration, products, categories, cart, checkout, orders, search, autocomplete, proxy pattern |
 | [OBSERVABILITY_ARCHITECTURE_eng.md](./OBSERVABILITY_ARCHITECTURE_eng.md) | 12 | **Observability** - Logs, X-Ray tracing, Container Insights, metrics, IRSA, data flows |
+| [SECURITY_ARCHITECTURE_eng.md](./SECURITY_ARCHITECTURE_eng.md) | 8 | **Security** - CI/CD pipeline security, network isolation, auth flow, rate limiting, container security, OWASP Top 10 |
 
 > **Italian versions:** Each document has an Italian version without the `_eng` suffix
 
@@ -151,21 +153,21 @@ Specific technical documents.
 
 ```
 📁 slides/
-├── 📄 Session Recaps     8 documents × 2 languages = 16 files
-├── 📄 Architecture       5 documents × 2 languages = 10 files
+├── 📄 Session Recaps     9 documents × 2 languages = 18 files
+├── 📄 Architecture       6 documents × 2 languages = 12 files
 ├── 📄 Technical Docs     8 documents × 2 languages = 16 files
 ├── 📄 Index              1 document  × 2 languages =  2 files
 └── ────────────────────────────────────────────────────────
-    TOTAL                22 documents × 2 languages = 44 files
+    TOTAL                24 documents × 2 languages = 48 files
 ```
 
 | Metric | Value |
 |--------|-------|
-| **Unique documents** | 22 |
-| **Total files** | 44 |
+| **Unique documents** | 24 |
+| **Total files** | 48 |
 | **Languages** | IT, EN |
-| **Mermaid diagrams** | ~52 |
-| **Total size** | ~530 KB |
+| **Mermaid diagrams** | ~60 |
+| **Total size** | ~580 KB |
 
 ---
 
@@ -219,10 +221,10 @@ All documents are available in Italian without the `_eng` suffix:
 
 | Metric | Value |
 |--------|-------|
-| **Unique documents** | 22 |
-| **Total files** | 44 (IT + EN) |
-| **Mermaid diagrams** | ~52 |
-| **Total size** | ~530 KB |
+| **Unique documents** | 24 |
+| **Total files** | 48 (IT + EN) |
+| **Mermaid diagrams** | ~60 |
+| **Total size** | ~580 KB |
 
 ### Time Comparison: Manual vs Claude
 
@@ -248,4 +250,4 @@ All documents are available in Italian without the `_eng` suffix:
 
 ---
 
-*Last updated: 2026-01-02*
+*Last updated: 2026-01-03*

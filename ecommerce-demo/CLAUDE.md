@@ -351,14 +351,45 @@ npm run lint                      # Lint all
 - [x] OBSERVABILITY_ANALYSIS.md
 - [x] Presentation slides v0.2 (IT + EN)
 
+### Completed ✅ (Day 9 - Security Hardening)
+
+**Network Security (Zero Trust):**
+- [x] Default deny network policy (all ingress/egress blocked)
+- [x] Backend network policy (frontend → backend only)
+- [x] Frontend network policy (ALB → frontend, frontend → backend)
+- [x] VPC CIDR restrictions for ALB health checks
+
+**Pod Security Standards (PSS):**
+- [x] Namespace labels for audit/warn mode
+- [x] Seccomp RuntimeDefault profile for all containers
+- [x] Gradual rollout strategy (audit → warn → enforce)
+
+**Application Security:**
+- [x] Content Security Policy (CSP) enabled with strict directives
+- [x] HSTS with 1-year max-age and preload
+- [x] Auth rate limiting (5/15min login, 3/hour register)
+- [x] Security event logging (login success/failure, password change)
+- [x] Request body size limit (1MB DoS protection)
+
+**OWASP ZAP Security Scan:**
+- [x] GitHub Actions workflow for ZAP scans (baseline, api, full)
+- [x] Baseline scan: 55 PASS, 12 WARN, 0 FAIL
+- [x] API scan: 113 PASS, 6 WARN, 0 FAIL
+- [x] All OWASP Top 10 categories covered
+
+**Bug Fixes:**
+- [x] Swagger UI routing (trailing slash redirect)
+- [x] Frontend Link vs anchor for API URLs
+
+**Documentation:**
+- [x] SESSION_09_RECAP.md (IT)
+- [x] SESSION_09_RECAP_eng.md (EN)
+- [x] SECURITY_ARCHITECTURE.md (IT + EN)
+
 ### NOT Completed ❌ (Future Sessions)
 
-**Day 9 - Security Hardening:**
-- [ ] OWASP Top 10 review
-- [ ] Network policies (namespace isolation)
-- [ ] Container hardening (securityContext)
-- [ ] Pod Security Standards
-- [ ] Secrets rotation strategy
+**Day 10 - Operational Portal:**
+- [ ] TBD (proposals coming)
 
 ## Technical Notes
 
@@ -539,11 +570,13 @@ Per ogni CVE:
     - X-Ray DaemonSet deployment
     - Terraform codification of CLI changes
     - Docker networking fixes for local dev
-15. **Day 9: Security Hardening** (Next)
-    - OWASP Top 10 review
-    - Network policies (namespace isolation)
-    - Container hardening (securityContext)
-    - Pod Security Standards
+15. ~~**Day 9: Security Hardening**~~ ✅
+    - Network policies (Zero Trust)
+    - Pod Security Standards (PSS)
+    - CSP, HSTS, rate limiting
+    - OWASP ZAP security scan (168 tests passed)
+16. **Day 10: Operational Portal** (Next)
+    - TBD (proposals coming)
 
 ## Completed Refactors
 

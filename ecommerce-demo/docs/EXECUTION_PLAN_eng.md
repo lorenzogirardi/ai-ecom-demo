@@ -29,7 +29,8 @@
 | 6 | Dec 30 | k6 Load Testing + Cluster Autoscaler + CloudWatch Analysis | ✅ |
 | 7 | Dec 30 | Performance Fix: Pod Anti-Affinity + HPA + k6 Bug Fix | ✅ |
 | 8 | Jan 2 | Deep Observability: Container Insights + X-Ray APM | ✅ |
-| 9 | TBD | Security Hardening: OWASP + Network Policies | ⏳ |
+| 9 | Jan 3 | Security Hardening: Network Policies + PSS + OWASP ZAP | ✅ |
+| 10 | TBD | Operational Portal | ⏳ |
 
 ---
 
@@ -832,19 +833,58 @@ k6/
 
 ---
 
-## Day 9 Details - Security Hardening ⏳
+## Day 9 Details - January 3 (Security Hardening) ✅
 
-### Security Tasks
+### Network Security (Zero Trust)
 
 | Task | Status |
 |------|--------|
-| OWASP Top 10 review | ⏳ |
-| Network policies (namespace isolation) | ⏳ |
-| Container hardening (securityContext) | ⏳ |
-| Pod Security Standards | ⏳ |
-| Secrets rotation strategy | ⏳ |
+| Default deny network policy (all ingress/egress blocked) | ✅ |
+| Backend network policy (frontend → backend only) | ✅ |
+| Frontend network policy (ALB → frontend, frontend → backend) | ✅ |
+| VPC CIDR restrictions for ALB health checks | ✅ |
 
-### Security Checklist
+### Pod Security Standards (PSS)
+
+| Task | Status |
+|------|--------|
+| Namespace labels for audit/warn mode | ✅ |
+| Seccomp RuntimeDefault profile for all containers | ✅ |
+| Gradual rollout strategy (audit → warn → enforce) | ✅ |
+
+### Application Security
+
+| Task | Status |
+|------|--------|
+| Content Security Policy (CSP) enabled | ✅ |
+| HSTS with 1-year max-age and preload | ✅ |
+| Auth rate limiting (5/15min login, 3/hour register) | ✅ |
+| Security event logging (login success/failure) | ✅ |
+| Request body size limit (1MB DoS protection) | ✅ |
+
+### OWASP ZAP Security Scan
+
+| Task | Status |
+|------|--------|
+| GitHub Actions workflow (baseline, api, full scan) | ✅ |
+| Baseline scan: 55 PASS, 12 WARN, 0 FAIL | ✅ |
+| API scan: 113 PASS, 6 WARN, 0 FAIL | ✅ |
+| All OWASP Top 10 categories covered | ✅ |
+
+### Bug Fixes
+
+| Bug | Fix |
+|-----|-----|
+| Swagger UI routing | Trailing slash redirect via onRequest hook |
+| Frontend Link vs anchor | Use `<a>` for API URLs instead of `<Link>` |
+
+### Documentation
+
+- [x] SESSION_09_RECAP.md (IT)
+- [x] SESSION_09_RECAP_eng.md (EN)
+- [x] SECURITY_ARCHITECTURE.md (IT + EN)
+
+### Security Checklist (Final)
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -854,10 +894,10 @@ k6/
 │  APPLICATION SECURITY                                            │
 │  ├── [x] SQL Injection prevention (Prisma ORM)                  │
 │  ├── [x] XSS prevention (React escaping)                        │
-│  ├── [ ] CSRF protection                                         │
-│  ├── [x] Rate limiting configured                                │
+│  ├── [x] CSRF protection (SameSite cookies)                     │
+│  ├── [x] Rate limiting configured (auth endpoints)              │
 │  ├── [x] Input validation (Zod schemas)                         │
-│  └── [ ] Secure headers (HSTS, CSP, etc.)                       │
+│  └── [x] Secure headers (HSTS, CSP, X-Frame-Options)            │
 │                                                                  │
 │  INFRASTRUCTURE SECURITY                                         │
 │  ├── [x] Network isolation (VPC, subnets)                       │
@@ -865,18 +905,33 @@ k6/
 │  ├── [x] Encryption at rest (RDS, S3)                           │
 │  ├── [x] Encryption in transit (TLS)                            │
 │  ├── [x] Secrets management (AWS Secrets Manager)               │
-│  └── [ ] IAM roles with least privilege review                  │
+│  └── [x] IAM roles with least privilege                         │
 │                                                                  │
 │  KUBERNETES SECURITY                                             │
-│  ├── [ ] Non-root containers                                     │
-│  ├── [ ] Read-only root filesystem                              │
-│  ├── [ ] Network policies                                        │
-│  ├── [ ] Pod security standards                                  │
-│  ├── [ ] Service accounts with minimal permissions              │
+│  ├── [x] Non-root containers                                     │
+│  ├── [x] Read-only root filesystem                              │
+│  ├── [x] Network policies (Zero Trust)                          │
+│  ├── [x] Pod security standards (audit/warn mode)               │
+│  ├── [x] Service accounts with minimal permissions              │
 │  └── [x] RBAC configured correctly                               │
+│                                                                  │
+│  SECURITY TESTING                                                │
+│  ├── [x] OWASP ZAP baseline scan                                │
+│  ├── [x] OWASP ZAP API scan                                     │
+│  └── [x] 168 security checks passed, 0 critical vulnerabilities │
 │                                                                  │
 └─────────────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## Day 10 Details - Operational Portal ⏳
+
+### Planned Tasks
+
+| Task | Status |
+|------|--------|
+| TBD (proposals coming) | ⏳ |
 
 ---
 

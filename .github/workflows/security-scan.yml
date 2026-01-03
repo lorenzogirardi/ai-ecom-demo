@@ -1,0 +1,200 @@
+# OWASP ZAP Security Scan
+# Runs automated security scanning against the deployed application
+# Uses OWASP ZAP (Zed Attack Proxy) for dynamic application security testing (DAST)
+
+name: Security Scan (OWASP ZAP)
+
+on:
+  workflow_dispatch:
+    inputs:
+      scan_type:
+        description: 'Type of scan to run'
+        required: true
+        default: 'baseline'
+        type: choice
+        options:
+          - baseline    # Quick passive scan (~2 min)
+          - api         # API-focused scan (~5 min)
+          - full        # Full active scan (~30+ min)
+      target_url:
+        description: 'Target URL to scan'
+        required: false
+        default: 'https://dls03qes9fc77.cloudfront.net'
+      openapi_url:
+        description: 'OpenAPI spec URL (for API scan)'
+        required: false
+        default: 'https://dls03qes9fc77.cloudfront.net/api/docs/json'
+
+env:
+  ZAP_VERSION: '2.14.0'
+
+jobs:
+  zap-scan:
+    name: OWASP ZAP ${{ inputs.scan_type }} Scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify target is accessible
+        run: |
+          echo "Checking target: ${{ inputs.target_url }}"
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${{ inputs.target_url }}/api/health" || echo "000")
+          if [ "$HTTP_STATUS" != "200" ]; then
+            echo "Warning: Target health check returned HTTP $HTTP_STATUS"
+            echo "Proceeding with scan anyway..."
+          else
+            echo "Target is healthy (HTTP 200)"
+          fi
+
+      - name: Create ZAP rules file
+        run: |
+          mkdir -p security/zap
+          cat > security/zap/rules.tsv << 'EOF'
+          # ZAP Rule Configuration
+          # Format: rule_id	action	parameter
+          # Actions: IGNORE, WARN, FAIL
+
+          # Informational (IGNORE in baseline)
+          10021	IGNORE	# X-Content-Type-Options Header Missing
+          10036	IGNORE	# Server Leaks Version Information
+          10055	IGNORE	# CSP: Wildcard Directive
+          10096	IGNORE	# Timestamp Disclosure - Unix
+
+          # Low risk (WARN)
+          10017	WARN	# Cross-Domain JavaScript Source File Inclusion
+          10020	WARN	# X-Frame-Options Header Not Set
+          10038	WARN	# Content Security Policy (CSP) Header Not Set
+
+          # Medium risk (check carefully)
+          10012	WARN	# Password Autocomplete in Browser
+          10015	WARN	# Incomplete or No Cache-control and Pragma HTTP Header Set
+
+          # High risk (always report)
+          10016	FAIL	# Web Browser XSS Protection Not Enabled
+          10024	FAIL	# Information Disclosure - Sensitive Information in URL
+          10025	FAIL	# Information Disclosure - Sensitive Information in HTTP Referrer Header
+          EOF
+
+      - name: ZAP Baseline Scan
+        if: inputs.scan_type == 'baseline'
+        uses: zaproxy/action-baseline@v0.12.0
+        with:
+          target: ${{ inputs.target_url }}
+          rules_file_name: 'security/zap/rules.tsv'
+          cmd_options: '-a -j -I'
+          allow_issue_writing: false
+          fail_action: false
+
+      - name: ZAP API Scan
+        if: inputs.scan_type == 'api'
+        uses: zaproxy/action-api-scan@v0.7.0
+        with:
+          target: ${{ inputs.openapi_url }}
+          rules_file_name: 'security/zap/rules.tsv'
+          cmd_options: '-f openapi -I'
+          allow_issue_writing: false
+          fail_action: false
+
+      - name: ZAP Full Scan
+        if: inputs.scan_type == 'full'
+        uses: zaproxy/action-full-scan@v0.10.0
+        with:
+          target: ${{ inputs.target_url }}
+          rules_file_name: 'security/zap/rules.tsv'
+          cmd_options: '-a -j -I'
+          allow_issue_writing: false
+          fail_action: false
+
+      - name: Rename and organize reports
+        if: always()
+        run: |
+          mkdir -p security/reports/zap
+          TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+          SCAN_TYPE="${{ inputs.scan_type }}"
+
+          # Move ZAP reports with timestamp
+          if [ -f report_html.html ]; then
+            mv report_html.html "security/reports/zap/zap-${SCAN_TYPE}-${TIMESTAMP}.html"
+          fi
+          if [ -f report_json.json ]; then
+            mv report_json.json "security/reports/zap/zap-${SCAN_TYPE}-${TIMESTAMP}.json"
+          fi
+          if [ -f report_md.md ]; then
+            mv report_md.md "security/reports/zap/zap-${SCAN_TYPE}-${TIMESTAMP}.md"
+          fi
+
+          # List generated reports
+          echo "Generated reports:"
+          ls -la security/reports/zap/
+
+      - name: Generate summary
+        if: always()
+        run: |
+          echo "## OWASP ZAP Security Scan Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Scan Type:** ${{ inputs.scan_type }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Target:** ${{ inputs.target_url }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Timestamp:** $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Parse JSON report if exists
+          REPORT_JSON=$(ls security/reports/zap/zap-*.json 2>/dev/null | head -1)
+          if [ -f "$REPORT_JSON" ]; then
+            echo "### Alert Summary" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+
+            # Count alerts by risk level
+            HIGH=$(jq '[.site[].alerts[] | select(.riskcode == "3")] | length' "$REPORT_JSON" 2>/dev/null || echo "0")
+            MEDIUM=$(jq '[.site[].alerts[] | select(.riskcode == "2")] | length' "$REPORT_JSON" 2>/dev/null || echo "0")
+            LOW=$(jq '[.site[].alerts[] | select(.riskcode == "1")] | length' "$REPORT_JSON" 2>/dev/null || echo "0")
+            INFO=$(jq '[.site[].alerts[] | select(.riskcode == "0")] | length' "$REPORT_JSON" 2>/dev/null || echo "0")
+
+            echo "| Risk Level | Count |" >> $GITHUB_STEP_SUMMARY
+            echo "|------------|-------|" >> $GITHUB_STEP_SUMMARY
+            echo "| High | $HIGH |" >> $GITHUB_STEP_SUMMARY
+            echo "| Medium | $MEDIUM |" >> $GITHUB_STEP_SUMMARY
+            echo "| Low | $LOW |" >> $GITHUB_STEP_SUMMARY
+            echo "| Informational | $INFO |" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+
+            # List high/medium alerts
+            if [ "$HIGH" != "0" ] || [ "$MEDIUM" != "0" ]; then
+              echo "### High/Medium Risk Alerts" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              jq -r '.site[].alerts[] | select(.riskcode >= "2") | "- **\(.alert)** (\(.riskdesc))"' "$REPORT_JSON" 2>/dev/null >> $GITHUB_STEP_SUMMARY || true
+            fi
+          fi
+
+      - name: Upload ZAP reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: zap-reports-${{ inputs.scan_type }}-${{ github.run_number }}
+          path: security/reports/zap/
+          retention-days: 30
+
+      - name: Commit reports to repository
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Only commit if there are new reports
+          if git status --porcelain security/reports/zap/ | grep -q .; then
+            git add security/reports/zap/
+            git commit -m "security: Add ZAP ${{ inputs.scan_type }} scan report
+
+Scan Type: ${{ inputs.scan_type }}
+Target: ${{ inputs.target_url }}
+Run: #${{ github.run_number }}
+
+Generated by GitHub Actions" || echo "No changes to commit"
+            git push || echo "Push failed - may need to pull first"
+          else
+            echo "No new reports to commit"
+          fi

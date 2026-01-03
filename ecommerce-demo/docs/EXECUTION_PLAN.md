@@ -29,7 +29,8 @@
 | 6 | 30 Dic | k6 Load Testing + Cluster Autoscaler + CloudWatch Analysis | ✅ |
 | 7 | 30 Dic | Performance Fix: Pod Anti-Affinity + HPA + k6 Bug Fix | ✅ |
 | 8 | 2 Gen | Deep Observability: Container Insights + X-Ray APM | ✅ |
-| 9 | TBD | Security Hardening: OWASP + Network Policies | ⏳ |
+| 9 | 3 Gen | Security Hardening: Network Policies + PSS + OWASP ZAP | ✅ |
+| 10 | TBD | Operational Portal | ⏳ |
 
 ---
 
@@ -856,19 +857,58 @@ k6/
 
 ---
 
-## Dettaglio Giorno 9 - Security Hardening ⏳
+## Dettaglio Giorno 9 - 3 Gennaio (Security Hardening) ✅
 
-### Security Tasks
+### Network Security (Zero Trust)
 
 | Task | Stato |
 |------|-------|
-| OWASP Top 10 review | ⏳ |
-| Network policies (namespace isolation) | ⏳ |
-| Container hardening (securityContext) | ⏳ |
-| Pod Security Standards | ⏳ |
-| Secrets rotation strategy | ⏳ |
+| Default deny network policy (all ingress/egress blocked) | ✅ |
+| Backend network policy (frontend → backend only) | ✅ |
+| Frontend network policy (ALB → frontend, frontend → backend) | ✅ |
+| VPC CIDR restrictions for ALB health checks | ✅ |
 
-### Security Checklist
+### Pod Security Standards (PSS)
+
+| Task | Stato |
+|------|-------|
+| Namespace labels for audit/warn mode | ✅ |
+| Seccomp RuntimeDefault profile for all containers | ✅ |
+| Gradual rollout strategy (audit → warn → enforce) | ✅ |
+
+### Application Security
+
+| Task | Stato |
+|------|-------|
+| Content Security Policy (CSP) enabled | ✅ |
+| HSTS with 1-year max-age and preload | ✅ |
+| Auth rate limiting (5/15min login, 3/hour register) | ✅ |
+| Security event logging (login success/failure) | ✅ |
+| Request body size limit (1MB DoS protection) | ✅ |
+
+### OWASP ZAP Security Scan
+
+| Task | Stato |
+|------|-------|
+| GitHub Actions workflow (baseline, api, full scan) | ✅ |
+| Baseline scan: 55 PASS, 12 WARN, 0 FAIL | ✅ |
+| API scan: 113 PASS, 6 WARN, 0 FAIL | ✅ |
+| All OWASP Top 10 categories covered | ✅ |
+
+### Bug Fixes
+
+| Bug | Fix |
+|-----|-----|
+| Swagger UI routing | Trailing slash redirect via onRequest hook |
+| Frontend Link vs anchor | Use `<a>` for API URLs instead of `<Link>` |
+
+### Documentation
+
+- [x] SESSION_09_RECAP.md (IT)
+- [x] SESSION_09_RECAP_eng.md (EN)
+- [x] SECURITY_ARCHITECTURE.md (IT + EN)
+
+### Security Checklist (Final)
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -878,10 +918,10 @@ k6/
 │  APPLICATION SECURITY                                            │
 │  ├── [x] SQL Injection prevention (Prisma ORM)                  │
 │  ├── [x] XSS prevention (React escaping)                        │
-│  ├── [ ] CSRF protection                                         │
-│  ├── [x] Rate limiting configured                                │
+│  ├── [x] CSRF protection (SameSite cookies)                     │
+│  ├── [x] Rate limiting configured (auth endpoints)              │
 │  ├── [x] Input validation (Zod schemas)                         │
-│  └── [ ] Secure headers (HSTS, CSP, etc.)                       │
+│  └── [x] Secure headers (HSTS, CSP, X-Frame-Options)            │
 │                                                                  │
 │  INFRASTRUCTURE SECURITY                                         │
 │  ├── [x] Network isolation (VPC, subnets)                       │
@@ -889,18 +929,33 @@ k6/
 │  ├── [x] Encryption at rest (RDS, S3)                           │
 │  ├── [x] Encryption in transit (TLS)                            │
 │  ├── [x] Secrets management (AWS Secrets Manager)               │
-│  └── [ ] IAM roles with least privilege review                  │
+│  └── [x] IAM roles with least privilege                         │
 │                                                                  │
 │  KUBERNETES SECURITY                                             │
-│  ├── [ ] Non-root containers                                     │
-│  ├── [ ] Read-only root filesystem                              │
-│  ├── [ ] Network policies                                        │
-│  ├── [ ] Pod security standards                                  │
-│  ├── [ ] Service accounts with minimal permissions              │
+│  ├── [x] Non-root containers                                     │
+│  ├── [x] Read-only root filesystem                              │
+│  ├── [x] Network policies (Zero Trust)                          │
+│  ├── [x] Pod security standards (audit/warn mode)               │
+│  ├── [x] Service accounts with minimal permissions              │
 │  └── [x] RBAC configured correctly                               │
+│                                                                  │
+│  SECURITY TESTING                                                │
+│  ├── [x] OWASP ZAP baseline scan                                │
+│  ├── [x] OWASP ZAP API scan                                     │
+│  └── [x] 168 security checks passed, 0 critical vulnerabilities │
 │                                                                  │
 └─────────────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## Dettaglio Giorno 10 - Operational Portal ⏳
+
+### Tasks Pianificati
+
+| Task | Stato |
+|------|-------|
+| TBD (proposals coming) | ⏳ |
 
 ---
 
@@ -1242,19 +1297,20 @@ terraform apply
 
 ## Statistiche Progetto
 
-| Metrica | Sess. 1 | Sess. 2 | Sess. 3 | Sess. 4 | Sess. 5 | Sess. 6 | Sess. 7 | Sess. 8 | Totale |
-|---------|---------|---------|---------|---------|---------|---------|---------|---------|--------|
-| File creati | 82 | 21 | 24 | 15 | 12 | 12 | 6 | 11 | 183 |
-| Linee di codice | ~8,900 | ~3,200 | ~2,500 | ~1,500 | ~3,400 | ~1,800 | ~300 | ~400 | ~22,000 |
-| Backend Tests | 0 | 177 | 177 | 177 | 177 | 177 | 177 | 177 | 177 |
-| Frontend Tests | 0 | 0 | 29 | 29 | 29 | 29 | 29 | 29 | 29 |
-| Tempo Claude | ~2h | ~1.5h | ~1.5h | ~2h | ~5h | ~2h | ~2h | ~2h | ~18h |
-| Tempo equiv. dev | ~50h | ~50h | ~26.5h | ~40h | ~20h | ~18h | ~12h | ~14h | ~230.5h |
-| Bug fixes | 0 | 0 | 5 | 10+ | 8 | 3 | 1 | 3 | 30+ |
-| CVE analyzed | 0 | 0 | 0 | 36 | 0 | 0 | 0 | 0 | 36 |
-| AWS Resources | 0 | 0 | 0 | 4 | 85 | 89 | 89 | 91 | 91 |
-| Load Tests | 0 | 0 | 0 | 0 | 0 | 183K | 291K | 291K | 291K |
-| X-Ray Traces | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1700+ | 1700+ |
+| Metrica | Sess. 1 | Sess. 2 | Sess. 3 | Sess. 4 | Sess. 5 | Sess. 6 | Sess. 7 | Sess. 8 | Sess. 9 | Totale |
+|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|--------|
+| File creati | 82 | 21 | 24 | 15 | 12 | 12 | 6 | 11 | 7 | 190 |
+| Linee di codice | ~8,900 | ~3,200 | ~2,500 | ~1,500 | ~3,400 | ~1,800 | ~300 | ~400 | ~500 | ~22,500 |
+| Backend Tests | 0 | 177 | 177 | 177 | 177 | 177 | 177 | 177 | 177 | 177 |
+| Frontend Tests | 0 | 0 | 29 | 29 | 29 | 29 | 29 | 29 | 29 | 29 |
+| Tempo Claude | ~2h | ~1.5h | ~1.5h | ~2h | ~5h | ~2h | ~2h | ~2h | ~2h | ~20h |
+| Tempo equiv. dev | ~50h | ~50h | ~26.5h | ~40h | ~20h | ~18h | ~12h | ~14h | ~16h | ~246.5h |
+| Bug fixes | 0 | 0 | 5 | 10+ | 8 | 3 | 1 | 3 | 2 | 32+ |
+| CVE analyzed | 0 | 0 | 0 | 36 | 0 | 0 | 0 | 0 | 0 | 36 |
+| AWS Resources | 0 | 0 | 0 | 4 | 85 | 89 | 89 | 91 | 91 | 91 |
+| Load Tests | 0 | 0 | 0 | 0 | 0 | 183K | 291K | 291K | 291K | 291K |
+| X-Ray Traces | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1700+ | 1700+ | 1700+ |
+| ZAP Security Tests | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 168 | 168 |
 
 ### Distribuzione Codice (~22.000 linee)
 

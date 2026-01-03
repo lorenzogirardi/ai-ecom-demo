@@ -22,6 +22,7 @@
 │  ✅ Auth Rate Limiting                          │
 │  ✅ Security Event Logging                      │
 │  ✅ Request Body Size Limit                     │
+│  ✅ OWASP ZAP Security Scan                     │
 │                                                  │
 └─────────────────────────────────────────────────┘
 ```
@@ -393,6 +394,9 @@ const app = Fastify({
 | `helm/frontend/values.yaml` | Modificato | Seccomp profile |
 | `apps/backend/src/server.ts` | Modificato | CSP, HSTS, bodyLimit, Swagger a /api/docs |
 | `apps/backend/src/modules/auth/auth.routes.ts` | Modificato | Rate limiting con bypass k6, security logging |
+| `.github/workflows/security-scan.yml` | Creato | OWASP ZAP security scan workflow |
+| `security/reports/zap/baseline-report.*` | Creato | Risultati ZAP baseline scan |
+| `security/reports/zap/api-report.*` | Creato | Risultati ZAP API scan |
 
 ---
 
@@ -486,30 +490,131 @@ jobs:
 
 ---
 
-## Prossimi Passi (Day 10)
+## 9. OWASP ZAP Security Scan
+
+### Overview
+
+OWASP ZAP (Zed Attack Proxy) è uno strumento open-source per trovare vulnerabilità nelle applicazioni web. Abbiamo eseguito due tipi di scan:
+
+1. **Baseline Scan** - Scan passivo veloce dell'intera applicazione (~2 min)
+2. **API Scan** - Scan attivo degli endpoint API usando OpenAPI spec (~3 min)
+
+### Risultati Scan
 
 ```
-┌─────────────────────────────────────────────────┐
-│         OPZIONI PER GIORNO 10                   │
-├─────────────────────────────────────────────────┤
-│                                                  │
-│  A) Advanced Load Testing & Security            │
-│     - k6 browser testing                        │
-│     - OWASP ZAP security scan                   │
-│     - Chaos engineering (pod failures)          │
-│                                                  │
-│  B) Cost Optimization & Cleanup                 │
-│     - Spot instances configuration              │
-│     - Resource right-sizing                     │
-│     - Cleanup unused resources                  │
-│                                                  │
-│  C) Documentation & Wrap-up                     │
-│     - Architecture diagrams                     │
-│     - Runbook documentation                     │
-│     - Demo preparation                          │
-│                                                  │
-└─────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                     RISULTATI ZAP SCAN                           │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  BASELINE SCAN (Frontend + Backend)                             │
+│  ├── PASS:  55 controlli di sicurezza                           │
+│  ├── WARN:  12 warning informativi                              │
+│  └── FAIL:  0 vulnerabilità critiche                            │
+│                                                                  │
+│  API SCAN (Backend API)                                         │
+│  ├── PASS:  113 controlli di sicurezza                          │
+│  ├── WARN:  6 warning informativi                               │
+│  └── FAIL:  0 vulnerabilità critiche                            │
+│                                                                  │
+│  ✅ NESSUNA VULNERABILITÀ CRITICA TROVATA                       │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
 ```
+
+### API Scan - Test Superati
+
+| Categoria | Test Superati |
+|-----------|--------------|
+| SQL Injection (tutti i DB) | 6 |
+| Cross-Site Scripting (XSS) | 5 |
+| Remote Code Execution | 4 |
+| Path Traversal | 1 |
+| Command Injection | 2 |
+| CSRF | 1 |
+| Log4Shell / Spring4Shell | 2 |
+| Buffer Overflow / Format String | 2 |
+| XML/XSLT Injection | 3 |
+| Server-Side Template Injection | 2 |
+| Cloud Metadata Exposure | 1 |
+| Altri controlli | 84 |
+
+### Warning Baseline (Informativi)
+
+| Warning | Interessato | Rischio | Azione |
+|---------|-------------|---------|--------|
+| HSTS Non Impostato | Frontend pages | Basso | Aggiungere HSTS a Next.js |
+| X-Powered-By Header | Frontend | Basso | Rimuovere header in Next.js |
+| CSP Non Impostato | Frontend pages | Basso | Aggiungere CSP a Next.js |
+| Permissions-Policy Non Impostato | Frontend | Info | Aggiungere Permissions-Policy |
+| Libreria JS Vulnerabile | swagger-ui | Basso | Aggiornare @fastify/swagger-ui |
+| Timestamp Disclosure | Dati prodotto | Info | Atteso (createdAt/updatedAt) |
+| Commenti Sospetti | JS bundles | Info | Artefatti minificazione |
+| Isolamento Spectre | Frontend | Info | Aggiungere header COOP/COEP |
+
+### Backend API - Security Headers (Verificati)
+
+```bash
+$ curl -I https://dls03qes9fc77.cloudfront.net/api/health
+
+Content-Security-Policy: default-src 'self'; script-src 'self'; ...
+Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+X-XSS-Protection: 0
+```
+
+### GitHub Action Workflow
+
+```yaml
+# .github/workflows/security-scan.yml
+name: Security Scan (OWASP ZAP)
+
+on:
+  workflow_dispatch:
+    inputs:
+      scan_type:
+        type: choice
+        options:
+          - baseline    # Scan passivo veloce (~2 min)
+          - api         # Scan API (~5 min)
+          - full        # Scan attivo completo (~30+ min)
+
+jobs:
+  zap-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: zaproxy/action-baseline@v0.12.0
+        with:
+          target: ${{ inputs.target_url }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: zap-reports
+          path: security/reports/zap/
+```
+
+### Report Generati
+
+| Report | Formato | Dimensione |
+|--------|---------|------------|
+| `baseline-report.html` | HTML | 126 KB |
+| `baseline-report.json` | JSON | 50 KB |
+| `api-report.html` | HTML | 174 KB |
+| `api-report.json` | JSON | 60 KB |
+
+### Raccomandazioni per il Futuro
+
+1. **Security Headers Frontend**
+   - Aggiungere CSP, HSTS, Permissions-Policy a Next.js
+   - Rimuovere header X-Powered-By
+   - Aggiungere header COOP/COEP per mitigazione Spectre
+
+2. **Scan Schedulati**
+   - Eseguire baseline scan settimanale
+   - Eseguire API scan dopo ogni deployment
+
+3. **Integrazione**
+   - Aggiungere ZAP scan alla CI/CD pipeline
+   - Bloccare deployment se vulnerabilità critiche trovate
 
 ---
 
@@ -517,12 +622,14 @@ jobs:
 
 | Metrica | Valore |
 |---------|--------|
-| File creati | 4 |
+| File creati | 7 |
 | File modificati | 4 |
 | Network Policies | 3 |
 | Security headers aggiunti | 5+ |
 | Rate limit endpoints | 2 |
 | Security events loggati | 6 tipi |
+| ZAP controlli sicurezza superati | 168 |
+| ZAP vulnerabilità critiche | 0 |
 
 ---
 

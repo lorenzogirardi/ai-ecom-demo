@@ -87,8 +87,8 @@ docs/EXECUTION_PLAN.md
 
 | Categoria | Documenti |
 |-----------|-----------|
-| [Session Recaps](#session-recaps) | 8 sessioni di sviluppo |
-| [Architettura](#architettura) | 5 documenti con diagrammi |
+| [Session Recaps](#session-recaps) | 9 sessioni di sviluppo |
+| [Architettura](#architettura) | 6 documenti con diagrammi |
 | [Documentazione Tecnica](#documentazione-tecnica) | 8 documenti specifici |
 
 ---
@@ -107,6 +107,7 @@ Riepiloghi delle sessioni di sviluppo del progetto.
 | 6 | [SESSION_06_RECAP.md](./SESSION_06_RECAP.md) | **Load Testing** - k6 scenarios, Cluster Autoscaler, CloudWatch metrics, bottleneck analysis |
 | 7 | [SESSION_07_RECAP.md](./SESSION_07_RECAP.md) | **Performance Optimization** - Pod Anti-Affinity, HPA tuning, +134% throughput, -42% latency |
 | 8 | [SESSION_08_RECAP.md](./SESSION_08_RECAP.md) | **Deep Observability** - Container Insights, X-Ray tracing, Code optimizations, 508 RPS (+116% vs Day 6), 99.95% cache hit rate |
+| 9 | [SESSION_09_RECAP.md](./SESSION_09_RECAP.md) | **Security Hardening** - Network Policies (Zero Trust), PSS, CSP/HSTS, Rate Limiting, OWASP ZAP scan (168 tests passed) |
 
 > **English versions:** Ogni documento ha una versione inglese con suffisso `_eng.md`
 
@@ -123,6 +124,7 @@ Diagrammi architetturali del sistema.
 | [GITHUB_PIPELINES.md](./GITHUB_PIPELINES.md) | 6 | **CI/CD Pipelines** - Backend CI, Frontend CI, Infra CI, ArgoCD deploy, Load test workflow, job dependencies |
 | [SEQUENCE_DIAGRAMS.md](./SEQUENCE_DIAGRAMS.md) | 10 | **Flussi Applicativi** - Login, registration, products, categories, cart, checkout, orders, search, autocomplete, proxy pattern |
 | [OBSERVABILITY_ARCHITECTURE.md](./OBSERVABILITY_ARCHITECTURE.md) | 12 | **Observability** - Logs, X-Ray tracing, Container Insights, metriche, IRSA, flussi dati |
+| [SECURITY_ARCHITECTURE.md](./SECURITY_ARCHITECTURE.md) | 8 | **Security** - CI/CD pipeline security, network isolation, auth flow, rate limiting, container security, OWASP Top 10 |
 
 > **English versions:** Ogni documento ha una versione inglese con suffisso `_eng.md`
 
@@ -151,21 +153,21 @@ Documenti tecnici specifici.
 
 ```
 📁 slides/
-├── 📄 Session Recaps     8 documenti × 2 lingue = 16 file
-├── 📄 Architettura       5 documenti × 2 lingue = 10 file
+├── 📄 Session Recaps     9 documenti × 2 lingue = 18 file
+├── 📄 Architettura       6 documenti × 2 lingue = 12 file
 ├── 📄 Technical Docs     8 documenti × 2 lingue = 16 file
 ├── 📄 Index              1 documento × 2 lingue =  2 file
 └── ────────────────────────────────────────────────────
-    TOTALE               22 documenti × 2 lingue = 44 file
+    TOTALE               24 documenti × 2 lingue = 48 file
 ```
 
 | Metrica | Valore |
 |---------|--------|
-| **Documenti unici** | 22 |
-| **File totali** | 44 |
+| **Documenti unici** | 24 |
+| **File totali** | 48 |
 | **Lingue** | IT, EN |
-| **Diagrammi Mermaid** | ~52 |
-| **Dimensione totale** | ~530 KB |
+| **Diagrammi Mermaid** | ~60 |
+| **Dimensione totale** | ~580 KB |
 
 ---
 
@@ -219,10 +221,10 @@ Tutti i documenti sono disponibili in inglese con il suffisso `_eng.md`:
 
 | Metrica | Valore |
 |---------|--------|
-| **Documenti unici** | 22 |
-| **File totali** | 44 (IT + EN) |
-| **Diagrammi Mermaid** | ~52 |
-| **Dimensione totale** | ~530 KB |
+| **Documenti unici** | 24 |
+| **File totali** | 48 (IT + EN) |
+| **Diagrammi Mermaid** | ~60 |
+| **Dimensione totale** | ~580 KB |
 
 ### Confronto Tempi: Manuale vs Claude
 
@@ -248,4 +250,4 @@ Tutti i documenti sono disponibili in inglese con il suffisso `_eng.md`:
 
 ---
 
-*Ultimo aggiornamento: 2026-01-02*
+*Ultimo aggiornamento: 2026-01-03*
