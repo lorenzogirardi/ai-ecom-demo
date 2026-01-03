@@ -37,6 +37,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Cleanup previous ZAP files
+        run: |
+          rm -f zap.yaml report*.html report*.json report*.md *-report.*
+          rm -rf ecommerce-demo/security/reports/zap/*
+
       - name: Verify target is accessible
         run: |
           echo "Checking target: ${{ inputs.target_url }}"
@@ -103,15 +108,18 @@ jobs:
           TIMESTAMP=$(date +%Y%m%d_%H%M%S)
           SCAN_TYPE="${{ inputs.scan_type }}"
 
-          # ZAP actions output reports as {scan_type}-report.{ext}
+          echo "Looking for report files..."
+          ls -la *.html *.json *.md *-report.* 2>/dev/null || echo "No reports in root"
+
+          # ZAP actions create: report_html.html, report_json.json, report_md.md
           for ext in html json md; do
-            # Try baseline-report, api-report, full-report patterns
-            if [ -f "${SCAN_TYPE}-report.${ext}" ]; then
-              mv "${SCAN_TYPE}-report.${ext}" "ecommerce-demo/security/reports/zap/zap-${SCAN_TYPE}-${TIMESTAMP}.${ext}"
-            # Also check generic report names
-            elif [ -f "report.${ext}" ]; then
-              mv "report.${ext}" "ecommerce-demo/security/reports/zap/zap-${SCAN_TYPE}-${TIMESTAMP}.${ext}"
-            fi
+            for pattern in "report_${ext}.${ext}" "${SCAN_TYPE}-report.${ext}" "report.${ext}"; do
+              if [ -f "$pattern" ]; then
+                echo "Moving $pattern"
+                mv "$pattern" "ecommerce-demo/security/reports/zap/zap-${SCAN_TYPE}-${TIMESTAMP}.${ext}"
+                break
+              fi
+            done
           done
 
           echo "Generated reports:"
