@@ -72,6 +72,7 @@ jobs:
           cmd_options: '-a -j -I'
           allow_issue_writing: false
           fail_action: false
+          artifact_name: ''
 
       - name: ZAP API Scan
         if: inputs.scan_type == 'api'
@@ -82,6 +83,7 @@ jobs:
           cmd_options: '-f openapi -I'
           allow_issue_writing: false
           fail_action: false
+          artifact_name: ''
 
       - name: ZAP Full Scan
         if: inputs.scan_type == 'full'
@@ -92,6 +94,7 @@ jobs:
           cmd_options: '-a -j -I'
           allow_issue_writing: false
           fail_action: false
+          artifact_name: ''
 
       - name: Organize reports
         if: always()
