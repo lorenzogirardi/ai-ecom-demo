@@ -89,7 +89,7 @@ docs/EXECUTION_PLAN.md
 |-----------|-----------|
 | [Session Recaps](#session-recaps) | 10 sessioni di sviluppo |
 | [Architettura](#architettura) | 7 documenti con diagrammi |
-| [Documentazione Tecnica](#documentazione-tecnica) | 10 documenti specifici |
+| [Documentazione Tecnica](#documentazione-tecnica) | 11 documenti specifici |
 
 ---
 
@@ -148,6 +148,7 @@ Documenti tecnici specifici.
 | [OBSERVABILITY_ANALYSIS.md](./OBSERVABILITY_ANALYSIS.md) | **Observability Analysis** - X-Ray traces analysis, Container Insights metrics, performance optimization post-load-test |
 | [ZAP_BASELINE_REPORT.md](./ZAP_BASELINE_REPORT.md) | **OWASP ZAP Scan** - Baseline security scan report: 0 High, 4 Medium, 6 Low, 11 Informational alerts |
 | [K6_STRESS_TEST_REPORT.md](./K6_STRESS_TEST_REPORT.md) | **k6 Stress Test** - Day 8 results: 216K requests, 277 RPS, p95 190ms, 0% errors, 100% checks passed |
+| [LIGHTHOUSE_REPORT.md](./LIGHTHOUSE_REPORT.md) | **Lighthouse Audit** - Performance 92, Accessibility 90, Best Practices 96, SEO 100 |
 
 > **English versions:** Ogni documento ha una versione inglese con suffisso `_eng.md`
 
@@ -159,16 +160,16 @@ Documenti tecnici specifici.
 📁 slides/
 ├── 📄 Session Recaps     10 documenti × 2 lingue = 20 file
 ├── 📄 Architettura        7 documenti × 2 lingue = 14 file
-├── 📄 Technical Docs     10 documenti × 2 lingue = 20 file
+├── 📄 Technical Docs     11 documenti × 2 lingue = 22 file
 ├── 📄 Index               1 documento × 2 lingue =  2 file
 └── ────────────────────────────────────────────────────
-    TOTALE                28 documenti × 2 lingue = 56 file
+    TOTALE                29 documenti × 2 lingue = 58 file
 ```
 
 | Metrica | Valore |
 |---------|--------|
-| **Documenti unici** | 28 |
-| **File totali** | 56 |
+| **Documenti unici** | 29 |
+| **File totali** | 58 |
 | **Lingue** | IT, EN |
 | **Diagrammi Mermaid** | ~66 |
 | **Dimensione totale** | ~620 KB |
