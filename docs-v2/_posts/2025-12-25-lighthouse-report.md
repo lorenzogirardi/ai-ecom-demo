@@ -10,57 +10,27 @@ excerpt: "Google Lighthouse audit results: Performance 92, Accessibility 90, Bes
 takeaway: "Excellent scores across all categories with minor TBT optimization opportunity."
 ---
 
-## Scores Overview
+<div class="lighthouse-embed">
+  <iframe src="{{ '/assets/lighthouse-report.html' | relative_url }}" width="100%" height="800" frameborder="0"></iframe>
+</div>
 
-| Category | Score |
-|----------|-------|
-| Performance | **92** |
-| Accessibility | **90** |
-| Best Practices | **96** |
-| SEO | **100** |
+<style>
+.lighthouse-embed {
+  margin: 0 -2rem;
+  width: calc(100% + 4rem);
+}
+.lighthouse-embed iframe {
+  border: 1px solid var(--border-color, #30363d);
+  border-radius: 8px;
+}
+@media (max-width: 768px) {
+  .lighthouse-embed {
+    margin: 0 -1rem;
+    width: calc(100% + 2rem);
+  }
+}
+</style>
 
-## Core Web Vitals
-
-| Metric | Value | Status |
-|--------|-------|--------|
-| First Contentful Paint (FCP) | 0.3 s | Good |
-| Largest Contentful Paint (LCP) | 0.9 s | Good |
-| Total Blocking Time (TBT) | 210 ms | Needs Improvement |
-| Cumulative Layout Shift (CLS) | 0.013 | Good |
-| Speed Index | 0.7 s | Good |
-
-## Key Findings
-
-### Performance (92/100)
-- Fast initial load with FCP at 0.3s
-- Main content loads in under 1 second (LCP 0.9s)
-- Minimal layout shift (CLS 0.013)
-- TBT slightly above threshold (210ms vs 200ms target)
-
-### SEO (100/100)
-All SEO best practices implemented:
-- Meta viewport and description present
-- Document has proper title
-- Mobile-friendly design
-- Valid hreflang attributes
-
-### Accessibility (90/100)
-Strong accessibility foundation:
-- Images have alt attributes
-- Form elements have labels
-- Proper document structure
-- Good color contrast
-
-### Best Practices (96/100)
-Security and web standards:
-- No deprecated APIs
-- Console error-free
-- Proper image aspect ratios
-
-## Full Report
-
-<a href="{{ '/assets/lighthouse-report.html' | relative_url }}" target="_blank" class="btn">View Full Lighthouse Report</a>
-
----
-
-*Tested with Lighthouse 11.4.0 on 2025-12-30*
+<p style="text-align: center; margin-top: 1rem;">
+  <a href="{{ '/assets/lighthouse-report.html' | relative_url }}" target="_blank">Open full report in new tab</a>
+</p>
