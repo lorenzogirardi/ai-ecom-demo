@@ -146,6 +146,7 @@ Documenti tecnici specifici.
 | [LOAD_TEST_ANALYSIS_RATE_ON.md](./LOAD_TEST_ANALYSIS_RATE_ON.md) | **Rate Limit Testing** - Test con rate limiting attivo, bypass header configuration |
 | [MULTI_TEAM_GUARDRAILS.md](./MULTI_TEAM_GUARDRAILS.md) | **Enterprise Guardrails** - Setup multi-repo con Claude Code, CLAUDE.md per team, CODEOWNERS, IAM isolation, CI/CD gates |
 | [OBSERVABILITY_ANALYSIS.md](./OBSERVABILITY_ANALYSIS.md) | **Observability Analysis** - X-Ray traces analysis, Container Insights metrics, performance optimization post-load-test |
+| [ZAP_BASELINE_REPORT.md](./ZAP_BASELINE_REPORT.md) | **OWASP ZAP Scan** - Baseline security scan report: 0 High, 4 Medium, 6 Low, 11 Informational alerts |
 
 > **English versions:** Ogni documento ha una versione inglese con suffisso `_eng.md`
 
@@ -157,16 +158,16 @@ Documenti tecnici specifici.
 📁 slides/
 ├── 📄 Session Recaps     10 documenti × 2 lingue = 20 file
 ├── 📄 Architettura        7 documenti × 2 lingue = 14 file
-├── 📄 Technical Docs      8 documenti × 2 lingue = 16 file
+├── 📄 Technical Docs      9 documenti × 2 lingue = 18 file
 ├── 📄 Index               1 documento × 2 lingue =  2 file
 └── ────────────────────────────────────────────────────
-    TOTALE                26 documenti × 2 lingue = 52 file
+    TOTALE                27 documenti × 2 lingue = 54 file
 ```
 
 | Metrica | Valore |
 |---------|--------|
-| **Documenti unici** | 26 |
-| **File totali** | 52 |
+| **Documenti unici** | 27 |
+| **File totali** | 54 |
 | **Lingue** | IT, EN |
 | **Diagrammi Mermaid** | ~66 |
 | **Dimensione totale** | ~620 KB |
