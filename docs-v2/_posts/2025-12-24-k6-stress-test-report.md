@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "k6 Stress Test Report - Day 8"
+title: "k6 Stress Test Report"
 date: 2025-12-24
 category: technical
 order: 12
