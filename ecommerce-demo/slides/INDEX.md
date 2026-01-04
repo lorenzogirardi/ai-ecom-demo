@@ -89,7 +89,7 @@ docs/EXECUTION_PLAN.md
 |-----------|-----------|
 | [Session Recaps](#session-recaps) | 10 sessioni di sviluppo |
 | [Architettura](#architettura) | 7 documenti con diagrammi |
-| [Documentazione Tecnica](#documentazione-tecnica) | 8 documenti specifici |
+| [Documentazione Tecnica](#documentazione-tecnica) | 10 documenti specifici |
 
 ---
 
@@ -147,6 +147,7 @@ Documenti tecnici specifici.
 | [MULTI_TEAM_GUARDRAILS.md](./MULTI_TEAM_GUARDRAILS.md) | **Enterprise Guardrails** - Setup multi-repo con Claude Code, CLAUDE.md per team, CODEOWNERS, IAM isolation, CI/CD gates |
 | [OBSERVABILITY_ANALYSIS.md](./OBSERVABILITY_ANALYSIS.md) | **Observability Analysis** - X-Ray traces analysis, Container Insights metrics, performance optimization post-load-test |
 | [ZAP_BASELINE_REPORT.md](./ZAP_BASELINE_REPORT.md) | **OWASP ZAP Scan** - Baseline security scan report: 0 High, 4 Medium, 6 Low, 11 Informational alerts |
+| [K6_STRESS_TEST_REPORT.md](./K6_STRESS_TEST_REPORT.md) | **k6 Stress Test** - Day 8 results: 216K requests, 277 RPS, p95 190ms, 0% errors, 100% checks passed |
 
 > **English versions:** Ogni documento ha una versione inglese con suffisso `_eng.md`
 
@@ -158,16 +159,16 @@ Documenti tecnici specifici.
 📁 slides/
 ├── 📄 Session Recaps     10 documenti × 2 lingue = 20 file
 ├── 📄 Architettura        7 documenti × 2 lingue = 14 file
-├── 📄 Technical Docs      9 documenti × 2 lingue = 18 file
+├── 📄 Technical Docs     10 documenti × 2 lingue = 20 file
 ├── 📄 Index               1 documento × 2 lingue =  2 file
 └── ────────────────────────────────────────────────────
-    TOTALE                27 documenti × 2 lingue = 54 file
+    TOTALE                28 documenti × 2 lingue = 56 file
 ```
 
 | Metrica | Valore |
 |---------|--------|
-| **Documenti unici** | 27 |
-| **File totali** | 54 |
+| **Documenti unici** | 28 |
+| **File totali** | 56 |
 | **Lingue** | IT, EN |
 | **Diagrammi Mermaid** | ~66 |
 | **Dimensione totale** | ~620 KB |
