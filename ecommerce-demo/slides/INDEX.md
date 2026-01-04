@@ -255,4 +255,4 @@ Tutti i documenti sono disponibili in inglese con il suffisso `_eng.md`:
 
 ---
 
-*Ultimo aggiornamento: 2026-01-03*
+*Ultimo aggiornamento: 2026-01-04*

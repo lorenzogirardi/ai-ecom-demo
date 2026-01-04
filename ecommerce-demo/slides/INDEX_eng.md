@@ -87,9 +87,9 @@ docs/EXECUTION_PLAN.md
 
 | Category | Documents |
 |----------|-----------|
-| [Session Recaps](#session-recaps) | 9 development sessions |
-| [Architecture](#architecture) | 6 documents with diagrams |
-| [Technical Documentation](#technical-documentation) | 8 specific documents |
+| [Session Recaps](#session-recaps) | 10 development sessions |
+| [Architecture](#architecture) | 7 documents with diagrams |
+| [Technical Documentation](#technical-documentation) | 11 specific documents |
 
 ---
 
@@ -108,6 +108,7 @@ Summaries of project development sessions.
 | 7 | [SESSION_07_RECAP_eng.md](./SESSION_07_RECAP_eng.md) | **Performance Optimization** - Pod Anti-Affinity, HPA tuning, +134% throughput, -42% latency |
 | 8 | [SESSION_08_RECAP_eng.md](./SESSION_08_RECAP_eng.md) | **Deep Observability** - Container Insights, X-Ray tracing, Code optimizations, 508 RPS (+116% vs Day 6), 99.95% cache hit rate |
 | 9 | [SESSION_09_RECAP_eng.md](./SESSION_09_RECAP_eng.md) | **Security Hardening** - Network Policies (Zero Trust), PSS, CSP/HSTS, Rate Limiting, OWASP ZAP scan (168 tests passed) |
+| 10 | [SESSION_10_RECAP_eng.md](./SESSION_10_RECAP_eng.md) | **Operational Portal** - 14 OPS workflows for L1 Support, GitHub Environment protection, bounded parameters |
 
 > **Italian versions:** Each document has an Italian version without the `_eng` suffix
 
@@ -125,6 +126,7 @@ System architecture diagrams.
 | [SEQUENCE_DIAGRAMS_eng.md](./SEQUENCE_DIAGRAMS_eng.md) | 10 | **Application Flows** - Login, registration, products, categories, cart, checkout, orders, search, autocomplete, proxy pattern |
 | [OBSERVABILITY_ARCHITECTURE_eng.md](./OBSERVABILITY_ARCHITECTURE_eng.md) | 12 | **Observability** - Logs, X-Ray tracing, Container Insights, metrics, IRSA, data flows |
 | [SECURITY_ARCHITECTURE_eng.md](./SECURITY_ARCHITECTURE_eng.md) | 8 | **Security** - CI/CD pipeline security, network isolation, auth flow, rate limiting, container security, OWASP Top 10 |
+| [OPERATIONAL_PORTAL_ARCHITECTURE_eng.md](./OPERATIONAL_PORTAL_ARCHITECTURE_eng.md) | 6 | **Operational Portal** - L1 Support workflows, GitHub Actions OPS, Environment protection, bounded parameters |
 
 > **Italian versions:** Each document has an Italian version without the `_eng` suffix
 
@@ -144,6 +146,9 @@ Specific technical documents.
 | [LOAD_TEST_ANALYSIS_RATE_ON_eng.md](./LOAD_TEST_ANALYSIS_RATE_ON_eng.md) | **Rate Limit Testing** - Testing with rate limiting enabled, bypass header configuration |
 | [MULTI_TEAM_GUARDRAILS_eng.md](./MULTI_TEAM_GUARDRAILS_eng.md) | **Enterprise Guardrails** - Multi-repo setup with Claude Code, per-team CLAUDE.md, CODEOWNERS, IAM isolation, CI/CD gates |
 | [OBSERVABILITY_ANALYSIS_eng.md](./OBSERVABILITY_ANALYSIS_eng.md) | **Observability Analysis** - X-Ray traces analysis, Container Insights metrics, performance optimization post-load-test |
+| [ZAP_BASELINE_REPORT_eng.md](./ZAP_BASELINE_REPORT_eng.md) | **Security Scan** - OWASP ZAP baseline scan results, 0 High/4 Medium/6 Low alerts, remediation recommendations |
+| [K6_STRESS_TEST_REPORT_eng.md](./K6_STRESS_TEST_REPORT_eng.md) | **Stress Test** - k6 load test results, 216K requests, 277 RPS, p95 190ms, 0% errors |
+| [LIGHTHOUSE_REPORT_eng.md](./LIGHTHOUSE_REPORT_eng.md) | **Performance Audit** - Lighthouse scores (Performance 92, Accessibility 90, Best Practices 96, SEO 100), Core Web Vitals |
 
 > **Italian versions:** Each document has an Italian version without the `_eng` suffix
 
@@ -153,21 +158,21 @@ Specific technical documents.
 
 ```
 📁 slides/
-├── 📄 Session Recaps     9 documents × 2 languages = 18 files
-├── 📄 Architecture       6 documents × 2 languages = 12 files
-├── 📄 Technical Docs     8 documents × 2 languages = 16 files
+├── 📄 Session Recaps    10 documents × 2 languages = 20 files
+├── 📄 Architecture       7 documents × 2 languages = 14 files
+├── 📄 Technical Docs    11 documents × 2 languages = 22 files
 ├── 📄 Index              1 document  × 2 languages =  2 files
 └── ────────────────────────────────────────────────────────
-    TOTAL                24 documents × 2 languages = 48 files
+    TOTAL                29 documents × 2 languages = 58 files
 ```
 
 | Metric | Value |
 |--------|-------|
-| **Unique documents** | 24 |
-| **Total files** | 48 |
+| **Unique documents** | 29 |
+| **Total files** | 58 |
 | **Languages** | IT, EN |
 | **Mermaid diagrams** | ~60 |
-| **Total size** | ~580 KB |
+| **Total size** | ~650 KB |
 
 ---
 
@@ -221,10 +226,10 @@ All documents are available in Italian without the `_eng` suffix:
 
 | Metric | Value |
 |--------|-------|
-| **Unique documents** | 24 |
-| **Total files** | 48 (IT + EN) |
+| **Unique documents** | 29 |
+| **Total files** | 58 (IT + EN) |
 | **Mermaid diagrams** | ~60 |
-| **Total size** | ~580 KB |
+| **Total size** | ~650 KB |
 
 ### Time Comparison: Manual vs Claude
 
@@ -250,4 +255,4 @@ All documents are available in Italian without the `_eng` suffix:
 
 ---
 
-*Last updated: 2026-01-03*
+*Last updated: 2026-01-04*
