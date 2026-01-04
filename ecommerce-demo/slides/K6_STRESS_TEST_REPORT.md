@@ -1,100 +1,100 @@
-# k6 Stress Test Report
+# Report Stress Test k6
 
-> **Test Date:** 2026-01-02
-> **Status:** PASSED
-> **Session:** Day 8 - Post Code Optimizations
+> **Data Test:** 2026-01-02
+> **Stato:** SUPERATO
+> **Sessione:** Giorno 8 - Post Ottimizzazioni Codice
 
-## Summary
+## Riepilogo
 
-| Metric | Value |
-|--------|-------|
-| Total Requests | 216,375 |
-| Requests/sec | 277.2 |
-| Response Time (p95) | 190 ms |
-| Error Rate | 0.00% |
-| Virtual Users | 100 max |
-| Duration | 780.6 seconds (~13 min) |
-| Iterations | 56,957 |
+| Metrica | Valore |
+|---------|--------|
+| Richieste Totali | 216.375 |
+| Richieste/sec | 277,2 |
+| Tempo di Risposta (p95) | 190 ms |
+| Tasso di Errore | 0,00% |
+| Utenti Virtuali | 100 max |
+| Durata | 780,6 secondi (~13 min) |
+| Iterazioni | 56.957 |
 
-## Response Time Distribution
+## Distribuzione Tempi di Risposta
 
-| Percentile | Response Time |
-|------------|---------------|
-| Minimum | 109.50 ms |
-| Average | 130.34 ms |
-| Median (p50) | 117.87 ms |
-| p90 | 166.29 ms |
-| p95 | 189.62 ms |
-| Maximum | 2105.21 ms |
+| Percentile | Tempo di Risposta |
+|------------|-------------------|
+| Minimo | 109,50 ms |
+| Media | 130,34 ms |
+| Mediana (p50) | 117,87 ms |
+| p90 | 166,29 ms |
+| p95 | 189,62 ms |
+| Massimo | 2105,21 ms |
 
-## Thresholds
+## Soglie
 
-All thresholds passed (4/4):
+Tutte le soglie superate (4/4):
 
-| Metric | Condition | Status |
-|--------|-----------|--------|
+| Metrica | Condizione | Stato |
+|---------|------------|-------|
 | requests_under_1s | rate > 0.8 | PASS |
 | http_req_duration | p(95) < 2000 | PASS |
 | http_req_failed | rate < 0.10 | PASS |
 | requests_under_500ms | rate > 0.5 | PASS |
 
-## Checks
+## Controlli
 
-All checks passed with 100% success rate:
+Tutti i controlli superati con tasso di successo 100%:
 
-### Auth Stress Tests
+### Test Stress Autenticazione
 
-| Check | Passes | Fails | Success Rate |
-|-------|--------|-------|--------------|
-| login successful | 11,453 | 0 | 100% |
-| has token | 11,453 | 0 | 100% |
-| orders ok | 11,453 | 0 | 100% |
-| me ok | 11,453 | 0 | 100% |
+| Controllo | Successi | Fallimenti | Tasso Successo |
+|-----------|----------|------------|----------------|
+| login riuscito | 11.453 | 0 | 100% |
+| ha token | 11.453 | 0 | 100% |
+| ordini ok | 11.453 | 0 | 100% |
+| me ok | 11.453 | 0 | 100% |
 
-### API Stress Tests
+### Test Stress API
 
-| Check | Passes | Fails | Success Rate |
-|-------|--------|-------|--------------|
-| health ok | 45,504 | 0 | 100% |
-| products ok | 45,504 | 0 | 100% |
-| categories ok | 45,504 | 0 | 100% |
-| search ok | 45,504 | 0 | 100% |
+| Controllo | Successi | Fallimenti | Tasso Successo |
+|-----------|----------|------------|----------------|
+| health ok | 45.504 | 0 | 100% |
+| products ok | 45.504 | 0 | 100% |
+| categories ok | 45.504 | 0 | 100% |
+| search ok | 45.504 | 0 | 100% |
 
-## Network
+## Rete
 
-| Metric | Value |
-|--------|-------|
-| Data Received | 1.22 GB |
-| Data Sent | 16.5 MB |
+| Metrica | Valore |
+|---------|--------|
+| Dati Ricevuti | 1,22 GB |
+| Dati Inviati | 16,5 MB |
 
-## Performance Improvements
+## Miglioramenti Prestazioni
 
-This test was run after Day 8 code optimizations:
+Questo test è stato eseguito dopo le ottimizzazioni del codice del Giorno 8:
 
-| Optimization | Impact |
-|--------------|--------|
-| Redis pipeline (mget/mset) | Batch operations for products |
-| User caching for /me | Reduced DB queries |
-| Cache hit rate | 99.95% (33,845 hits, 18 misses) |
+| Ottimizzazione | Impatto |
+|----------------|---------|
+| Redis pipeline (mget/mset) | Operazioni batch per prodotti |
+| Cache utente per /me | Riduzione query DB |
+| Tasso hit cache | 99,95% (33.845 hit, 18 miss) |
 
-### Comparison with Previous Tests
+### Confronto con Test Precedenti
 
-| Metric | Day 6 | Day 7 | Day 8 | Improvement |
-|--------|-------|-------|-------|-------------|
-| Total Requests | 183,203 | 291,480 | 216,375 | - |
-| RPS | 234.8 | 373.4 | 277.2 | +18% vs Day 6 |
-| p95 Latency | 380 ms | 206 ms | 190 ms | -50% vs Day 6 |
-| Error Rate | 5.33% | 5.27% | 0.00% | -100% |
+| Metrica | Giorno 6 | Giorno 7 | Giorno 8 | Miglioramento |
+|---------|----------|----------|----------|---------------|
+| Richieste Totali | 183.203 | 291.480 | 216.375 | - |
+| RPS | 234,8 | 373,4 | 277,2 | +18% vs Giorno 6 |
+| Latenza p95 | 380 ms | 206 ms | 190 ms | -50% vs Giorno 6 |
+| Tasso Errore | 5,33% | 5,27% | 0,00% | -100% |
 
-## Infrastructure During Test
+## Infrastruttura Durante il Test
 
-| Component | Status |
-|-----------|--------|
-| Backend Pods | 6/7 active (HPA scaled) |
-| Frontend Pods | 3 active |
-| Cluster Nodes | Autoscaled as needed |
-| Cache Hit Rate | 99.95% |
+| Componente | Stato |
+|------------|-------|
+| Pod Backend | 6/7 attivi (HPA scalato) |
+| Pod Frontend | 3 attivi |
+| Nodi Cluster | Autoscalati secondo necessità |
+| Tasso Hit Cache | 99,95% |
 
 ---
 
-*Generated by k6 Load Testing*
+*Generato da k6 Load Testing*
