@@ -139,6 +139,8 @@ Documenti tecnici specifici.
 | Documento | Contenuto |
 |-----------|-----------|
 | [ORIGINAL_IDEA.md](./ORIGINAL_IDEA.md) | **Vision & Requirements** - Idea originale del progetto, requisiti funzionali, stack tecnologico, piano di esecuzione |
+| [FIRST_PROMPT.md](./FIRST_PROMPT.md) | **Prompt Iniziale** - Il prompt originale fornito a Claude Code per avviare il progetto, obiettivi, requisiti, architettura target |
+| [REASONING_PROMPT_UI.md](./REASONING_PROMPT_UI.md) | **Sessione di Planning** - Ragionamento e pianificazione con Claude Web UI, analisi fattibilità, ottimizzazione per rate limits, calendario sessioni |
 | [CVE_ANALYSIS.md](./CVE_ANALYSIS.md) | **Security Analysis** - Analisi contestuale delle 36 CVE rilevate da Trivy, prioritizzazione, remediation |
 | [K8S_UPGRADE.md](./K8S_UPGRADE.md) | **EKS Upgrade** - Upgrade da 1.29 a 1.32, migrazione AL2→AL2023, decision rationale downtime vs zero-downtime |
 | [CLUSTER_AUTOSCALER.md](./CLUSTER_AUTOSCALER.md) | **Autoscaling** - Setup Cluster Autoscaler con IRSA, configurazione, scale policies |
@@ -149,8 +151,6 @@ Documenti tecnici specifici.
 | [ZAP_BASELINE_REPORT.md](./ZAP_BASELINE_REPORT.md) | **OWASP ZAP Scan** - Baseline security scan report: 0 High, 4 Medium, 6 Low, 11 Informational alerts |
 | [K6_STRESS_TEST_REPORT.md](./K6_STRESS_TEST_REPORT.md) | **k6 Stress Test** - Day 8 results: 216K requests, 277 RPS, p95 190ms, 0% errors, 100% checks passed |
 | [LIGHTHOUSE_REPORT.md](./LIGHTHOUSE_REPORT.md) | **Lighthouse Audit** - Performance 92, Accessibility 90, Best Practices 96, SEO 100 |
-| [FIRST_PROMPT.md](./FIRST_PROMPT.md) | **Prompt Iniziale** - Il prompt originale fornito a Claude Code per avviare il progetto, obiettivi, requisiti, architettura target |
-| [REASONING_PROMPT_UI.md](./REASONING_PROMPT_UI.md) | **Sessione di Planning** - Ragionamento e pianificazione con Claude Web UI, analisi fattibilità, ottimizzazione per rate limits, calendario sessioni |
 
 > **English versions:** Ogni documento ha una versione inglese con suffisso `_eng.md`
 

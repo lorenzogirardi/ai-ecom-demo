@@ -139,6 +139,8 @@ Specific technical documents.
 | Document | Content |
 |----------|---------|
 | [ORIGINAL_IDEA_eng.md](./ORIGINAL_IDEA_eng.md) | **Vision & Requirements** - Original project idea, functional requirements, tech stack, execution plan |
+| [FIRST_PROMPT_eng.md](./FIRST_PROMPT_eng.md) | **Initial Prompt** - The original prompt given to Claude Code to start the project, objectives, requirements, target architecture |
+| [REASONING_PROMPT_UI_eng.md](./REASONING_PROMPT_UI_eng.md) | **Planning Session** - Reasoning and planning with Claude Web UI, feasibility analysis, rate limit optimization, session calendar |
 | [CVE_ANALYSIS_eng.md](./CVE_ANALYSIS_eng.md) | **Security Analysis** - Contextual analysis of 36 CVEs detected by Trivy, prioritization, remediation |
 | [K8S_UPGRADE_eng.md](./K8S_UPGRADE_eng.md) | **EKS Upgrade** - Upgrade from 1.29 to 1.32, AL2→AL2023 migration, downtime vs zero-downtime decision rationale |
 | [CLUSTER_AUTOSCALER_eng.md](./CLUSTER_AUTOSCALER_eng.md) | **Autoscaling** - Cluster Autoscaler setup with IRSA, configuration, scale policies |
@@ -149,8 +151,6 @@ Specific technical documents.
 | [ZAP_BASELINE_REPORT_eng.md](./ZAP_BASELINE_REPORT_eng.md) | **Security Scan** - OWASP ZAP baseline scan results, 0 High/4 Medium/6 Low alerts, remediation recommendations |
 | [K6_STRESS_TEST_REPORT_eng.md](./K6_STRESS_TEST_REPORT_eng.md) | **Stress Test** - k6 load test results, 216K requests, 277 RPS, p95 190ms, 0% errors |
 | [LIGHTHOUSE_REPORT_eng.md](./LIGHTHOUSE_REPORT_eng.md) | **Performance Audit** - Lighthouse scores (Performance 92, Accessibility 90, Best Practices 96, SEO 100), Core Web Vitals |
-| [FIRST_PROMPT_eng.md](./FIRST_PROMPT_eng.md) | **Initial Prompt** - The original prompt given to Claude Code to start the project, objectives, requirements, target architecture |
-| [REASONING_PROMPT_UI_eng.md](./REASONING_PROMPT_UI_eng.md) | **Planning Session** - Reasoning and planning with Claude Web UI, feasibility analysis, rate limit optimization, session calendar |
 
 > **Italian versions:** Each document has an Italian version without the `_eng` suffix
 
