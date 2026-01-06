@@ -89,7 +89,7 @@ docs/EXECUTION_PLAN.md
 |----------|-----------|
 | [Session Recaps](#session-recaps) | 10 development sessions |
 | [Architecture](#architecture) | 7 documents with diagrams |
-| [Technical Documentation](#technical-documentation) | 11 specific documents |
+| [Technical Documentation](#technical-documentation) | 12 specific documents |
 
 ---
 
@@ -149,6 +149,7 @@ Specific technical documents.
 | [ZAP_BASELINE_REPORT_eng.md](./ZAP_BASELINE_REPORT_eng.md) | **Security Scan** - OWASP ZAP baseline scan results, 0 High/4 Medium/6 Low alerts, remediation recommendations |
 | [K6_STRESS_TEST_REPORT_eng.md](./K6_STRESS_TEST_REPORT_eng.md) | **Stress Test** - k6 load test results, 216K requests, 277 RPS, p95 190ms, 0% errors |
 | [LIGHTHOUSE_REPORT_eng.md](./LIGHTHOUSE_REPORT_eng.md) | **Performance Audit** - Lighthouse scores (Performance 92, Accessibility 90, Best Practices 96, SEO 100), Core Web Vitals |
+| [FIRST_PROMPT_eng.md](./FIRST_PROMPT_eng.md) | **Initial Prompt** - The original prompt given to Claude Code to start the project, objectives, requirements, target architecture |
 
 > **Italian versions:** Each document has an Italian version without the `_eng` suffix
 
@@ -160,19 +161,19 @@ Specific technical documents.
 📁 slides/
 ├── 📄 Session Recaps    10 documents × 2 languages = 20 files
 ├── 📄 Architecture       7 documents × 2 languages = 14 files
-├── 📄 Technical Docs    11 documents × 2 languages = 22 files
+├── 📄 Technical Docs    12 documents × 2 languages = 24 files
 ├── 📄 Index              1 document  × 2 languages =  2 files
 └── ────────────────────────────────────────────────────────
-    TOTAL                29 documents × 2 languages = 58 files
+    TOTAL                30 documents × 2 languages = 60 files
 ```
 
 | Metric | Value |
 |--------|-------|
-| **Unique documents** | 29 |
-| **Total files** | 58 |
+| **Unique documents** | 30 |
+| **Total files** | 60 |
 | **Languages** | IT, EN |
-| **Mermaid diagrams** | ~60 |
-| **Total size** | ~650 KB |
+| **Mermaid diagrams** | ~66 |
+| **Total size** | ~680 KB |
 
 ---
 
@@ -226,10 +227,10 @@ All documents are available in Italian without the `_eng` suffix:
 
 | Metric | Value |
 |--------|-------|
-| **Unique documents** | 29 |
-| **Total files** | 58 (IT + EN) |
-| **Mermaid diagrams** | ~60 |
-| **Total size** | ~650 KB |
+| **Unique documents** | 30 |
+| **Total files** | 60 (IT + EN) |
+| **Mermaid diagrams** | ~66 |
+| **Total size** | ~680 KB |
 
 ### Time Comparison: Manual vs Claude
 

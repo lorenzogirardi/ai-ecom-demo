@@ -89,7 +89,7 @@ docs/EXECUTION_PLAN.md
 |-----------|-----------|
 | [Session Recaps](#session-recaps) | 10 sessioni di sviluppo |
 | [Architettura](#architettura) | 7 documenti con diagrammi |
-| [Documentazione Tecnica](#documentazione-tecnica) | 11 documenti specifici |
+| [Documentazione Tecnica](#documentazione-tecnica) | 12 documenti specifici |
 
 ---
 
@@ -149,6 +149,7 @@ Documenti tecnici specifici.
 | [ZAP_BASELINE_REPORT.md](./ZAP_BASELINE_REPORT.md) | **OWASP ZAP Scan** - Baseline security scan report: 0 High, 4 Medium, 6 Low, 11 Informational alerts |
 | [K6_STRESS_TEST_REPORT.md](./K6_STRESS_TEST_REPORT.md) | **k6 Stress Test** - Day 8 results: 216K requests, 277 RPS, p95 190ms, 0% errors, 100% checks passed |
 | [LIGHTHOUSE_REPORT.md](./LIGHTHOUSE_REPORT.md) | **Lighthouse Audit** - Performance 92, Accessibility 90, Best Practices 96, SEO 100 |
+| [FIRST_PROMPT.md](./FIRST_PROMPT.md) | **Prompt Iniziale** - Il prompt originale fornito a Claude Code per avviare il progetto, obiettivi, requisiti, architettura target |
 
 > **English versions:** Ogni documento ha una versione inglese con suffisso `_eng.md`
 
@@ -160,19 +161,19 @@ Documenti tecnici specifici.
 📁 slides/
 ├── 📄 Session Recaps     10 documenti × 2 lingue = 20 file
 ├── 📄 Architettura        7 documenti × 2 lingue = 14 file
-├── 📄 Technical Docs     11 documenti × 2 lingue = 22 file
+├── 📄 Technical Docs     12 documenti × 2 lingue = 24 file
 ├── 📄 Index               1 documento × 2 lingue =  2 file
 └── ────────────────────────────────────────────────────
-    TOTALE                29 documenti × 2 lingue = 58 file
+    TOTALE                30 documenti × 2 lingue = 60 file
 ```
 
 | Metrica | Valore |
 |---------|--------|
-| **Documenti unici** | 29 |
-| **File totali** | 58 |
+| **Documenti unici** | 30 |
+| **File totali** | 60 |
 | **Lingue** | IT, EN |
 | **Diagrammi Mermaid** | ~66 |
-| **Dimensione totale** | ~620 KB |
+| **Dimensione totale** | ~650 KB |
 
 ---
 
@@ -226,10 +227,10 @@ Tutti i documenti sono disponibili in inglese con il suffisso `_eng.md`:
 
 | Metrica | Valore |
 |---------|--------|
-| **Documenti unici** | 24 |
-| **File totali** | 48 (IT + EN) |
-| **Diagrammi Mermaid** | ~60 |
-| **Dimensione totale** | ~580 KB |
+| **Documenti unici** | 30 |
+| **File totali** | 60 (IT + EN) |
+| **Diagrammi Mermaid** | ~66 |
+| **Dimensione totale** | ~650 KB |
 
 ### Confronto Tempi: Manuale vs Claude
 
