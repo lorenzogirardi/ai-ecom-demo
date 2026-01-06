@@ -89,7 +89,7 @@ docs/EXECUTION_PLAN.md
 |-----------|-----------|
 | [Session Recaps](#session-recaps) | 10 sessioni di sviluppo |
 | [Architettura](#architettura) | 7 documenti con diagrammi |
-| [Documentazione Tecnica](#documentazione-tecnica) | 12 documenti specifici |
+| [Documentazione Tecnica](#documentazione-tecnica) | 13 documenti specifici |
 
 ---
 
@@ -150,6 +150,7 @@ Documenti tecnici specifici.
 | [K6_STRESS_TEST_REPORT.md](./K6_STRESS_TEST_REPORT.md) | **k6 Stress Test** - Day 8 results: 216K requests, 277 RPS, p95 190ms, 0% errors, 100% checks passed |
 | [LIGHTHOUSE_REPORT.md](./LIGHTHOUSE_REPORT.md) | **Lighthouse Audit** - Performance 92, Accessibility 90, Best Practices 96, SEO 100 |
 | [FIRST_PROMPT.md](./FIRST_PROMPT.md) | **Prompt Iniziale** - Il prompt originale fornito a Claude Code per avviare il progetto, obiettivi, requisiti, architettura target |
+| [REASONING_PROMPT_UI.md](./REASONING_PROMPT_UI.md) | **Sessione di Planning** - Ragionamento e pianificazione con Claude Web UI, analisi fattibilità, ottimizzazione per rate limits, calendario sessioni |
 
 > **English versions:** Ogni documento ha una versione inglese con suffisso `_eng.md`
 
@@ -161,19 +162,19 @@ Documenti tecnici specifici.
 📁 slides/
 ├── 📄 Session Recaps     10 documenti × 2 lingue = 20 file
 ├── 📄 Architettura        7 documenti × 2 lingue = 14 file
-├── 📄 Technical Docs     12 documenti × 2 lingue = 24 file
+├── 📄 Technical Docs     13 documenti × 2 lingue = 26 file
 ├── 📄 Index               1 documento × 2 lingue =  2 file
 └── ────────────────────────────────────────────────────
-    TOTALE                30 documenti × 2 lingue = 60 file
+    TOTALE                31 documenti × 2 lingue = 62 file
 ```
 
 | Metrica | Valore |
 |---------|--------|
-| **Documenti unici** | 30 |
-| **File totali** | 60 |
+| **Documenti unici** | 31 |
+| **File totali** | 62 |
 | **Lingue** | IT, EN |
 | **Diagrammi Mermaid** | ~66 |
-| **Dimensione totale** | ~650 KB |
+| **Dimensione totale** | ~700 KB |
 
 ---
 
@@ -227,10 +228,10 @@ Tutti i documenti sono disponibili in inglese con il suffisso `_eng.md`:
 
 | Metrica | Valore |
 |---------|--------|
-| **Documenti unici** | 30 |
-| **File totali** | 60 (IT + EN) |
+| **Documenti unici** | 31 |
+| **File totali** | 62 (IT + EN) |
 | **Diagrammi Mermaid** | ~66 |
-| **Dimensione totale** | ~650 KB |
+| **Dimensione totale** | ~700 KB |
 
 ### Confronto Tempi: Manuale vs Claude
 
