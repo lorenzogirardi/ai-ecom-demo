@@ -262,7 +262,7 @@ At the end you'll have:
 | Week 3: Frontend | 6 sessions (Days 11-16) | **Days 2-3** | ✅ |
 | Week 4: CI/CD + Integration | 6 sessions (Days 17-23) | **Days 1, 4** | ✅ |
 | Days 24-30: Buffer & Polish | 7 days | **Day 4** | ✅ |
-| **Extra: AWS Deploy** | Not planned | **Day 5** | ✅ |
+| AWS Deploy (planned) | Sessions 22-23 | **Day 5** | ✅ |
 | **Extra: Load Testing** | Not planned | **Day 6** | ✅ |
 | **Extra: Performance Tuning** | Not planned | **Day 7** | ✅ |
 | **Extra: Deep Observability** | Not planned | **Day 8** | ✅ |

@@ -564,7 +564,7 @@ Alla fine avrai:
 | Settimana 3: Frontend | 6 sessioni (Giorni 11-16) | **Giorni 2-3** | ✅ |
 | Settimana 4: CI/CD + Integrazione | 6 sessioni (Giorni 17-23) | **Giorni 1, 4** | ✅ |
 | Giorni 24-30: Buffer & Polish | 7 giorni | **Giorno 4** | ✅ |
-| **Extra: AWS Deploy** | Non previsto | **Giorno 5** | ✅ |
+| AWS Deploy (previsto) | Sessioni 22-23 | **Giorno 5** | ✅ |
 | **Extra: Load Testing** | Non previsto | **Giorno 6** | ✅ |
 | **Extra: Performance Tuning** | Non previsto | **Giorno 7** | ✅ |
 | **Extra: Deep Observability** | Non previsto | **Giorno 8** | ✅ |
@@ -579,7 +579,7 @@ Alla fine avrai:
 | **2** | Sessioni 3-4 (EKS + Database) | Dockerfiles + React Components + 177 Backend Tests + Seed Data |
 | **3** | Sessione 5 (Cache + CDN) | Auth + Checkout + Account + Search + Security + 29 Frontend Tests |
 | **4** | Sessione 6 (Environment demo) | CI Security + ArgoCD + Terraform Remote State + CVE Analysis + 10+ Bug Fixes |
-| **5** | *Non previsto* | AWS Deploy: EKS + RDS + Redis + CloudFront + External Secrets + ArgoCD |
+| **5** | Sessioni 22-23 (Deploy) | AWS Deploy: EKS + RDS + Redis + CloudFront + External Secrets + ArgoCD |
 | **6** | *Non previsto* | Load Testing: k6 scenarios + Cluster Autoscaler + CloudWatch metrics |
 | **7** | *Non previsto* | Performance: Pod Anti-Affinity + HPA tuning (+134% throughput, -42% latency) |
 | **8** | *Non previsto* | Observability: Container Insights + X-Ray tracing + Cache optimization (508 RPS) |
