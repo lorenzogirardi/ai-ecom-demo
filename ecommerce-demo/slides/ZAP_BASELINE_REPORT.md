@@ -1,209 +1,195 @@
-# Report Scansione ZAP
+# Report Scansione Sicurezza ZAP Baseline
 
-ZAP di [Checkmarx](https://checkmarx.com/).
+**Sito:** https://dls03qes9fc77.cloudfront.net
+**Generato:** 3 Gennaio 2026
+**Versione ZAP:** 2.17.0
+**Scansione di:** [Checkmarx](https://checkmarx.com/)
+
+---
 
 ## Riepilogo Alert
 
 | Livello Rischio | Numero Alert |
 |-----------------|--------------|
-| Alto | 0 |
-| Medio | 4 |
-| Basso | 6 |
-| Informativo | 11 |
+| High | 0 |
+| Medium | 4 |
+| Low | 6 |
+| Informational | 11 |
+| Falsi Positivi | 0 |
 
-## Approfondimenti
+---
 
-| Livello | Motivo | Sito | Descrizione | Statistica |
-|---------|--------|------|-------------|------------|
-| Basso | Warning | | Avvisi ZAP registrati - vedere file zap.log per dettagli | 3 |
-| Info | Informativo | https://dls03qes9fc77.cloudfront.net | Percentuale risposte con codice stato 2xx | 95% |
-| Info | Informativo | https://dls03qes9fc77.cloudfront.net | Percentuale risposte con codice stato 3xx | 2% |
-| Info | Informativo | https://dls03qes9fc77.cloudfront.net | Percentuale risposte con codice stato 4xx | 2% |
-| Info | Informativo | https://dls03qes9fc77.cloudfront.net | Percentuale risposte con codice stato 5xx | 1% |
-| Info | Informativo | https://dls03qes9fc77.cloudfront.net | Conteggio endpoint totali | 88 |
-| Info | Informativo | https://dls03qes9fc77.cloudfront.net | Percentuale risposte lente | 1% |
+## Insights
+
+| Livello | Descrizione | Valore |
+|---------|-------------|--------|
+| Info | Endpoint totali scansionati | 88 |
+| Info | Risposte con status 2xx | 95% |
+| Info | Risposte con status 3xx | 2% |
+| Info | Risposte con status 4xx | 2% |
+| Info | Risposte con status 5xx | 1% |
+| Info | Risposte lente | 1% |
+| Warning | Warning ZAP registrati | 3 |
+
+### Distribuzione Content Types
+
+| Content Type | Percentuale |
+|--------------|-------------|
+| text/x-component | 32% |
+| application/javascript | 23% |
+| application/json | 17% |
+| text/html | 15% |
+| text/css | 3% |
+| image/png | 2% |
+| font/woff2 | 1% |
+| image/avif | 1% |
+
+---
 
 ## Alert
 
-| Nome | Livello Rischio | Numero Istanze |
-|------|-----------------|----------------|
-| CSP: Direttiva Wildcard | Medio | 1 |
-| CSP: style-src unsafe-inline | Medio | 1 |
-| Header Content Security Policy (CSP) Non Impostato | Medio | Sistemico |
-| Libreria JS Vulnerabile | Medio | 1 |
-| Isolamento Sito Insufficiente Contro Vulnerabilità Spectre | Basso | 12 |
-| Header Permissions Policy Non Impostato | Basso | Sistemico |
-| Server Espone Informazioni via Header "X-Powered-By" | Basso | Sistemico |
-| Server Espone Versione via Header "Server" | Basso | Sistemico |
-| Header Strict-Transport-Security Non Impostato | Basso | Sistemico |
-| Divulgazione Timestamp - Unix | Basso | Sistemico |
-| Divulgazione Base64 | Informativo | 12 |
-| Header Content-Type Mancante | Informativo | 1 |
-| Divulgazione Informazioni - Commenti Sospetti | Informativo | 12 |
-| Applicazione Web Moderna | Informativo | Sistemico |
-| Contenuto Non Memorizzabile | Informativo | 2 |
-| Riesaminare Direttive Cache-control | Informativo | Sistemico |
-| Header Sec-Fetch-Dest Mancante | Informativo | 3 |
-| Header Sec-Fetch-Mode Mancante | Informativo | 3 |
-| Header Sec-Fetch-Site Mancante | Informativo | 3 |
-| Header Sec-Fetch-User Mancante | Informativo | 3 |
-| Contenuto Memorizzabile e Cacheable | Informativo | Sistemico |
+| Nome | Livello Rischio | Istanze |
+|------|-----------------|---------|
+| CSP: Wildcard Directive | Medium | 1 |
+| CSP: style-src unsafe-inline | Medium | 1 |
+| Content Security Policy (CSP) Header Not Set | Medium | Systemic |
+| Vulnerable JS Library | Medium | 1 |
+| Insufficient Site Isolation Against Spectre Vulnerability | Low | 12 |
+| Permissions Policy Header Not Set | Low | Systemic |
+| Server Leaks Information via "X-Powered-By" Header | Low | Systemic |
+| Server Leaks Version Information via "Server" Header | Low | Systemic |
+| Strict-Transport-Security Header Not Set | Low | Systemic |
+| Timestamp Disclosure - Unix | Low | Systemic |
+| Base64 Disclosure | Informational | 12 |
+| Content-Type Header Missing | Informational | 1 |
+| Information Disclosure - Suspicious Comments | Informational | 12 |
+| Modern Web Application | Informational | Systemic |
+| Non-Storable Content | Informational | 2 |
+| Re-examine Cache-control Directives | Informational | Systemic |
+| Sec-Fetch-Dest Header is Missing | Informational | 3 |
+| Sec-Fetch-Mode Header is Missing | Informational | 3 |
+| Sec-Fetch-Site Header is Missing | Informational | 3 |
+| Sec-Fetch-User Header is Missing | Informational | 3 |
+| Storable and Cacheable Content | Informational | Systemic |
+
+---
 
 ## Dettaglio Alert
 
-### CSP: Direttiva Wildcard
+### Alert Rischio Medium
 
-##### Medio (Alto)
+#### CSP: Wildcard Directive
 
-**Descrizione:** Content Security Policy (CSP) è un livello di sicurezza aggiuntivo che aiuta a rilevare e mitigare certi tipi di attacchi, inclusi Cross Site Scripting (XSS) e attacchi di injection dati.
+**Descrizione:** Content Security Policy (CSP) è un livello aggiuntivo di sicurezza che aiuta a rilevare e mitigare certi tipi di attacchi inclusi Cross Site Scripting (XSS) e attacchi di data injection.
 
-* URL: `https://dls03qes9fc77.cloudfront.net/api/docs/static/index.html`
-* Parametro: `Content-Security-Policy`
-* Altra Info: `img-src permette sorgenti wildcard`
+**URL:** `/api/docs/static/index.html`
+**Parametro:** `Content-Security-Policy`
+**Problema:** La direttiva `img-src` permette sorgenti wildcard.
 
-**Soluzione:** Assicurarsi che il web server sia configurato correttamente per impostare l'header Content-Security-Policy.
-
----
-
-### CSP: style-src unsafe-inline
-
-##### Medio (Alto)
-
-**Descrizione:** style-src include unsafe-inline, permettendo stili inline che potrebbero essere sfruttati per attacchi XSS.
-
-* URL: `https://dls03qes9fc77.cloudfront.net/api/docs/static/index.html`
-
-**Soluzione:** Rimuovere 'unsafe-inline' da style-src dove possibile, usando nonce o hash per stili inline necessari.
+**Soluzione:** Assicurarsi che il web server sia configurato correttamente per impostare l'header Content-Security-Policy con direttive restrittive.
 
 ---
 
-### Header Content Security Policy (CSP) Non Impostato
+#### CSP: style-src unsafe-inline
 
-##### Medio (Alto)
+**Descrizione:** L'header CSP contiene `style-src 'unsafe-inline'` che permette stili inline.
 
-**Descrizione:** L'header CSP non è impostato sulle pagine frontend.
+**URL:** `/api/docs/static/index.html`
+**Problema:** `style-src` include `unsafe-inline`, richiesto da Swagger UI.
 
-* URL interessati: `/`, `/cart`, `/sitemap.xml`
-
-**Soluzione:** Configurare l'header CSP su tutte le risposte.
-
----
-
-### Libreria JS Vulnerabile
-
-##### Medio (Medio)
-
-**Descrizione:** DOMPurify versione 3.1.4 ha CVE-2025-26791.
-
-* URL: `https://dls03qes9fc77.cloudfront.net/api/docs/static/swagger-ui-bundle.js`
-
-**Soluzione:** Aggiornare @fastify/swagger-ui per ottenere la versione patchata di DOMPurify.
+**Soluzione:** Considerare l'uso di nonces o hash per gli stili inline dove possibile.
 
 ---
 
-### Header Strict-Transport-Security Non Impostato
+#### Content Security Policy (CSP) Header Not Set
 
-##### Basso (Alto)
+**Descrizione:** L'header CSP è mancante sulle pagine frontend.
 
-**Descrizione:** HSTS forza i browser a usare solo HTTPS. Non è impostato sulle pagine frontend.
+**URL interessati:**
+- `/` (homepage)
+- `/cart`
+- `/sitemap.xml`
 
-**Soluzione:** Configurare HSTS con max-age appropriato.
-
----
-
-### Server Espone Informazioni via "X-Powered-By"
-
-##### Basso (Medio)
-
-**Descrizione:** L'header `X-Powered-By: Next.js` espone il framework utilizzato.
-
-**Soluzione:** Configurare Next.js con `poweredByHeader: false` in next.config.js.
+**Soluzione:** Configurare il web server per impostare l'header Content-Security-Policy su tutte le risposte.
 
 ---
 
-### Header Permissions Policy Non Impostato
+#### Vulnerable JS Library
 
-##### Basso (Medio)
+**Descrizione:** La libreria identificata risulta vulnerabile.
 
-**Descrizione:** Permissions Policy limita le funzionalità del browser (camera, microfono, ecc.).
+**URL:** `/api/docs/static/swagger-ui-bundle.js`
+**Libreria:** DOMPurify versione 3.1.4
+**CVE:** CVE-2025-26791
 
-**Soluzione:** Aggiungere header Permissions-Policy con restrizioni appropriate.
+**Soluzione:** Aggiornare a DOMPurify 3.2.4 o successivo aggiornando `@fastify/swagger-ui`.
 
 ---
 
-## Valutazione Rischio
+### Alert Rischio Low
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    MATRICE RISCHIO                          │
-├─────────────────────────────────────────────────────────────┤
-│                                                              │
-│  SEVERITÀ ALTA:      0 alert                                │
-│  ════════════════════════════════════════════════════       │
-│                                                              │
-│  SEVERITÀ MEDIA:     4 alert (tutti relativi a CSP)         │
-│  ████████████████                                           │
-│  └── 3 su Swagger UI (dipendenza esterna)                   │
-│  └── 1 su Frontend (opportunità di miglioramento)           │
-│                                                              │
-│  SEVERITÀ BASSA:     6 alert (opportunità hardening)        │
-│  ████████████████████████                                   │
-│                                                              │
-│  INFORMATIVI:       11 alert (nessuna azione richiesta)     │
-│  ████████████████████████████████████████████               │
-│                                                              │
-└─────────────────────────────────────────────────────────────┘
-```
+#### Insufficient Site Isolation Against Spectre Vulnerability
 
-## Raccomandazioni
+**Descrizione:** Header Cross-Origin-Resource-Policy, Cross-Origin-Embedder-Policy e Cross-Origin-Opener-Policy mancanti.
 
-### Priorità 1: Aggiornare Swagger UI
-```bash
-npm update @fastify/swagger-ui
-```
-Questo correggerà la CVE di DOMPurify.
+**Istanze:** 12
+**Soluzione:** Impostare gli header CORP/COEP/COOP appropriati per mitigare vulnerabilità di classe Spectre.
 
-### Priorità 2: Aggiungere CSP Frontend
-```typescript
-// next.config.js
-async headers() {
-  return [{
-    source: '/:path*',
-    headers: [{
-      key: 'Content-Security-Policy',
-      value: "default-src 'self'; ..."
-    }]
-  }]
-}
-```
+---
 
-### Priorità 3: Rimuovere X-Powered-By
-```typescript
+#### Permissions Policy Header Not Set
+
+**Descrizione:** L'header Permissions Policy restringe le funzionalità del browser disponibili per la pagina.
+
+**Soluzione:** Configurare l'header Permissions-Policy per restringere l'accesso a funzionalità sensibili come camera, microfono, geolocalizzazione.
+
+---
+
+#### Server Leaks Information via "X-Powered-By" Header
+
+**Descrizione:** Gli header di risposta espongono `X-Powered-By: Next.js`.
+
+**Soluzione:** Configurare Next.js per sopprimere l'header X-Powered-By:
+```javascript
 // next.config.js
 poweredByHeader: false
 ```
 
-### Priorità 4: Aggiungere Permissions Policy
-```typescript
-headers: [{
-  key: 'Permissions-Policy',
-  value: 'camera=(), microphone=(), geolocation=()'
-}]
-```
+---
 
-## Conclusione
+#### Server Leaks Version Information via "Server" Header
 
-La scansione baseline OWASP ZAP mostra una buona postura di sicurezza:
+**Descrizione:** Gli header di risposta espongono `Server: awselb/2.0`.
 
-| Categoria | Valutazione |
-|-----------|-------------|
-| Vulnerabilità critiche | Nessuna |
-| Problemi sfruttabili | Nessuno |
-| Miglioramenti defense-in-depth | 4 medi, 6 bassi |
-| Raccomandazioni best practice | 11 informativi |
-
-Gli alert medi sono principalmente relativi a Swagger UI (dipendenza esterna) e rappresentano opportunità di hardening aggiuntivo piuttosto che vulnerabilità sfruttabili.
+**Soluzione:** Questo è controllato da AWS ALB e non può essere facilmente soppresso.
 
 ---
 
-*Report generato da OWASP ZAP*
+#### Strict-Transport-Security Header Not Set
+
+**Descrizione:** L'header HSTS è mancante, il che potrebbe permettere attacchi downgrade.
+
+**Soluzione:** Aggiungere l'header HSTS con max-age appropriato:
+```
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+```
+
+---
+
+#### Timestamp Disclosure - Unix
+
+**Descrizione:** Timestamp Unix trovati nei file JavaScript di Swagger UI.
+
+**Soluzione:** Rischio basso - verificare se i timestamp contengono informazioni sensibili.
+
+---
+
+## Riferimenti
+
+- [OWASP ZAP](https://www.zaproxy.org/)
+- [Content Security Policy (MDN)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
+- [OWASP Secure Headers](https://owasp.org/www-project-secure-headers/)
+
+---
+
+*Report generato da OWASP ZAP 2.17.0*
