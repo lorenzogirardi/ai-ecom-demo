@@ -400,30 +400,34 @@ spec:
 
 ### Epic: VIP-001 - VIP Early Access System
 
-| Ticket | Title | Type | Priority | Estimate |
-|--------|-------|------|----------|----------|
-| VIP-002 | Add isVip field to User model | Task | High | S |
-| VIP-003 | Add vipOnly/vipUntil fields to Product model | Task | High | S |
-| VIP-004 | Implement Prisma VIP filtering middleware | Task | High | M |
-| VIP-005 | Add VIP context hook to Fastify | Task | High | S |
-| VIP-006 | Update cache keys for VIP separation | Task | High | M |
-| VIP-007 | Add VIP verification to checkout | Task | High | S |
-| VIP-008 | Create admin app scaffold (Next.js) | Task | High | M |
-| VIP-009 | Implement admin auth (ADMIN role check) | Task | High | S |
-| VIP-010 | Build VIP users management page | Task | Medium | M |
-| VIP-011 | Build VIP products management page | Task | Medium | M |
-| VIP-012 | Create admin API endpoints | Task | High | M |
-| VIP-013 | Add Helm chart for admin app | Task | Medium | S |
-| VIP-014 | Add ArgoCD application for admin | Task | Medium | S |
-| VIP-015 | Create ECR repo for admin | Task | Medium | S |
-| VIP-016 | Add admin CI/CD workflow | Task | Medium | M |
-| VIP-017 | Add VIP_FEATURE_ENABLED env var | Task | Medium | S |
-| VIP-018 | Write unit tests for VIP middleware | Task | High | M |
-| VIP-019 | Write integration tests for VIP filtering | Task | High | M |
-| VIP-020 | Update network policies for admin | Task | Medium | S |
-| VIP-021 | Documentation update | Task | Low | S |
+| Ticket | Title | Type | Priority | Dev Estimate | Claude Code |
+|--------|-------|------|----------|--------------|-------------|
+| VIP-002 | Add isVip field to User model | Task | High | S | 5 min |
+| VIP-003 | Add vipOnly/vipUntil fields to Product model | Task | High | S | 5 min |
+| VIP-004 | Implement Prisma VIP filtering middleware | Task | High | M | 30 min |
+| VIP-005 | Add VIP context hook to Fastify | Task | High | S | 20 min |
+| VIP-006 | Update cache keys for VIP separation | Task | High | M | 15 min |
+| VIP-007 | Add VIP verification to checkout | Task | High | S | 15 min |
+| VIP-008 | Create admin app scaffold (Next.js) | Task | High | M | 45 min |
+| VIP-009 | Implement admin auth (ADMIN role check) | Task | High | S | 15 min |
+| VIP-010 | Build VIP users management page | Task | Medium | M | 30 min |
+| VIP-011 | Build VIP products management page | Task | Medium | M | 30 min |
+| VIP-012 | Create admin API endpoints | Task | High | M | 45 min |
+| VIP-013 | Add Helm chart for admin app | Task | Medium | S | 20 min |
+| VIP-014 | Add ArgoCD application for admin | Task | Medium | S | 10 min |
+| VIP-015 | Create ECR repo for admin | Task | Medium | S | 5 min |
+| VIP-016 | Add admin CI/CD workflow | Task | Medium | M | 20 min |
+| VIP-017 | Add VIP_FEATURE_ENABLED env var | Task | Medium | S | 5 min |
+| VIP-018 | Write unit tests for VIP middleware | Task | High | M | 30 min |
+| VIP-019 | Write integration tests for VIP filtering | Task | High | M | 45 min |
+| VIP-020 | Update network policies for admin | Task | Medium | S | 10 min |
+| VIP-021 | Documentation update | Task | Low | S | 15 min |
 
-**Size Legend:** S = Small (1-2h), M = Medium (3-5h), L = Large (6-8h)
+**Dev Estimate Legend:** S = Small (1-2h), M = Medium (3-5h), L = Large (6-8h)
+
+**Totals:**
+- Developer: ~50-70 hours (2-3 weeks)
+- Claude Code: ~7 hours (1-2 sessions)
 
 ---
 
