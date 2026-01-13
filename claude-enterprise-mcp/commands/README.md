@@ -81,38 +81,16 @@ One command invokes another in sequence. Useful for complete review pipelines.
 User: /eth0-release-pipeline
 ```
 
-Create a new command `eth0-release-pipeline.md`:
+Create a new command `eth0-release-pipeline.md` with:
 
-```markdown
-name: eth0-release-pipeline
-description: Full release pipeline with security, delivery, and platform review
+- **name:** eth0-release-pipeline
+- **description:** Full release pipeline with security, delivery, and platform review
 
----
-
-Execute a complete release pipeline following these steps:
-
-## Step 1: Security Review
-First, execute a security review:
-- Read most recent `claude-docs/security-review-*.md` if exists
-- If not exists or older than 24h, ask user: "Do you want to run /eth0-security-review before continuing?"
-- If there are CRITICAL or HIGH findings, STOP and report blockers
-
-## Step 2: Delivery Review
-If security is OK:
-- Execute delivery review following eth0-delivery-review instructions
-- Save report to `claude-docs/delivery-review-YYYYMMDD.md`
-
-## Step 3: Platform Review
-If there are IaC changes (*.tf, helm/, k8s/):
-- Execute platform review following eth0-platform-review instructions
-- Save report to `claude-docs/platform-review-YYYYMMDD.md`
-
-## Step 4: Summary Report
-Generate a combined final report in `claude-docs/release-pipeline-YYYYMMDD.md`:
-- GO / NO-GO recommendation
-- Links to individual reports
-- Blockers to resolve
-```
+**Steps:**
+1. **Security Review** - Check for CRITICAL/HIGH findings, STOP if found
+2. **Delivery Review** - Execute if security OK
+3. **Platform Review** - Execute if IaC changes (*.tf, helm/, k8s/)
+4. **Summary Report** - Generate combined report with GO/NO-GO recommendation
 
 **Flow:**
 
@@ -183,89 +161,14 @@ An intelligent command that decides which reviews to run based on project contex
 
 **Example: eth0-smart-review.md**
 
-```markdown
-name: eth0-smart-review
-description: Intelligent review orchestrator that runs appropriate reviews based on changes
+See the actual implementation in [eth0-smart-review.md](./eth0-smart-review.md).
 
----
-
-You are an intelligent orchestrator. Analyze context and decide which reviews to run.
-
-## Step 1: Context Analysis
-
-Gather information:
-1. `git diff --name-only HEAD~10` - recently modified files
-2. `git log --oneline -10` - recent commits
-3. Read `claude-docs/context-shared.md` if exists
-
-## Step 2: Change Classification
-
-Classify modified files:
-
-| Pattern | Type | Required Review |
-|---------|------|-----------------|
-| `*.tf`, `terraform/` | Infrastructure | /eth0-platform-review |
-| `helm/`, `k8s/`, `*.yaml` (deploy) | Platform | /eth0-platform-review |
-| `src/auth/`, `**/security/**` | Security-sensitive | /eth0-security-review |
-| `src/**/*.ts`, `src/**/*.py` | Application code | /eth0-security-review (light) |
-| `.github/workflows/` | CI/CD | /eth0-platform-review |
-| `package.json`, `requirements.txt` | Dependencies | /eth0-security-review |
-
-## Step 3: Decision Matrix
-
-```
-IF infrastructure changes OR CI/CD:
-   → Run /eth0-platform-review
-
-IF security-sensitive changes OR new dependencies:
-   → Run /eth0-security-review (full)
-
-IF only application code:
-   → Run /eth0-security-review (light - OWASP top 10 only)
-
-IF close to release (sprint end < 3 days):
-   → Run /eth0-delivery-review
-
-IF portfolio report requested:
-   → Run /eth0-portfolio-insights
-```
-
-## Step 4: Execution
-
-For each identified review:
-1. Inform user: "I will run X review based on Y changes"
-2. Ask for confirmation or skip
-3. Execute confirmed reviews
-4. Generate combined summary
-
-## Step 5: Output
-
-Write `claude-docs/smart-review-YYYYMMDD.md`:
-
-```markdown
-# Smart Review Summary
-
-**Date:** YYYY-MM-DD
-**Trigger:** [manual | CI | scheduled]
-
-## Changes Detected
-- Infrastructure: X files
-- Security-sensitive: X files
-- Application: X files
-
-## Reviews Executed
-| Review | Result | Findings | Report |
-|--------|--------|----------|--------|
-| Security | PASS | 0 HIGH | link |
-| Platform | WARN | 2 MEDIUM | link |
-
-## Recommendation
-[GO | NO-GO | CONDITIONAL]
-
-## Next Actions
-1. ...
-```
-```
+Key steps:
+1. **Context Analysis** - git diff, git log, read context-shared.md
+2. **Change Classification** - categorize files by type
+3. **Decision Matrix** - select appropriate reviews
+4. **Execution** - run confirmed reviews
+5. **Output** - generate combined summary
 
 **Flow:**
 
