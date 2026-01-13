@@ -113,28 +113,22 @@ Generate a combined final report in `claude-docs/release-pipeline-YYYYMMDD.md`:
 ```
 
 **Flow:**
+
 ```
 /eth0-release-pipeline
-        │
-        ▼
-┌─────────────────┐
-│ Security Review │──▶ CRITICAL? ──▶ STOP
-└────────┬────────┘
-         │ OK
-         ▼
-┌─────────────────┐
-│ Delivery Review │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│ Platform Review │ (if IaC changes)
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│ Summary Report  │
-└─────────────────┘
+         |
+         v
+  [Security Review] ---> CRITICAL? ---> STOP
+         |
+         | OK
+         v
+  [Delivery Review]
+         |
+         v
+  [Platform Review] (if IaC changes)
+         |
+         v
+  [Summary Report]
 ```
 
 ---
@@ -284,31 +278,26 @@ Write `claude-docs/smart-review-YYYYMMDD.md`:
 ```
 
 **Flow:**
+
 ```
 /eth0-smart-review
-        │
-        ▼
-┌─────────────────────┐
-│ Analyze git changes │
-└──────────┬──────────┘
-           │
-           ▼
-┌─────────────────────┐
-│ Classify by type    │
-└──────────┬──────────┘
-           │
-     ┌─────┴─────┬─────────────┐
-     ▼           ▼             ▼
-┌─────────┐ ┌─────────┐ ┌───────────┐
-│ IaC?    │ │ Sec?    │ │ Release?  │
-│ Platform│ │ Security│ │ Delivery  │
-└────┬────┘ └────┬────┘ └─────┬─────┘
-     │           │             │
-     └─────┬─────┴─────────────┘
-           ▼
-┌─────────────────────┐
-│ Combined Summary    │
-└─────────────────────┘
+         |
+         v
+  [Analyze git changes]
+         |
+         v
+  [Classify by type]
+         |
+         +--------+--------+
+         |        |        |
+         v        v        v
+      [IaC?]   [Sec?]  [Release?]
+     Platform  Security  Delivery
+         |        |        |
+         +--------+--------+
+                  |
+                  v
+        [Combined Summary]
 ```
 
 ---
