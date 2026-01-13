@@ -1,0 +1,28 @@
+{
+  "name": "claude-enterprise-mcp",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Claude Code Enterprise MCP Servers and Skills",
+  "workspaces": [
+    "servers/*",
+    "shared/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "clean": "turbo run clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "eslint": "^8.56.0",
+    "prettier": "^3.2.0",
+    "turbo": "^1.11.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "packageManager": "npm@10.2.0"
+}

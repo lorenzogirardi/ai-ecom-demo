@@ -1,0 +1,44 @@
+{
+  "mcpServers": {
+    "github": {
+      "command": "node",
+      "args": ["~/.claude-enterprise/servers/github-mcp/dist/index.js"],
+      "env": {
+        "GITHUB_TOKEN": "${GITHUB_TOKEN}",
+        "AUDIT_LOG_DIR": "~/.claude-enterprise/audit-logs"
+      },
+      "description": "GitHub integration (read + PR-only write)"
+    },
+    "jira": {
+      "command": "node",
+      "args": ["~/.claude-enterprise/servers/jira-mcp/dist/index.js"],
+      "env": {
+        "JIRA_BASE_URL": "${JIRA_BASE_URL}",
+        "JIRA_EMAIL": "${JIRA_EMAIL}",
+        "JIRA_API_TOKEN": "${JIRA_API_TOKEN}",
+        "AUDIT_LOG_DIR": "~/.claude-enterprise/audit-logs"
+      },
+      "description": "Jira integration (read/write)"
+    },
+    "confluence": {
+      "command": "node",
+      "args": ["~/.claude-enterprise/servers/confluence-mcp/dist/index.js"],
+      "env": {
+        "CONFLUENCE_BASE_URL": "${CONFLUENCE_BASE_URL}",
+        "CONFLUENCE_EMAIL": "${CONFLUENCE_EMAIL}",
+        "CONFLUENCE_API_TOKEN": "${CONFLUENCE_API_TOKEN}",
+        "AUDIT_LOG_DIR": "~/.claude-enterprise/audit-logs"
+      },
+      "description": "Confluence integration (read/write)"
+    },
+    "aws": {
+      "command": "node",
+      "args": ["~/.claude-enterprise/servers/aws-mcp/dist/index.js"],
+      "env": {
+        "AWS_REGION": "${AWS_REGION:-eu-west-1}",
+        "AUDIT_LOG_DIR": "~/.claude-enterprise/audit-logs"
+      },
+      "description": "AWS integration (READ-ONLY)"
+    }
+  }
+}

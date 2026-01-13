@@ -1,0 +1,34 @@
+name: security-review
+version: "1.0.0"
+description: Security review of code changes and PRs
+
+# Manual trigger via /security-review command
+triggers:
+  manual:
+    command: /security-review
+    description: Run security review on current PR or code changes
+
+  # Suggested when security-relevant changes detected
+  suggested:
+    - when: "PR contains changes to authentication code"
+    - when: "PR modifies security configurations"
+    - when: "IaC changes detected (Terraform, Helm)"
+    - when: "Dependency updates with potential CVEs"
+
+# Required MCP tools
+tools_required:
+  - github
+  - jira
+
+# Output formats
+output:
+  - type: markdown
+    filename: security_findings.md
+  - type: jira_issues
+    optional: true
+    description: Create Jira issues for critical findings
+
+# Configuration
+config:
+  severity_threshold: medium  # Report medium and above
+  auto_create_issues: false   # Require confirmation for Jira

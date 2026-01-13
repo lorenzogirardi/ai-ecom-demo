@@ -1,0 +1,28 @@
+{
+  "$schema": "https://claude.ai/schemas/claude-code-config.json",
+  "version": "1.0",
+  "settings": {
+    "model": "claude-opus-4-5",
+    "context": {
+      "maxTokens": 100000,
+      "summaryThreshold": 80000
+    },
+    "tools": {
+      "enabled": true,
+      "requireConfirmation": {
+        "write": true,
+        "delete": true
+      }
+    },
+    "skills": {
+      "directory": "~/.claude-enterprise/skills",
+      "enabled": [
+        "security-review",
+        "delivery-review",
+        "platform-review",
+        "portfolio-insights"
+      ]
+    }
+  },
+  "mcpServersPath": "~/.config/claude-code/mcp-servers.json"
+}

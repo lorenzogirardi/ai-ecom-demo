@@ -1,0 +1,30 @@
+name: platform-review
+version: "1.0.0"
+description: Infrastructure change risk assessment
+
+triggers:
+  manual:
+    command: /platform-review
+    description: Review infrastructure changes for stability risks
+
+  suggested:
+    - when: "IaC changes detected (Terraform)"
+    - when: "Helm chart modifications"
+    - when: "Kubernetes manifest changes"
+    - when: "CI/CD pipeline modifications"
+
+tools_required:
+  - github
+  - aws
+
+output:
+  - type: markdown
+    filename: platform_review.md
+  - type: github_comment
+    optional: true
+    description: Add review to PR
+
+config:
+  check_cost_impact: true
+  check_availability_impact: true
+  check_security_impact: true
