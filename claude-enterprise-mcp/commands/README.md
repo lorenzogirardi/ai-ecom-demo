@@ -116,16 +116,10 @@ Generate a combined final report in `claude-docs/release-pipeline-YYYYMMDD.md`:
 
 **Flow:**
 
-```mermaid
-flowchart TD
-    A["eth0-release-pipeline"] --> B["Security Review"]
-    B -->|CRITICAL/HIGH| C["STOP"]
-    B -->|OK| D["Delivery Review"]
-    D --> E{"IaC changes?"}
-    E -->|Yes| F["Platform Review"]
-    E -->|No| G["Summary Report"]
-    F --> G
-```
+1. **Security Review** → if CRITICAL/HIGH → **STOP**
+2. **Delivery Review** (if security OK)
+3. **Platform Review** (if IaC changes detected)
+4. **Summary Report**
 
 ---
 
@@ -275,19 +269,14 @@ Write `claude-docs/smart-review-YYYYMMDD.md`:
 
 **Flow:**
 
-```mermaid
-flowchart TD
-    A["eth0-smart-review"] --> B["Analyze git changes"]
-    B --> C["Classify by type"]
-    C --> D{"Decision matrix"}
-    D -->|IaC changes| E["eth0-platform-review"]
-    D -->|Security changes| F["eth0-security-review"]
-    D -->|Near release| G["eth0-delivery-review"]
-    E --> H["Execute selected reviews"]
-    F --> H
-    G --> H
-    H --> I["Combined Summary"]
-```
+1. **Analyze git changes** (git diff, git log)
+2. **Classify by type** (IaC, security, application, dependencies)
+3. **Decision matrix:**
+   - IaC changes → `eth0-platform-review`
+   - Security changes → `eth0-security-review`
+   - Near release → `eth0-delivery-review`
+4. **Execute selected reviews**
+5. **Combined Summary**
 
 ---
 
