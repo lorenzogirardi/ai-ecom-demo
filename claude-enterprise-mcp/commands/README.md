@@ -116,21 +116,15 @@ Generate a combined final report in `claude-docs/release-pipeline-YYYYMMDD.md`:
 
 **Flow:**
 
-```
-/eth0-release-pipeline
-         |
-         v
-  [Security Review] ---> CRITICAL? ---> STOP
-         |
-         | OK
-         v
-  [Delivery Review]
-         |
-         v
-  [Platform Review] (if IaC changes)
-         |
-         v
-  [Summary Report]
+```mermaid
+flowchart TD
+    A[/eth0-release-pipeline] --> B[Security Review]
+    B -->|CRITICAL/HIGH| C[STOP]
+    B -->|OK| D[Delivery Review]
+    D --> E{IaC changes?}
+    E -->|Yes| F[Platform Review]
+    E -->|No| G[Summary Report]
+    F --> G
 ```
 
 ---
@@ -281,22 +275,18 @@ Write `claude-docs/smart-review-YYYYMMDD.md`:
 
 **Flow:**
 
-```
-/eth0-smart-review
-    |
-    +--> [1] Analyze git changes
-    |
-    +--> [2] Classify by type
-    |
-    +--> [3] Decision matrix
-    |         |
-    |         +--> IaC changes? --------> /eth0-platform-review
-    |         +--> Security changes? ---> /eth0-security-review
-    |         +--> Near release? -------> /eth0-delivery-review
-    |
-    +--> [4] Execute selected reviews
-    |
-    +--> [5] Combined Summary
+```mermaid
+flowchart TD
+    A[/eth0-smart-review] --> B[Analyze git changes]
+    B --> C[Classify by type]
+    C --> D{Decision matrix}
+    D -->|IaC changes| E[/eth0-platform-review]
+    D -->|Security changes| F[/eth0-security-review]
+    D -->|Near release| G[/eth0-delivery-review]
+    E --> H[Execute selected reviews]
+    F --> H
+    G --> H
+    H --> I[Combined Summary]
 ```
 
 ---
