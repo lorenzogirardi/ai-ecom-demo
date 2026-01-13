@@ -6,10 +6,10 @@ Custom slash commands for Claude Code Enterprise governance.
 
 | Command | Description |
 |---------|-------------|
-| `/wds-security-review` | Security review of code changes, PRs, and infrastructure |
-| `/wds-delivery-review` | Release readiness and risk assessment |
-| `/wds-platform-review` | Infrastructure change risk assessment |
-| `/wds-portfolio-insights` | Portfolio and delivery metrics analysis |
+| `/eth0-security-review` | Security review of code changes, PRs, and infrastructure |
+| `/eth0-delivery-review` | Release readiness and risk assessment |
+| `/eth0-platform-review` | Infrastructure change risk assessment |
+| `/eth0-portfolio-insights` | Portfolio and delivery metrics analysis |
 
 ## Installation
 
@@ -17,10 +17,10 @@ Custom slash commands for Claude Code Enterprise governance.
 
 ```bash
 # Create symlinks in your Claude commands folder
-ln -s $(pwd)/wds-security-review.md ~/.claude/commands/
-ln -s $(pwd)/wds-delivery-review.md ~/.claude/commands/
-ln -s $(pwd)/wds-platform-review.md ~/.claude/commands/
-ln -s $(pwd)/wds-portfolio-insights.md ~/.claude/commands/
+ln -s $(pwd)/eth0-security-review.md ~/.claude/commands/
+ln -s $(pwd)/eth0-delivery-review.md ~/.claude/commands/
+ln -s $(pwd)/eth0-platform-review.md ~/.claude/commands/
+ln -s $(pwd)/eth0-portfolio-insights.md ~/.claude/commands/
 ```
 
 ### Option 2: Copy to user commands
@@ -34,7 +34,7 @@ cp *.md ~/.claude/commands/
 In any Claude Code session:
 
 ```
-/wds-security-review
+/eth0-security-review
 ```
 
 The command will:

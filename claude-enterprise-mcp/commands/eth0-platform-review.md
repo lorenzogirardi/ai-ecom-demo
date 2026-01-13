@@ -1,4 +1,4 @@
-name: wds-platform-review
+name: eth0-platform-review
 description: Infrastructure change risk assessment for IaC and platform changes
 
 ---

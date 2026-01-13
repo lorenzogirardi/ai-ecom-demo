@@ -1,4 +1,4 @@
-name: wds-security-review
+name: eth0-security-review
 description: Security review of code changes, PRs, and infrastructure
 
 ---

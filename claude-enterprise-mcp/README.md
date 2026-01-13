@@ -13,10 +13,10 @@ This repository provides enterprise-ready MCP servers and Claude Code skills for
 
 Plus Claude Code commands (agents) for:
 
-- `/wds-security-review` - Automated security analysis
-- `/wds-delivery-review` - Release readiness assessment
-- `/wds-platform-review` - Infrastructure change review
-- `/wds-portfolio-insights` - Delivery metrics and reporting
+- `/eth0-security-review` - Automated security analysis
+- `/eth0-delivery-review` - Release readiness assessment
+- `/eth0-platform-review` - Infrastructure change review
+- `/eth0-portfolio-insights` - Delivery metrics and reporting
 
 ## Quick Start
 
@@ -65,10 +65,10 @@ claude-enterprise-mcp/
 │   ├── audit-logger/          # Centralized logging
 │   └── auth/                  # OAuth + token storage
 ├── commands/                   # Claude Code commands (agents)
-│   ├── wds-security-review.md
-│   ├── wds-delivery-review.md
-│   ├── wds-platform-review.md
-│   └── wds-portfolio-insights.md
+│   ├── eth0-security-review.md
+│   ├── eth0-delivery-review.md
+│   ├── eth0-platform-review.md
+│   └── eth0-portfolio-insights.md
 ├── scripts/                    # Setup and configuration
 ├── config/                     # Configuration examples
 └── docs/                       # Documentation
@@ -125,10 +125,10 @@ claude-enterprise-mcp/
 
 | Command | Description |
 |---------|-------------|
-| `/wds-security-review` | Security analysis of code, PRs, infrastructure |
-| `/wds-delivery-review` | Release readiness and risk assessment |
-| `/wds-platform-review` | IaC and platform change review |
-| `/wds-portfolio-insights` | Portfolio metrics and reporting |
+| `/eth0-security-review` | Security analysis of code, PRs, infrastructure |
+| `/eth0-delivery-review` | Release readiness and risk assessment |
+| `/eth0-platform-review` | IaC and platform change review |
+| `/eth0-portfolio-insights` | Portfolio metrics and reporting |
 
 ### Installing Commands
 

@@ -1,4 +1,4 @@
-name: wds-portfolio-insights
+name: eth0-portfolio-insights
 description: Portfolio and delivery metrics analysis for planning and reporting
 
 ---

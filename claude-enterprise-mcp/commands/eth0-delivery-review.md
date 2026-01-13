@@ -1,4 +1,4 @@
-name: wds-delivery-review
+name: eth0-delivery-review
 description: Release readiness and risk assessment for sprints/releases
 
 ---
