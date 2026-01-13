@@ -118,12 +118,12 @@ Generate a combined final report in `claude-docs/release-pipeline-YYYYMMDD.md`:
 
 ```mermaid
 flowchart TD
-    A[/eth0-release-pipeline] --> B[Security Review]
-    B -->|CRITICAL/HIGH| C[STOP]
-    B -->|OK| D[Delivery Review]
-    D --> E{IaC changes?}
-    E -->|Yes| F[Platform Review]
-    E -->|No| G[Summary Report]
+    A["eth0-release-pipeline"] --> B["Security Review"]
+    B -->|CRITICAL/HIGH| C["STOP"]
+    B -->|OK| D["Delivery Review"]
+    D --> E{"IaC changes?"}
+    E -->|Yes| F["Platform Review"]
+    E -->|No| G["Summary Report"]
     F --> G
 ```
 
@@ -277,16 +277,16 @@ Write `claude-docs/smart-review-YYYYMMDD.md`:
 
 ```mermaid
 flowchart TD
-    A[/eth0-smart-review] --> B[Analyze git changes]
-    B --> C[Classify by type]
-    C --> D{Decision matrix}
-    D -->|IaC changes| E[/eth0-platform-review]
-    D -->|Security changes| F[/eth0-security-review]
-    D -->|Near release| G[/eth0-delivery-review]
-    E --> H[Execute selected reviews]
+    A["eth0-smart-review"] --> B["Analyze git changes"]
+    B --> C["Classify by type"]
+    C --> D{"Decision matrix"}
+    D -->|IaC changes| E["eth0-platform-review"]
+    D -->|Security changes| F["eth0-security-review"]
+    D -->|Near release| G["eth0-delivery-review"]
+    E --> H["Execute selected reviews"]
     F --> H
     G --> H
-    H --> I[Combined Summary]
+    H --> I["Combined Summary"]
 ```
 
 ---
