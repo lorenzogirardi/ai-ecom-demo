@@ -11,12 +11,12 @@ This repository provides enterprise-ready MCP servers and Claude Code skills for
 - **Confluence** - Documentation and knowledge base
 - **AWS** - Cloud infrastructure (read-only)
 
-Plus AI agents (skills) for:
+Plus Claude Code commands (agents) for:
 
-- **Security Review** - Automated security analysis
-- **Delivery Review** - Release readiness assessment
-- **Platform Review** - Infrastructure change review
-- **Portfolio Insights** - Delivery metrics and reporting
+- `/wds-security-review` - Automated security analysis
+- `/wds-delivery-review` - Release readiness assessment
+- `/wds-platform-review` - Infrastructure change review
+- `/wds-portfolio-insights` - Delivery metrics and reporting
 
 ## Quick Start
 
@@ -64,11 +64,11 @@ claude-enterprise-mcp/
 ├── shared/                     # Shared modules
 │   ├── audit-logger/          # Centralized logging
 │   └── auth/                  # OAuth + token storage
-├── skills/                     # Claude Code skills (agents)
-│   ├── security-agent/
-│   ├── delivery-agent/
-│   ├── platform-agent/
-│   └── portfolio-agent/
+├── commands/                   # Claude Code commands (agents)
+│   ├── wds-security-review.md
+│   ├── wds-delivery-review.md
+│   ├── wds-platform-review.md
+│   └── wds-portfolio-insights.md
 ├── scripts/                    # Setup and configuration
 ├── config/                     # Configuration examples
 └── docs/                       # Documentation
@@ -121,14 +121,21 @@ claude-enterprise-mcp/
 | `aws_describe_rds` | Read | RDS info |
 | `aws_describe_eks` | Read | EKS info |
 
-## Available Skills
+## Available Commands
 
-| Skill | Command | Description |
-|-------|---------|-------------|
-| Security Review | `/security-review` | Security analysis of PRs |
-| Delivery Review | `/delivery-review` | Release readiness check |
-| Platform Review | `/platform-review` | IaC change review |
-| Portfolio Insights | `/portfolio-insights` | Metrics and reporting |
+| Command | Description |
+|---------|-------------|
+| `/wds-security-review` | Security analysis of code, PRs, infrastructure |
+| `/wds-delivery-review` | Release readiness and risk assessment |
+| `/wds-platform-review` | IaC and platform change review |
+| `/wds-portfolio-insights` | Portfolio metrics and reporting |
+
+### Installing Commands
+
+```bash
+# Symlink to your Claude commands folder
+ln -s $(pwd)/commands/*.md ~/.claude/commands/
+```
 
 ## Guardrails
 
