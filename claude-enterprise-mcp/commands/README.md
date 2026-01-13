@@ -283,23 +283,20 @@ Write `claude-docs/smart-review-YYYYMMDD.md`:
 
 ```
 /eth0-smart-review
-         |
-         v
-  [Analyze git changes]
-         |
-         v
-  [Classify by type]
-         |
-         +--------+--------+
-         |        |        |
-         v        v        v
-      [IaC?]   [Sec?]  [Release?]
-     Platform  Security  Delivery
-         |        |        |
-         +--------+--------+
-                  |
-                  v
-        [Combined Summary]
+    |
+    +--> [1] Analyze git changes
+    |
+    +--> [2] Classify by type
+    |
+    +--> [3] Decision matrix
+    |         |
+    |         +--> IaC changes? --------> /eth0-platform-review
+    |         +--> Security changes? ---> /eth0-security-review
+    |         +--> Near release? -------> /eth0-delivery-review
+    |
+    +--> [4] Execute selected reviews
+    |
+    +--> [5] Combined Summary
 ```
 
 ---
