@@ -67,19 +67,19 @@ These commands can leverage the MCP servers in `../servers/` when configured:
 
 ## Connecting Commands
 
-I commands possono essere connessi tra loro in diversi modi per creare workflow più complessi.
+Commands can be connected together in different ways to create more complex workflows.
 
-### Pattern 1: Workflow Sequenziale
+### Pattern 1: Sequential Workflow
 
-Un command ne invoca un altro in sequenza. Utile per pipeline di review complete.
+One command invokes another in sequence. Useful for complete review pipelines.
 
-**Esempio: Release Pipeline**
+**Example: Release Pipeline**
 
 ```
 User: /eth0-release-pipeline
 ```
 
-Crea un nuovo command `eth0-release-pipeline.md`:
+Create a new command `eth0-release-pipeline.md`:
 
 ```markdown
 name: eth0-release-pipeline
@@ -87,29 +87,29 @@ description: Full release pipeline with security, delivery, and platform review
 
 ---
 
-Esegui una pipeline completa di release seguendo questi step:
+Execute a complete release pipeline following these steps:
 
 ## Step 1: Security Review
-Prima di tutto, esegui una security review:
-- Leggi `claude-docs/security-review-*.md` più recente, se esiste
-- Se non esiste o è più vecchio di 24h, chiedi all'utente: "Vuoi eseguire /eth0-security-review prima di continuare?"
-- Se ci sono finding CRITICAL o HIGH, STOP e riporta i blocchi
+First, execute a security review:
+- Read most recent `claude-docs/security-review-*.md` if exists
+- If not exists or older than 24h, ask user: "Do you want to run /eth0-security-review before continuing?"
+- If there are CRITICAL or HIGH findings, STOP and report blockers
 
 ## Step 2: Delivery Review
-Se la security è OK:
-- Esegui la delivery review seguendo le istruzioni di eth0-delivery-review
-- Salva il report in `claude-docs/delivery-review-YYYYMMDD.md`
+If security is OK:
+- Execute delivery review following eth0-delivery-review instructions
+- Save report to `claude-docs/delivery-review-YYYYMMDD.md`
 
 ## Step 3: Platform Review
-Se ci sono modifiche IaC (*.tf, helm/, k8s/):
-- Esegui platform review seguendo le istruzioni di eth0-platform-review
-- Salva il report in `claude-docs/platform-review-YYYYMMDD.md`
+If there are IaC changes (*.tf, helm/, k8s/):
+- Execute platform review following eth0-platform-review instructions
+- Save report to `claude-docs/platform-review-YYYYMMDD.md`
 
 ## Step 4: Summary Report
-Genera un report finale combinato in `claude-docs/release-pipeline-YYYYMMDD.md`:
+Generate a combined final report in `claude-docs/release-pipeline-YYYYMMDD.md`:
 - GO / NO-GO recommendation
-- Link ai singoli report
-- Blockers da risolvere
+- Links to individual reports
+- Blockers to resolve
 ```
 
 **Flow:**
@@ -128,7 +128,7 @@ Genera un report finale combinato in `claude-docs/release-pipeline-YYYYMMDD.md`:
          │
          ▼
 ┌─────────────────┐
-│ Platform Review │ (se IaC changes)
+│ Platform Review │ (if IaC changes)
 └────────┬────────┘
          │
          ▼
@@ -141,21 +141,21 @@ Genera un report finale combinato in `claude-docs/release-pipeline-YYYYMMDD.md`:
 
 ### Pattern 2: Shared Context via Files
 
-I commands condividono dati tramite file in `claude-docs/`. Ogni command legge gli output precedenti.
+Commands share data via files in `claude-docs/`. Each command reads previous outputs.
 
-**Convenzione file:**
+**File convention:**
 ```
 claude-docs/
-├── security-review-20260113.md      # Output di /eth0-security-review
-├── delivery-review-20260113.md      # Output di /eth0-delivery-review
-├── platform-review-20260113.md      # Output di /eth0-platform-review
-├── portfolio-insights-20260113.md   # Output di /eth0-portfolio-insights
-└── context-shared.md                # Contesto condiviso tra commands
+├── security-review-20260113.md      # Output from /eth0-security-review
+├── delivery-review-20260113.md      # Output from /eth0-delivery-review
+├── platform-review-20260113.md      # Output from /eth0-platform-review
+├── portfolio-insights-20260113.md   # Output from /eth0-portfolio-insights
+└── context-shared.md                # Shared context between commands
 ```
 
-**Esempio: context-shared.md**
+**Example: context-shared.md**
 
-I commands possono scrivere/leggere un file di contesto condiviso:
+Commands can read/write a shared context file:
 
 ```markdown
 # Shared Context
@@ -179,25 +179,25 @@ I commands possono scrivere/leggere un file di contesto condiviso:
 | 2026-01-12 | Delivery | GO | delivery-review-20260112.md |
 ```
 
-**Come usarlo nei commands:**
+**How to use in commands:**
 
-Aggiungi questa sezione ai tuoi commands:
+Add this section to your commands:
 
 ```markdown
 ## Shared Context
-Prima di iniziare:
-1. Leggi `claude-docs/context-shared.md` se esiste
-2. Considera i rischi attivi e blockers nella tua analisi
-3. Alla fine, aggiorna `context-shared.md` con nuovi findings
+Before starting:
+1. Read `claude-docs/context-shared.md` if exists
+2. Consider active risks and blockers in your analysis
+3. At the end, update `context-shared.md` with new findings
 ```
 
 ---
 
 ### Pattern 3: Master Orchestrator
 
-Un command intelligente che decide quali review eseguire in base al contesto del progetto.
+An intelligent command that decides which reviews to run based on project context.
 
-**Esempio: eth0-smart-review.md**
+**Example: eth0-smart-review.md**
 
 ```markdown
 name: eth0-smart-review
@@ -205,21 +205,21 @@ description: Intelligent review orchestrator that runs appropriate reviews based
 
 ---
 
-Sei un orchestratore intelligente. Analizza il contesto e decidi quali review eseguire.
+You are an intelligent orchestrator. Analyze context and decide which reviews to run.
 
-## Step 1: Analisi del Contesto
+## Step 1: Context Analysis
 
-Raccogli informazioni:
-1. `git diff --name-only HEAD~10` - ultimi file modificati
-2. `git log --oneline -10` - ultimi commit
-3. Leggi `claude-docs/context-shared.md` se esiste
+Gather information:
+1. `git diff --name-only HEAD~10` - recently modified files
+2. `git log --oneline -10` - recent commits
+3. Read `claude-docs/context-shared.md` if exists
 
-## Step 2: Classificazione Modifiche
+## Step 2: Change Classification
 
-Classifica i file modificati:
+Classify modified files:
 
-| Pattern | Tipo | Review Necessaria |
-|---------|------|-------------------|
+| Pattern | Type | Required Review |
+|---------|------|-----------------|
 | `*.tf`, `terraform/` | Infrastructure | /eth0-platform-review |
 | `helm/`, `k8s/`, `*.yaml` (deploy) | Platform | /eth0-platform-review |
 | `src/auth/`, `**/security/**` | Security-sensitive | /eth0-security-review |
@@ -230,33 +230,33 @@ Classifica i file modificati:
 ## Step 3: Decision Matrix
 
 ```
-IF modifiche infrastructure OR CI/CD:
-   → Esegui /eth0-platform-review
+IF infrastructure changes OR CI/CD:
+   → Run /eth0-platform-review
 
-IF modifiche security-sensitive OR nuove dependencies:
-   → Esegui /eth0-security-review (full)
+IF security-sensitive changes OR new dependencies:
+   → Run /eth0-security-review (full)
 
-IF solo application code:
-   → Esegui /eth0-security-review (light - solo OWASP top 10)
+IF only application code:
+   → Run /eth0-security-review (light - OWASP top 10 only)
 
-IF prossimo a release (sprint end < 3 days):
-   → Esegui /eth0-delivery-review
+IF close to release (sprint end < 3 days):
+   → Run /eth0-delivery-review
 
-IF richiesto report portfolio:
-   → Esegui /eth0-portfolio-insights
+IF portfolio report requested:
+   → Run /eth0-portfolio-insights
 ```
 
-## Step 4: Esecuzione
+## Step 4: Execution
 
-Per ogni review identificata:
-1. Comunica all'utente: "Eseguirò X review basandomi su Y modifiche"
-2. Chiedi conferma o skip
-3. Esegui le review confermate
-4. Genera summary combinato
+For each identified review:
+1. Inform user: "I will run X review based on Y changes"
+2. Ask for confirmation or skip
+3. Execute confirmed reviews
+4. Generate combined summary
 
 ## Step 5: Output
 
-Scrivi `claude-docs/smart-review-YYYYMMDD.md`:
+Write `claude-docs/smart-review-YYYYMMDD.md`:
 
 ```markdown
 # Smart Review Summary
