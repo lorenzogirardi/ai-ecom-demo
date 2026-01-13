@@ -17,6 +17,7 @@ Plus Claude Code commands (agents) for:
 - `/eth0-delivery-review` - Release readiness assessment
 - `/eth0-platform-review` - Infrastructure change review
 - `/eth0-portfolio-insights` - Delivery metrics and reporting
+- `/eth0-smart-review` - Intelligent review orchestrator
 
 ## Quick Start
 
@@ -68,7 +69,8 @@ claude-enterprise-mcp/
 │   ├── eth0-security-review.md
 │   ├── eth0-delivery-review.md
 │   ├── eth0-platform-review.md
-│   └── eth0-portfolio-insights.md
+│   ├── eth0-portfolio-insights.md
+│   └── eth0-smart-review.md
 ├── scripts/                    # Setup and configuration
 ├── config/                     # Configuration examples
 └── docs/                       # Documentation
@@ -129,6 +131,7 @@ claude-enterprise-mcp/
 | `/eth0-delivery-review` | Release readiness and risk assessment |
 | `/eth0-platform-review` | IaC and platform change review |
 | `/eth0-portfolio-insights` | Portfolio metrics and reporting |
+| `/eth0-smart-review` | Intelligent orchestrator that auto-selects reviews |
 
 ### Installing Commands
 
