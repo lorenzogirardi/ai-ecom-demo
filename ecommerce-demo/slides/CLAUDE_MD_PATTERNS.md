@@ -434,5 +434,185 @@ jobs:
 
 ---
 
-*Documento basato su 10 sessioni di sviluppo ecommerce-demo con Claude Code*
-*Version: 1.0.0 - 2026-01-14*
+## Enterprise Integration: agent-toolkit Analysis
+
+Analysis of `/agent-toolkit/` for enterprise multi-repo, multi-team adoption.
+
+### Key Components from agent-toolkit
+
+| Component | Purpose | Enterprise Value |
+|-----------|---------|------------------|
+| **Skills System** | Domain-specific prompts (.md with YAML) | Standardize practices across teams |
+| **Decision Framework** | Autonomy tiers (🟢🟡🔴) | Governance and risk management |
+| **CLAUDE.md-example** | Full user config template | Onboarding new developers |
+
+### Skills Worth Adopting
+
+**1. Infrastructure Skills**
+- `terraform/SKILL.md` - IaC patterns, Atlantis integration
+- `trivy/SKILL.md` - Security scanning pre-commit
+
+**2. Development Workflow**
+- `scm/SKILL.md` - Git conventions, branching strategies
+- `spec-driven-dev/SKILL.md` - Feature specs → tasks → TDD
+
+**3. TypeScript Skill (To Create)**
+```markdown
+# skills/typescript/SKILL.md
+---
+name: typescript
+description: TypeScript conventions for ecommerce monorepo
+triggers: ["*.ts", "*.tsx", "typescript", "type error"]
+---
+
+## Patterns
+- Zod schemas in `schemas/`
+- Strict null checks enabled
+- Prisma types auto-generated
+
+## Commands
+npm run typecheck     # Check all
+npm run lint:fix      # Auto-fix
+```
+
+---
+
+## Enterprise Multi-Repo Architecture
+
+For teams of 4-5 developers across multiple repositories:
+
+```
+company-root/
+├── .claude/                          # Company-wide
+│   ├── architecture.md               # Shared patterns
+│   └── skills/                       # Shared skills
+│
+├── ecommerce-api/                    # Team Alpha (4 devs)
+│   ├── CLAUDE.md                     # Repo-specific conventions
+│   └── .claude/
+│       ├── status.md                 # Team Alpha progress
+│       └── decisions/                # Repo ADRs
+│
+├── ecommerce-web/                    # Team Beta (5 devs)
+│   ├── CLAUDE.md
+│   └── .claude/
+│       ├── status.md
+│       └── decisions/
+│
+└── infra/                            # Platform Team (3 devs)
+    ├── CLAUDE.md
+    └── .claude/
+        ├── status.md
+        └── decisions/
+```
+
+### Hierarchy
+
+| Level | File | Content | Update Frequency |
+|-------|------|---------|------------------|
+| Company | `.claude/architecture.md` | Tech stack, auth patterns, API contracts | Quarterly |
+| Repo | `CLAUDE.md` | Module conventions, commands | Monthly |
+| Team | `.claude/status.md` | Sprint progress, blockers | Daily/Weekly |
+| Decision | `.claude/decisions/*.md` | ADRs | As needed |
+
+---
+
+## Decision Framework (from agent-toolkit)
+
+Implement autonomy tiers for enterprise governance:
+
+```markdown
+## Decision Framework
+
+### 🟢 GREEN - Claude proceeds autonomously
+- Code formatting, linting fixes
+- Test file updates matching code changes
+- Documentation typo fixes
+- Dependency minor version updates
+
+### 🟡 YELLOW - Claude asks before proceeding
+- New dependencies
+- Database schema changes
+- API contract changes
+- Configuration changes
+
+### 🔴 RED - Always require approval
+- Production deployments
+- Security-related changes
+- Infrastructure modifications
+- Data migrations
+```
+
+**Benefit:** Reduces friction on safe operations while maintaining control on risky ones.
+
+---
+
+## Recommended Adoption Path
+
+### Phase 1: Single Repo (Current)
+Keep ecommerce-demo CLAUDE.md as-is. It works well for single developer.
+
+### Phase 2: Team (3-5 devs)
+```
+ecommerce-demo/
+├── CLAUDE.md                 # Slim down to conventions (~150 lines)
+├── .claude/
+│   ├── status.md             # Progress tracking (per-developer sections)
+│   └── decisions/            # ADRs
+└── ...
+```
+
+### Phase 3: Multi-Repo (6+ devs)
+```
+company/
+├── .claude/architecture.md   # Shared standards
+├── ecommerce-api/           # Own CLAUDE.md + .claude/status.md
+├── ecommerce-web/           # Own CLAUDE.md + .claude/status.md
+└── infra/                   # Own CLAUDE.md + .claude/status.md
+```
+
+### Phase 4: CI Auto-Generated Status
+```yaml
+# .github/workflows/update-status.yml
+on:
+  push:
+    branches: [main]
+
+jobs:
+  update-status:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate status from git/PRs
+        run: |
+          echo "# Auto-Generated Status" > .claude/status.md
+          echo "Last updated: $(date)" >> .claude/status.md
+          gh pr list --json title,author,state >> .claude/status.md
+          git log --oneline -20 >> .claude/status.md
+      - name: Commit
+        run: |
+          git add .claude/status.md
+          git commit -m "chore: auto-update status" || true
+          git push
+```
+
+**Benefit:** Zero merge conflicts, always up-to-date.
+
+---
+
+## Summary: Best Practices
+
+| Practice | Source | Why |
+|----------|--------|-----|
+| Conventions in CLAUDE.md | agent-toolkit | Stable, rarely changes |
+| Progress in .claude/status.md | ecommerce-demo | Volatile, per-session |
+| ADRs in .claude/decisions/ | ADR pattern | Capture "why" for future |
+| Decision Framework (🟢🟡🔴) | agent-toolkit | Enterprise governance |
+| Skills for domain knowledge | agent-toolkit | Standardize practices |
+| CI auto-update | Hybrid | Zero conflicts at scale |
+
+---
+
+*Document based on 10 development sessions of ecommerce-demo with Claude Code*
+*Enhanced with agent-toolkit enterprise patterns*
+*Version: 2.0.0 - 2026-01-14*
