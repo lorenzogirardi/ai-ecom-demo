@@ -89,7 +89,7 @@ docs/EXECUTION_PLAN.md
 |----------|-----------|
 | [Session Recaps](#session-recaps) | 10 development sessions |
 | [Architecture](#architecture) | 7 documents with diagrams |
-| [Technical Documentation](#technical-documentation) | 13 specific documents |
+| [Technical Documentation](#technical-documentation) | 16 specific documents |
 
 ---
 
@@ -138,6 +138,7 @@ Specific technical documents.
 
 | Document | Content |
 |----------|---------|
+| [PROMPT_ECOM_eng.md](./PROMPT_ECOM_eng.md) | **Complete Replication Prompt** - Definitive prompt to recreate the entire project with Claude Code: tech stack, structure, UI/UX, testing, infra, security, observability, operations |
 | [ORIGINAL_IDEA_eng.md](./ORIGINAL_IDEA_eng.md) | **Vision & Requirements** - Original project idea, functional requirements, tech stack, execution plan |
 | [FIRST_PROMPT_eng.md](./FIRST_PROMPT_eng.md) | **Initial Prompt** - The original prompt given to Claude Code to start the project, objectives, requirements, target architecture |
 | [REASONING_PROMPT_UI_eng.md](./REASONING_PROMPT_UI_eng.md) | **Planning Session** - Reasoning and planning with Claude Web UI, feasibility analysis, rate limit optimization, session calendar |
@@ -151,6 +152,8 @@ Specific technical documents.
 | [ZAP_BASELINE_REPORT_eng.md](./ZAP_BASELINE_REPORT_eng.md) | **Security Scan** - OWASP ZAP baseline scan results, 0 High/4 Medium/6 Low alerts, remediation recommendations |
 | [K6_STRESS_TEST_REPORT_eng.md](./K6_STRESS_TEST_REPORT_eng.md) | **Stress Test** - k6 load test results, 216K requests, 277 RPS, p95 190ms, 0% errors |
 | [LIGHTHOUSE_REPORT_eng.md](./LIGHTHOUSE_REPORT_eng.md) | **Performance Audit** - Lighthouse scores (Performance 92, Accessibility 90, Best Practices 96, SEO 100), Core Web Vitals |
+| [UI_UX_HOWTO_eng.md](./UI_UX_HOWTO_eng.md) | **UI/UX How-To** - Guide for professional interfaces with Claude Code: shadcn/ui, Tailwind, globals.css template |
+| [TESTING_HOWTO_eng.md](./TESTING_HOWTO_eng.md) | **Testing How-To** - Guide for quality tests: TestFactory, Testcontainers, Test Pyramid, 177+ tests |
 
 > **Italian versions:** Each document has an Italian version without the `_eng` suffix
 
@@ -162,16 +165,16 @@ Specific technical documents.
 📁 slides/
 ├── 📄 Session Recaps    10 documents × 2 languages = 20 files
 ├── 📄 Architecture       7 documents × 2 languages = 14 files
-├── 📄 Technical Docs    13 documents × 2 languages = 26 files
+├── 📄 Technical Docs    16 documents × 2 languages = 32 files
 ├── 📄 Index              1 document  × 2 languages =  2 files
 └── ────────────────────────────────────────────────────────
-    TOTAL                31 documents × 2 languages = 62 files
+    TOTAL                34 documents × 2 languages = 68 files
 ```
 
 | Metric | Value |
 |--------|-------|
-| **Unique documents** | 31 |
-| **Total files** | 62 |
+| **Unique documents** | 34 |
+| **Total files** | 68 |
 | **Languages** | IT, EN |
 | **Mermaid diagrams** | ~66 |
 | **Total size** | ~700 KB |
@@ -228,10 +231,10 @@ All documents are available in Italian without the `_eng` suffix:
 
 | Metric | Value |
 |--------|-------|
-| **Unique documents** | 31 |
-| **Total files** | 62 (IT + EN) |
+| **Unique documents** | 34 |
+| **Total files** | 68 (IT + EN) |
 | **Mermaid diagrams** | ~66 |
-| **Total size** | ~700 KB |
+| **Total size** | ~750 KB |
 
 ### Time Comparison: Manual vs Claude
 
@@ -257,4 +260,4 @@ All documents are available in Italian without the `_eng` suffix:
 
 ---
 
-*Last updated: 2026-01-04*
+*Last updated: 2026-01-17*

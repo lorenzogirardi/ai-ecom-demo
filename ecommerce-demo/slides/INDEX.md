@@ -89,7 +89,7 @@ docs/EXECUTION_PLAN.md
 |-----------|-----------|
 | [Session Recaps](#session-recaps) | 10 sessioni di sviluppo |
 | [Architettura](#architettura) | 7 documenti con diagrammi |
-| [Documentazione Tecnica](#documentazione-tecnica) | 13 documenti specifici |
+| [Documentazione Tecnica](#documentazione-tecnica) | 16 documenti specifici |
 
 ---
 
@@ -138,6 +138,7 @@ Documenti tecnici specifici.
 
 | Documento | Contenuto |
 |-----------|-----------|
+| [PROMPT_ECOM.md](./PROMPT_ECOM.md) | **Prompt Completo per Replica** - Prompt definitivo per ricreare l'intero progetto con Claude Code: tech stack, struttura, UI/UX, testing, infra, security, observability, operations |
 | [ORIGINAL_IDEA.md](./ORIGINAL_IDEA.md) | **Vision & Requirements** - Idea originale del progetto, requisiti funzionali, stack tecnologico, piano di esecuzione |
 | [FIRST_PROMPT.md](./FIRST_PROMPT.md) | **Prompt Iniziale** - Il prompt originale fornito a Claude Code per avviare il progetto, obiettivi, requisiti, architettura target |
 | [REASONING_PROMPT_UI.md](./REASONING_PROMPT_UI.md) | **Sessione di Planning** - Ragionamento e pianificazione con Claude Web UI, analisi fattibilità, ottimizzazione per rate limits, calendario sessioni |
@@ -151,6 +152,8 @@ Documenti tecnici specifici.
 | [ZAP_BASELINE_REPORT.md](./ZAP_BASELINE_REPORT.md) | **OWASP ZAP Scan** - Baseline security scan report: 0 High, 4 Medium, 6 Low, 11 Informational alerts |
 | [K6_STRESS_TEST_REPORT.md](./K6_STRESS_TEST_REPORT.md) | **k6 Stress Test** - Day 8 results: 216K requests, 277 RPS, p95 190ms, 0% errors, 100% checks passed |
 | [LIGHTHOUSE_REPORT.md](./LIGHTHOUSE_REPORT.md) | **Lighthouse Audit** - Performance 92, Accessibility 90, Best Practices 96, SEO 100 |
+| [UI_UX_HOWTO.md](./UI_UX_HOWTO.md) | **How-To UI/UX** - Guida per ottenere interfacce professionali con Claude Code: shadcn/ui, Tailwind, globals.css template |
+| [TESTING_HOWTO.md](./TESTING_HOWTO.md) | **How-To Testing** - Guida per ottenere test di qualità: TestFactory, Testcontainers, Test Pyramid, 177+ tests |
 
 > **English versions:** Ogni documento ha una versione inglese con suffisso `_eng.md`
 
@@ -162,16 +165,16 @@ Documenti tecnici specifici.
 📁 slides/
 ├── 📄 Session Recaps     10 documenti × 2 lingue = 20 file
 ├── 📄 Architettura        7 documenti × 2 lingue = 14 file
-├── 📄 Technical Docs     13 documenti × 2 lingue = 26 file
+├── 📄 Technical Docs     16 documenti × 2 lingue = 32 file
 ├── 📄 Index               1 documento × 2 lingue =  2 file
 └── ────────────────────────────────────────────────────
-    TOTALE                31 documenti × 2 lingue = 62 file
+    TOTALE                34 documenti × 2 lingue = 68 file
 ```
 
 | Metrica | Valore |
 |---------|--------|
-| **Documenti unici** | 31 |
-| **File totali** | 62 |
+| **Documenti unici** | 34 |
+| **File totali** | 68 |
 | **Lingue** | IT, EN |
 | **Diagrammi Mermaid** | ~66 |
 | **Dimensione totale** | ~700 KB |
@@ -228,10 +231,10 @@ Tutti i documenti sono disponibili in inglese con il suffisso `_eng.md`:
 
 | Metrica | Valore |
 |---------|--------|
-| **Documenti unici** | 31 |
-| **File totali** | 62 (IT + EN) |
+| **Documenti unici** | 34 |
+| **File totali** | 68 (IT + EN) |
 | **Diagrammi Mermaid** | ~66 |
-| **Dimensione totale** | ~700 KB |
+| **Dimensione totale** | ~750 KB |
 
 ### Confronto Tempi: Manuale vs Claude
 
@@ -257,4 +260,4 @@ Tutti i documenti sono disponibili in inglese con il suffisso `_eng.md`:
 
 ---
 
-*Ultimo aggiornamento: 2026-01-04*
+*Ultimo aggiornamento: 2026-01-17*
