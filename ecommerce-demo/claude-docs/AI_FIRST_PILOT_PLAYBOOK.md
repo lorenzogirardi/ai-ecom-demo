@@ -212,7 +212,13 @@ git commit -m "chore: setup Claude Code AI-first pilot"
 
 ## 5. CLAUDE.md Template
 
-```markdown
+> **Nota:** Copia questo template nel tuo progetto come `CLAUDE.md`
+
+---
+
+**File: CLAUDE.md**
+
+```
 # CLAUDE.md
 
 ## Project Overview
@@ -226,7 +232,6 @@ E-commerce platform monorepo.
 
 ## Repository Structure
 
-```
 apps/
 ├── frontend/          # Next.js App Router
 │   ├── src/
@@ -242,68 +247,59 @@ apps/
 infra/
 ├── terraform/         # IaC
 └── helm/              # Kubernetes charts
-```
 
 ## Development Commands
 
-```bash
-# Start all services
-docker-compose -f docker-compose.full.yml up --build
+    # Start all services
+    docker-compose -f docker-compose.full.yml up --build
 
-# Frontend only
-cd apps/frontend && npm run dev
+    # Frontend only
+    cd apps/frontend && npm run dev
 
-# Backend only
-cd apps/backend && npm run dev
+    # Backend only
+    cd apps/backend && npm run dev
 
-# Run all tests
-npm run test
+    # Run all tests
+    npm run test
 
-# Type check
-npm run typecheck
+    # Type check
+    npm run typecheck
 
-# Lint
-npm run lint
-```
+    # Lint
+    npm run lint
 
 ## Code Conventions
 
 ### Backend Modules
 
-```typescript
-// Pattern: src/modules/{name}/{name}.routes.ts
-export async function productRoutes(app: FastifyInstance) {
-  app.get('/', { schema: getProductsSchema }, getProductsHandler);
-  app.post('/', { schema: createProductSchema }, createProductHandler);
-}
-```
+    // Pattern: src/modules/{name}/{name}.routes.ts
+    export async function productRoutes(app: FastifyInstance) {
+      app.get('/', { schema: getProductsSchema }, getProductsHandler);
+      app.post('/', { schema: createProductSchema }, createProductHandler);
+    }
 
 ### Frontend Components
 
-```typescript
-// Pattern: src/components/{Name}/{Name}.tsx
-interface Props {
-  // typed props
-}
+    // Pattern: src/components/{Name}/{Name}.tsx
+    interface Props {
+      // typed props
+    }
 
-export function ComponentName({ prop1, prop2 }: Props) {
-  // implementation
-}
-```
+    export function ComponentName({ prop1, prop2 }: Props) {
+      // implementation
+    }
 
 ### Money Handling (CRITICAL)
 
-```typescript
-// ALWAYS use integer cents internally
-// ALWAYS use Prisma Decimal for DB operations
-// NEVER use floating point for money calculations
+    // ALWAYS use integer cents internally
+    // ALWAYS use Prisma Decimal for DB operations
+    // NEVER use floating point for money calculations
 
-// Frontend display
-const displayPrice = (cents: number) => `$${(cents / 100).toFixed(2)}`;
+    // Frontend display
+    const displayPrice = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 
-// Backend calculation
-const total = new Prisma.Decimal(subtotalCents).div(100);
-```
+    // Backend calculation
+    const total = new Prisma.Decimal(subtotalCents).div(100);
 
 ## Business Rules
 
@@ -317,27 +313,27 @@ const total = new Prisma.Decimal(subtotalCents).div(100);
 ## Quality Gates
 
 Before committing:
-- [ ] `npm run test` passes
-- [ ] `npm run lint` passes
-- [ ] `npm run typecheck` passes
+- [ ] npm run test passes
+- [ ] npm run lint passes
+- [ ] npm run typecheck passes
 - [ ] No console.log in production code
 - [ ] API changes documented in OpenAPI
 
 ## Decision Framework
 
-### 🟢 GREEN - Proceed autonomously
+### GREEN - Proceed autonomously
 - Code formatting, linting fixes
 - Test updates matching code changes
 - Documentation updates
 - Dependency patch updates
 
-### 🟡 YELLOW - Ask before proceeding
+### YELLOW - Ask before proceeding
 - New dependencies
 - Database schema changes
 - API contract changes
 - New environment variables
 
-### 🔴 RED - Always require approval
+### RED - Always require approval
 - Security-related changes
 - Authentication/authorization changes
 - Payment flow changes
@@ -345,8 +341,8 @@ Before committing:
 
 ## Project Status
 
-👉 See `.claude/status.md` for current sprint progress
-👉 See `.claude/decisions/` for architecture decisions
+See .claude/status.md for current sprint progress
+See .claude/decisions/ for architecture decisions
 
 ## Known Issues
 
@@ -1145,7 +1141,13 @@ Average: [X.X]
 
 ### 10.3 Sprint Metrics Report
 
-```markdown
+> **Template:** Copia questo template per il report di fine sprint
+
+---
+
+**File: sprint-N-metrics.md**
+
+```
 # Sprint [N] Metrics Report
 
 ## Executive Summary
@@ -1153,10 +1155,8 @@ Average: [X.X]
 
 ## Velocity Analysis
 
-```
-Planned: ████████████████████ 40 pts
-Actual:  ██████████████████   38 pts (95%)
-```
+    Planned: ████████████████████ 40 pts
+    Actual:  ██████████████████   38 pts (95%)
 
 ### Historical Comparison
 | Sprint | Planned | Actual | AI Usage |
