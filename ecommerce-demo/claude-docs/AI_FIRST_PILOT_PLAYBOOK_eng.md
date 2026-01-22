@@ -127,6 +127,10 @@ SPRINT 3: CONSOLIDATION (Days 26-30)
 
 ### 3.2 Typical Day
 
+> **Reality Check:** Developers typically face ~40% interrupts (production issues, support requests, meetings, Slack). The ideal schedule below rarely happens. Choose the model that fits your team's interrupt pattern.
+
+#### Model A: Ideal Day (Low Interrupts <20%)
+
 ```
 09:00 - 09:15  Daily Standup (AI-enhanced)
 09:15 - 12:30  Development Block 1
@@ -136,6 +140,184 @@ SPRINT 3: CONSOLIDATION (Days 26-30)
                └── Code review, testing
 17:00 - 17:30  Metrics capture + journaling
 ```
+
+**When to use:** Dedicated pilot team with interrupt shield, or during Sprint 0 training.
+
+---
+
+#### Model B: Shield Rotation (High Interrupts ~40%)
+
+One developer absorbs ALL interrupts while others focus. Rotate daily.
+
+```
+FOCUSED DEVELOPER (4 days/week)
+09:00 - 09:15  Daily Standup
+09:15 - 12:30  Deep Work Block (NO interrupts)
+               └── AI pair programming, complex tasks
+12:30 - 13:30  Lunch
+13:30 - 16:30  Deep Work Block (NO interrupts)
+               └── Feature development
+16:30 - 17:30  Sync + Metrics
+
+SHIELD DEVELOPER (1 day/week per dev)
+09:00 - 09:15  Daily Standup
+09:15 - 17:00  Interrupt handling:
+               ├── Production issues
+               ├── Support escalations
+               ├── Code review requests
+               ├── Slack/Teams questions
+               └── Small bug fixes (use AI for quick triage)
+17:00 - 17:30  Handover notes for next shield
+```
+
+**AI tip for Shield:** Use Claude to quickly triage issues:
+- "Analyze this error log and suggest root cause"
+- "Write a quick fix for this bug, I'll review in 5 min"
+
+**Math:** With 2 devs, each gets 4 focused days = 80% effective vs 60% with constant interrupts.
+
+---
+
+#### Model C: Morning/Afternoon Split (Moderate Interrupts ~30%)
+
+Interrupts allowed only in one half of the day.
+
+```
+MORNING: FOCUS TIME (Team Agreement: No Interrupts)
+09:00 - 09:15  Daily Standup
+09:15 - 12:30  Protected Development Block
+               ├── Complex features
+               ├── AI pair programming
+               └── Requires concentration
+               ⛔ Slack on DND, no meetings allowed
+
+12:30 - 13:30  Lunch
+
+AFTERNOON: COLLABORATIVE + INTERRUPT TIME
+13:30 - 14:00  Interrupt Buffer
+               └── Check Slack, respond to morning requests
+14:00 - 15:30  Collaborative Work
+               ├── Code reviews
+               ├── Pair programming (human)
+               ├── Support requests
+               └── Small tasks with AI
+15:30 - 16:30  Meetings (if needed)
+16:30 - 17:30  Wrap-up
+               ├── PR submissions
+               ├── Metrics capture
+               └── Prepare tomorrow's focus block
+```
+
+**AI tip:** Use AI in the afternoon for interrupt-driven work:
+- Quick code reviews with AI pre-analysis
+- Rapid bug investigation
+- Documentation updates
+
+---
+
+#### Model D: Pomodoro + Interrupt Slots (Variable Interrupts)
+
+Structured 90-minute cycles with built-in interrupt windows.
+
+```
+CYCLE 1 (09:00 - 10:30)
+├── 09:00-09:15  Standup
+├── 09:15-10:15  Focus Block (60 min)
+│                └── One task, AI-assisted
+└── 10:15-10:30  Interrupt Window (15 min)
+                 └── Check Slack, quick responses
+
+CYCLE 2 (10:30 - 12:00)
+├── 10:30-11:30  Focus Block (60 min)
+└── 11:30-12:00  Interrupt Window (30 min)
+                 └── Longer interrupts, small tasks
+
+12:00 - 13:00   Lunch
+
+CYCLE 3 (13:00 - 14:30)
+├── 13:00-14:00  Focus Block (60 min)
+└── 14:00-14:30  Interrupt Window (30 min)
+
+CYCLE 4 (14:30 - 16:00)
+├── 14:30-15:30  Focus Block (60 min)
+└── 15:30-16:00  Interrupt Window (30 min)
+
+CYCLE 5 (16:00 - 17:30)
+├── 16:00-17:00  Flexible Block
+│                └── Interrupts OR focus, based on queue
+└── 17:00-17:30  Metrics + Wrap-up
+```
+
+**Math:** 4 focus hours + 2 interrupt hours = 67% focused time (vs typical 40-50% with unstructured interrupts).
+
+---
+
+#### Model E: Async-First (Remote/Distributed Teams)
+
+Minimize synchronous interrupts, maximize AI leverage.
+
+```
+DAILY ASYNC RHYTHM
+
+Start of Day (Flexible)
+├── Read async standup (written, not meeting)
+├── Review overnight AI suggestions
+└── Plan 2-3 focus tasks for the day
+
+Focus Blocks (Self-managed, 4-5 hours total)
+├── Deep work with AI
+├── Slack on DND
+└── Respond to async requests in batches
+
+Interrupt Batches (2-3 times/day, 30 min each)
+├── Process Slack queue
+├── Review PRs (AI pre-reviewed)
+├── Quick responses
+└── Escalate blockers
+
+End of Day
+├── Async standup update (written)
+├── PR submissions
+└── Metrics capture
+
+ONE SYNC MEETING/DAY (Optional)
+├── 30 min team sync
+└── OR skip if no blockers
+```
+
+**AI tip for Async:** Claude can help write async updates:
+- "Summarize what I did today for the standup update"
+- "Draft a response to this Slack thread about [issue]"
+
+---
+
+#### Choosing Your Model
+
+| Team Situation | Recommended Model |
+|----------------|-------------------|
+| Dedicated pilot team, minimal support duties | Model A (Ideal) |
+| On-call rotation exists, production support | Model B (Shield) |
+| Same team handles feature + support | Model C (AM/PM Split) |
+| Unpredictable interrupts, high variability | Model D (Pomodoro) |
+| Remote team, different timezones | Model E (Async-First) |
+
+#### Interrupt Tracking (First Week)
+
+Before choosing a model, track actual interrupts for 1 week:
+
+```
+| Day | Planned Focus (h) | Actual Focus (h) | Interrupts | Type |
+|-----|-------------------|------------------|------------|------|
+| Mon | 6 | 3.5 | 8 | Slack(5), Support(2), Meeting(1) |
+| Tue | 6 | 2 | 12 | Production incident |
+| ... | ... | ... | ... | ... |
+```
+
+Calculate your **Interrupt Rate:**
+- **<20%:** Model A works
+- **20-35%:** Model C or D
+- **35-50%:** Model B or D
+- **>50%:** Fix organizational issues first, pilot will fail
 
 ---
 

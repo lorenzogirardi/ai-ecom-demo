@@ -127,15 +127,197 @@ SPRINT 3: CONSOLIDAMENTO (Giorni 26-30)
 
 ### 3.2 Giornata Tipo
 
+> **Reality Check:** I developer tipicamente subiscono ~40% di interruzioni (incidenti produzione, richieste supporto, meeting, Slack). La giornata ideale sotto raramente accade. Scegli il modello che si adatta al pattern di interruzioni del tuo team.
+
+#### Modello A: Giornata Ideale (Interruzioni basse <20%)
+
 ```
 09:00 - 09:15  Daily Standup (AI-enhanced)
 09:15 - 12:30  Development Block 1
                └── AI pair programming
-12:30 - 13:30  Lunch
+12:30 - 13:30  Pranzo
 13:30 - 17:00  Development Block 2
                └── Code review, testing
-17:00 - 17:30  Metrics capture + journaling
+17:00 - 17:30  Raccolta metriche + journaling
 ```
+
+**Quando usarlo:** Team pilot dedicato con protezione dalle interruzioni, o durante Sprint 0 training.
+
+---
+
+#### Modello B: Rotazione Shield (Interruzioni alte ~40%)
+
+Un developer assorbe TUTTE le interruzioni mentre gli altri si concentrano. Rotazione giornaliera.
+
+```
+DEVELOPER FOCALIZZATO (4 giorni/settimana)
+09:00 - 09:15  Daily Standup
+09:15 - 12:30  Blocco Deep Work (NO interruzioni)
+               └── AI pair programming, task complessi
+12:30 - 13:30  Pranzo
+13:30 - 16:30  Blocco Deep Work (NO interruzioni)
+               └── Sviluppo feature
+16:30 - 17:30  Sync + Metriche
+
+DEVELOPER SHIELD (1 giorno/settimana per dev)
+09:00 - 09:15  Daily Standup
+09:15 - 17:00  Gestione interruzioni:
+               ├── Incidenti produzione
+               ├── Escalation supporto
+               ├── Richieste code review
+               ├── Domande Slack/Teams
+               └── Bug fix piccoli (usa AI per triage rapido)
+17:00 - 17:30  Note handover per prossimo shield
+```
+
+**Tip AI per Shield:** Usa Claude per triage rapido:
+- "Analizza questo error log e suggerisci la root cause"
+- "Scrivi una fix rapida per questo bug, la revisiono in 5 min"
+
+**Calcolo:** Con 2 dev, ognuno ha 4 giorni focalizzati = 80% efficacia vs 60% con interruzioni costanti.
+
+---
+
+#### Modello C: Split Mattina/Pomeriggio (Interruzioni moderate ~30%)
+
+Interruzioni permesse solo in metà giornata.
+
+```
+MATTINA: TEMPO FOCUS (Accordo Team: No Interruzioni)
+09:00 - 09:15  Daily Standup
+09:15 - 12:30  Blocco Sviluppo Protetto
+               ├── Feature complesse
+               ├── AI pair programming
+               └── Richiede concentrazione
+               ⛔ Slack in DND, no meeting permessi
+
+12:30 - 13:30  Pranzo
+
+POMERIGGIO: COLLABORATIVO + INTERRUZIONI
+13:30 - 14:00  Buffer Interruzioni
+               └── Check Slack, rispondi a richieste mattutine
+14:00 - 15:30  Lavoro Collaborativo
+               ├── Code review
+               ├── Pair programming (umano)
+               ├── Richieste supporto
+               └── Task piccoli con AI
+15:30 - 16:30  Meeting (se necessario)
+16:30 - 17:30  Wrap-up
+               ├── Sottomissione PR
+               ├── Raccolta metriche
+               └── Prepara blocco focus di domani
+```
+
+**Tip AI:** Usa AI nel pomeriggio per lavoro guidato da interruzioni:
+- Code review rapide con pre-analisi AI
+- Investigazione bug veloce
+- Aggiornamenti documentazione
+
+---
+
+#### Modello D: Pomodoro + Slot Interruzioni (Interruzioni variabili)
+
+Cicli strutturati di 90 minuti con finestre interruzioni integrate.
+
+```
+CICLO 1 (09:00 - 10:30)
+├── 09:00-09:15  Standup
+├── 09:15-10:15  Blocco Focus (60 min)
+│                └── Un task, AI-assistito
+└── 10:15-10:30  Finestra Interruzioni (15 min)
+                 └── Check Slack, risposte rapide
+
+CICLO 2 (10:30 - 12:00)
+├── 10:30-11:30  Blocco Focus (60 min)
+└── 11:30-12:00  Finestra Interruzioni (30 min)
+                 └── Interruzioni più lunghe, task piccoli
+
+12:00 - 13:00   Pranzo
+
+CICLO 3 (13:00 - 14:30)
+├── 13:00-14:00  Blocco Focus (60 min)
+└── 14:00-14:30  Finestra Interruzioni (30 min)
+
+CICLO 4 (14:30 - 16:00)
+├── 14:30-15:30  Blocco Focus (60 min)
+└── 15:30-16:00  Finestra Interruzioni (30 min)
+
+CICLO 5 (16:00 - 17:30)
+├── 16:00-17:00  Blocco Flessibile
+│                └── Interruzioni O focus, in base alla coda
+└── 17:00-17:30  Metriche + Wrap-up
+```
+
+**Calcolo:** 4 ore focus + 2 ore interruzioni = 67% tempo focalizzato (vs tipico 40-50% con interruzioni non strutturate).
+
+---
+
+#### Modello E: Async-First (Team Remoti/Distribuiti)
+
+Minimizza interruzioni sincrone, massimizza leva AI.
+
+```
+RITMO GIORNALIERO ASYNC
+
+Inizio Giornata (Flessibile)
+├── Leggi standup async (scritto, non meeting)
+├── Rivedi suggerimenti AI notturni
+└── Pianifica 2-3 task focus per la giornata
+
+Blocchi Focus (Autogestiti, 4-5 ore totali)
+├── Deep work con AI
+├── Slack in DND
+└── Rispondi a richieste async in batch
+
+Batch Interruzioni (2-3 volte/giorno, 30 min ciascuno)
+├── Processa coda Slack
+├── Revisiona PR (pre-revisionate da AI)
+├── Risposte rapide
+└── Escala bloccanti
+
+Fine Giornata
+├── Update standup async (scritto)
+├── Sottomissione PR
+└── Raccolta metriche
+
+UN MEETING SYNC/GIORNO (Opzionale)
+├── 30 min sync team
+└── OPPURE salta se no bloccanti
+```
+
+**Tip AI per Async:** Claude può aiutare a scrivere update async:
+- "Riassumi cosa ho fatto oggi per l'update standup"
+- "Bozza una risposta a questo thread Slack su [issue]"
+
+---
+
+#### Scegliere il Modello
+
+| Situazione Team | Modello Consigliato |
+|-----------------|---------------------|
+| Team pilot dedicato, minime responsabilità supporto | Modello A (Ideale) |
+| Rotazione on-call esistente, supporto produzione | Modello B (Shield) |
+| Stesso team gestisce feature + supporto | Modello C (Split AM/PM) |
+| Interruzioni imprevedibili, alta variabilità | Modello D (Pomodoro) |
+| Team remoto, fusi orari diversi | Modello E (Async-First) |
+
+#### Tracking Interruzioni (Prima Settimana)
+
+Prima di scegliere un modello, traccia le interruzioni effettive per 1 settimana:
+
+```
+| Giorno | Focus Pianificato (h) | Focus Effettivo (h) | Interruzioni | Tipo |
+|--------|----------------------|---------------------|--------------|------|
+| Lun | 6 | 3.5 | 8 | Slack(5), Supporto(2), Meeting(1) |
+| Mar | 6 | 2 | 12 | Incidente produzione |
+| ... | ... | ... | ... | ... |
+```
+
+Calcola il tuo **Tasso di Interruzione:**
+- **<20%:** Modello A funziona
+- **20-35%:** Modello C o D
+- **35-50%:** Modello B o D
+- **>50%:** Prima risolvi problemi organizzativi, il pilot fallirà
 
 ---
 
